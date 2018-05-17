@@ -28,7 +28,7 @@ public class Spawn {
         scoreKeep++;
         coinspawn = hud.getScore() + r.nextInt(512);
         if (hud.getScore() == coinspawn) {
-            handler.addObject(new Coin(r.nextInt(590), r.nextInt(427), ID.Coin, handler));
+            handler.addObject(new Coin(r.nextInt(Game.WIDTH - 50), r.nextInt(Game.HEIGHT - 50), ID.Coin, handler));
         }
 
         if (scoreKeep >= 250) {
