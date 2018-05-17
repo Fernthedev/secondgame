@@ -1,54 +1,46 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
-
 package io.github.fernthedev.secondgame.main;
 
-import java.awt.Graphics;
-import java.awt.Rectangle;
+import java.awt.*;
 
 public abstract class GameObject {
-    protected float x;
-    protected float y;
+    protected float x, y;
     protected ID id;
-    protected float velX;
-    protected float velY;
+    protected float velX, velY;
 
     public GameObject(float x, float y, ID id) {
         this.x = x;
         this.y = y;
         this.id = id;
+
     }
 
     public abstract void tick();
-
-    public abstract void render(Graphics var1);
-
+    public abstract void render(Graphics g);
     public abstract Rectangle getBounds();
 
     public void setX(int x) {
-        this.x = (float)x;
+        this.x = x;
     }
 
     public float getVelX() {
-        return this.velX;
+        return velX;
     }
 
     public void setVelX(int velX) {
-        this.velX = (float)velX;
+        this.velX = velX;
     }
 
     public float getVelY() {
-        return this.velY;
+        return velY;
     }
 
     public void setVelY(int velY) {
-        this.velY = (float)velY;
+        this.velY = velY;
     }
 
     public ID getId() {
-        return this.id;
+
+        return id;
     }
 
     public void setId(ID id) {
@@ -56,14 +48,15 @@ public abstract class GameObject {
     }
 
     public float getX() {
-        return this.x;
+        return x;
     }
 
     public float getY() {
-        return this.y;
+        return y;
     }
 
     public void setY(int y) {
-        this.y = (float)y;
+
+        this.y = y;
     }
 }

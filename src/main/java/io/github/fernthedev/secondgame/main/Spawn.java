@@ -8,6 +8,7 @@ package io.github.fernthedev.secondgame.main;
 import java.util.Random;
 
 public class Spawn {
+
     private Handler handler;
     private HUD hud;
     private int scoreKeep = 0;
@@ -24,41 +25,38 @@ public class Spawn {
     }
 
     public void tick() {
-        ++this.scoreKeep;
-        this.coinspawn = this.hud.getScore() + this.r.nextInt(512);
-        if (this.hud.getScore() == this.coinspawn) {
-            this.handler.addObject(new Coin(this.r.nextInt(590), this.r.nextInt(427), ID.Coin, this.handler));
+        scoreKeep++;
+        coinspawn = hud.getScore() + r.nextInt(512);
+        if (hud.getScore() == coinspawn) {
+            handler.addObject(new Coin(r.nextInt(590), r.nextInt(427), ID.Coin, handler));
         }
 
-        if (this.scoreKeep >= 250) {
-            this.hud.setLevel(this.hud.getLevel() + 1);
-            ++this.timer;
-            this.scoreKeep = 0;
+        if (scoreKeep >= 250) {
+            hud.setLevel(hud.getLevel() + 1);
+            timer++;
+            scoreKeep = 0;
 
-            int mob;
-            for(mob = this.r.nextInt(4); mob <= 0; mob = this.r.nextInt(4)) {
-                ;
-            }
+            int mob = r.nextInt(4);
 
             System.out.println(mob);
             if (mob == 1) {
-                this.handler.addObject(new BasicEnemy(this.r.nextInt(590), this.r.nextInt(427), ID.BasicEnemey, this.handler));
+                handler.addObject(new BasicEnemy(r.nextInt(Game.WIDTH - 50), r.nextInt(Game.HEIGHT - 50), ID.BasicEnemey, handler));
             }
 
             if (mob == 2) {
-                this.handler.addObject(new FastEnemy(this.r.nextInt(590), this.r.nextInt(427), ID.FastEnemy, this.handler));
+                handler.addObject(new FastEnemy(r.nextInt(Game.WIDTH - 50), r.nextInt(Game.HEIGHT - 50), ID.FastEnemy, handler));
             }
 
             if (mob == 3) {
-                this.handler.addObject(new SmartEnemy((float)this.r.nextInt(590), (float)this.r.nextInt(427), ID.SmartEnemy, this.handler));
+                handler.addObject(new SmartEnemy(r.nextInt(Game.WIDTH - 50), r.nextInt(Game.HEIGHT - 50), ID.SmartEnemy, handler));
             }
         }
 
-        if (this.timer >= this.nexttimer) {
-            this.nexttimer = this.r.nextInt(15) + 7;
-            this.timer = 0;
-            this.handler.clearEnemies();
-            this.scoreKeep = 250;
+        if (timer >= nexttimer) {
+            nexttimer = r.nextInt(15) + 7;
+            timer = 0;
+            handler.clearEnemies();
+            scoreKeep = 250;
         }
 
     }
