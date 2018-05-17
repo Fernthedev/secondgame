@@ -20,7 +20,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>io.github.fernthedev.firstgame.main.Game</mainClass>
+                            <mainClass>io.github.fernthedev.secondgame.main.Game</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
