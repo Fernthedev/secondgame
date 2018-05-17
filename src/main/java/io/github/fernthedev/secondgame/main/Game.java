@@ -88,6 +88,7 @@ public class Game extends Canvas implements Runnable {
         if (gameState == STATE.Game) {
             handler.addObject(new Player(WIDTH/2-32,HEIGHT/2-32,ID.Player,handler,hud));
             handler.addObject(new BasicEnemy(r.nextInt(WIDTH - 50),r.nextInt(HEIGHT - 50),ID.BasicEnemey,handler));
+            handler.addObject(new Coin(r.nextInt(Game.WIDTH - 50), r.nextInt(Game.HEIGHT - 50), ID.Coin, handler));
         }else {
             int amount = r.nextInt(15);
             if (amount < 10) amount = 10;

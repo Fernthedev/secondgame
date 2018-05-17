@@ -57,6 +57,7 @@ public class Spawn {
             timer = 0;
             handler.clearEnemies();
             scoreKeep = 250;
+            hud.setLevel(hud.getLevel() - 1);
         }
 
     }
