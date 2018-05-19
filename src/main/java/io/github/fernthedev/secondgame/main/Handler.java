@@ -8,22 +8,30 @@ package io.github.fernthedev.secondgame.main;
 import io.github.fernthedev.secondgame.main.Game.STATE;
 import java.awt.Graphics;
 import java.util.LinkedList;
+import java.util.concurrent.TimeUnit;
 
 public class Handler {
-    LinkedList<GameObject> object = new LinkedList();
+
     HUD hud;
 
+    LinkedList<GameObject> object = new LinkedList<GameObject>();
+
     public void tick() {
-        for(int i = 0; i < this.object.size(); ++i) {
-            GameObject tempObject = (GameObject)this.object.get(i);
+        for(int i = 0; i < object.size(); i++) {
+            GameObject tempObject = object.get(i);
+
             tempObject.tick();
         }
-
     }
 
     public void render(Graphics g) {
-        for(int i = 0; i < this.object.size(); ++i) {
-            GameObject tempObject = (GameObject)this.object.get(i);
+        for (int i = 0; i <  object.size();i++) {
+            GameObject tempObject = object.get(i);
+            try {
+                TimeUnit.SECONDS.sleep((long) 0.3);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             tempObject.render(g);
         }
 
@@ -38,16 +46,14 @@ public class Handler {
     }
 
     public void clearEnemies() {
-        for(int i = 0; i < this.object.size(); ++i) {
-            GameObject tempObject = (GameObject)this.object.get(i);
+        for (int i = 0; i < object.size(); i++) {
+            GameObject tempObject = object.get(i);
             if (tempObject.id == ID.Player) {
-                this.object.clear();
-                if (Game.gameState != STATE.End) {
-                    this.addObject(new Player((int)tempObject.getX(), (int)tempObject.getY(), ID.Player, this, this.hud));
-                }
+                object.clear();
+                if (Game.gameState != Game.STATE.End)
+                    addObject(new Player((int) tempObject.getX(), (int) tempObject.getY(), ID.Player, this,hud));
             }
         }
-
     }
 
     public Handler(HUD hud) {

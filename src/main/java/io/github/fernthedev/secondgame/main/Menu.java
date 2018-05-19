@@ -59,7 +59,7 @@ public class Menu extends MouseAdapter {
             g.setFont(fnt2);
             g.drawString("Score: " + hud.getScore(),150,200);
             g.drawString("Level: " + hud.getLevel(),150,230);
-            g.drawString("Coin: " + HUD.coin,150,230);
+            g.drawString("Coin: " + HUD.coin,150,260);
 
 
             g.setFont(fnt2);

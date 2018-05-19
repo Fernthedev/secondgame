@@ -37,6 +37,7 @@ public class Spawn {
             scoreKeep = 0;
 
             int mob = r.nextInt(4);
+            if(mob == 0 ) mob++;
 
             System.out.println(mob);
             if (mob == 1) {

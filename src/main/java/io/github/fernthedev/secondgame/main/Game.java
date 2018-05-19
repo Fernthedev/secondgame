@@ -5,6 +5,8 @@
 
 package io.github.fernthedev.secondgame.main;
 
+import org.lwjgl.Version;
+
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
@@ -21,6 +23,7 @@ public class Game extends Canvas implements Runnable {
     private HUD hud;
     private Spawn spawnner;
     private Menu menu;
+    private KeyInput keyInput;
 
     public static int fern$;
 
@@ -70,8 +73,10 @@ public class Game extends Canvas implements Runnable {
         hud = new HUD();
         handler = new Handler(hud);
         menu = new Menu(this,handler,hud);
+        System.out.println("LWJGL Version " + Version.getVersion() + " is working.");
+        keyInput = new KeyInput(handler,this);
 
-        this.addKeyListener(new KeyInput(handler,this));
+        this.addKeyListener(keyInput);
         this.addMouseListener(menu);
 
         new Window(WIDTH, HEIGHT, "A NEW GAME", this);
@@ -143,6 +148,7 @@ public class Game extends Canvas implements Runnable {
                 handler.tick();
                 hud.tick();
                 spawnner.tick();
+                keyInput.tick();
 
                 if (HUD.HEALTH <= 0) {
                     HUD.HEALTH = 100;
