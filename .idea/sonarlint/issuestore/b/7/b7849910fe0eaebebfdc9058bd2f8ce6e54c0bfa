@@ -1,0 +1,6 @@
+
+Lsquid:S1133"5Do not forget to remove this deprecated code someday.(Àß®¦
+Psquid:MissingDeprecatedCheck"(Add the missing @deprecated Javadoc tag.(Àß®¦
+Dsquid:S1068"(Remove this unused "game" private field.(Ä¿–Žøÿÿÿÿ
+Jsquid:S1172".Remove this unused method parameter "handler".(¾ÇêÅøÿÿÿÿ
+Nsquid:S1135e"2Complete the task associated to this TODO comment.(å½¸Ùùÿÿÿÿ

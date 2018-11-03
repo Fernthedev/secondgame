@@ -1,0 +1,25 @@
+
+Isquid:S00108Î")Either remove or fill this block of code.(Şá›¨8öñ®í,
+Bsquid:S3010d"$Remove this assignment of "handler".(©›çÚ8¦ñîê,
+Usquid:S1481±"1Remove this unused "OPTIMAL_TIME" local variable.(Å»š±ùÿÿÿÿ8®¹’áì,
+Esquid:S1948 "(Make "thread" transient or serializable.(â£Ÿ48ş€Âìê,
+psquid:S00117]"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¶çïÔ8¢ÌÂ±ë,
+ysquid:S00115E"ZRename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.(ªÁê‚8–ªÂ„ë,
+Isquid:S1948&"&Make "menu" transient or serializable.(ùŠéçùÿÿÿÿ8™«Öë,
+~squid:S00115C"ZRename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.(á”ŸÜÿÿÿÿÿ8ş€Âìê,
+xsquid:S00115J"ZRename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.(‹áC8öñ®í,
+Gsquid:S1659"$Declare "HEIGHT" on a separate line.(îáúÏÿÿÿÿÿ8ş€Âìê,
+Osquid:S1481]"1Remove this unused "sprite_sheet" local variable.(¶çïÔ8¢ÌÂ±ë,
+~squid:S00115G"ZRename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.(†Šˆœüÿÿÿÿ8±»…ë,
+Esquid:S3010s""Remove this assignment of "fern$".(ï‚Õüÿÿÿÿ8ş€Âìê,
+Msquid:S1948'"*Make "keyInput" transient or serializable.(ùóã£úÿÿÿÿ8™«Öë,
+Qsquid:S1948)".Make "testJoyStick" transient or serializable.(ùÏ§Ğøÿÿÿÿ8öñ®í,
+ysquid:S00115H"ZRename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.(¶ş¨ï8–ªÂ„ë,
+Isquid:S1181‰"%Catch Exception instead of Throwable.(‡˜ÚÚøÿÿÿÿ8¸„áì,
+ysquid:S00115D"ZRename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.(‹ÊşÌ8úÄêîê,
+~squid:S00115I"ZRename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.(™•¦Ùùÿÿÿÿ8öñ®í,
+Csquid:S3010`" Remove this assignment of "hud".(ş™ñ’øÿÿÿÿ8•ğ¬îê,
+xsquid:S00115B"ZRename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.(©›w8ş€Âìê,
+Msquid:S1948%"*Make "spawnner" transient or serializable.(´çš•üÿÿÿÿ8Ü‘Ñ…ë,
+~squid:S00115F"ZRename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.(ºò´æùÿÿÿÿ8Ü‘Ñ…ë,
+Jsquid:S1481®"+Remove this unused "frames" local variable.(ˆ¥¨è8í·ÂŒë,

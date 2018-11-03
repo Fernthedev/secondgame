@@ -1,0 +1,6 @@
+
+nsquid:HiddenFieldCheck·"?Rename "gameObjects" which hides the field declared at line 20.(æ²Ø•ÿÿÿÿÿ8ÌòÚ³ë,
+Xsquid:S1133n"5Do not forget to remove this deprecated code someday.(íÀ™çüÿÿÿÿ8…À®çì,
+\squid:UnusedPrivateMethodÀ"/Remove this unused private "getHandler" method.(™À‰8ÌòÚ³ë,
+nsquid:HiddenFieldCheckª"?Rename "gameObjects" which hides the field declared at line 20.(ƒ¢‡şÿÿÿÿ8Â®æ³ë,
+\squid:MissingDeprecatedCheckn"(Add the missing @deprecated Javadoc tag.(íÀ™çüÿÿÿÿ8…À®çì,

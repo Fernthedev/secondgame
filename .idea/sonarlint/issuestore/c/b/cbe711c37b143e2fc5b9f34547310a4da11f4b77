@@ -1,0 +1,12 @@
+
+esquid:S2142»"FEither re-interrupt this method or rethrow the "InterruptedException".(ä ¹€8¸ô‰’ì,
+Ysquid:S1133¢"5Do not forget to remove this deprecated code someday.(ÓÓÆ¢øÿÿÿÿ8¸ô‰’ì,
+esquid:S2142œ"FEither re-interrupt this method or rethrow the "InterruptedException".(ä ¹€8¸ô‰’ì,
+esquid:S2142µ"FEither re-interrupt this method or rethrow the "InterruptedException".(ä ¹€8¸ô‰’ì,
+Nsquid:S1066ª"/Merge this if statement with the enclosing one.(¾ƒéó8¸ô‰’ì,
+Msquid:S1068"*Remove this unused "player" private field.(Ç¹Ù±úÿÿÿÿ8·—ûÃë,
+dsquid:S2142M"FEither re-interrupt this method or rethrow the "InterruptedException".(ä ¹€8½Ø´ìê,
+]squid:MissingDeprecatedCheck¢"(Add the missing @deprecated Javadoc tag.(ÓÓÆ¢øÿÿÿÿ8¸ô‰’ì,
+]squid:UnusedPrivateMethod"1Remove this unused private "isRegistered" method.(¸ìÄ8½Ø´ìê,
+Osquid:S1068#"1Remove this unused "readingThread" private field.(õˆ™æ8½Ø´ìê,
+Ysquid:S1141³"5Extract this nested try block into a separate method.(¡»¢üùÿÿÿÿ8¸ô‰’ì,

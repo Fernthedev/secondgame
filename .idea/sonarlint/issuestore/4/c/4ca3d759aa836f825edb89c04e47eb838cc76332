@@ -1,0 +1,15 @@
+
+Lsquid:S1659")Declare "oldVertical" on a separate line.(¡¡ë¢øÿÿÿÿ8ê‰²·í,
+Dsquid:S1068"(Remove this unused "game" private field.(Ä¿–øÿÿÿÿ
+Gsquid:S1172"+Remove this unused method parameter "game".(ìçÚ“ÿÿÿÿÿ
+`squid:S1481y"BRemove this unused "yValuePercentageRightJoystick" local variable.(—ê‰8Êğ²¯í,
+Jsquid:S1172ç"&Remove these unused method parameters.(‡ì»Œûÿÿÿÿ8èŒ±í,
+Ssquid:S1066Ê"/Merge this if statement with the enclosing one.(‡ğÊúÿÿÿÿ8âİÈ·í,
+Vsquid:S1197"8Move the array designator from the variable to the type.(´É­8±ÔÆ¯í,
+Xsquid:S3400é"9Remove this method and declare a constant for this value.(”·³›8âÂæ¶í,
+`squid:S1481y"BRemove this unused "xValuePercentageRightJoystick" local variable.(—ê‰8Êğ²¯í,
+]squid:S1481”"9Remove this unused "zAxisValuePercentage" local variable.(Úæ›Ëúÿÿÿÿ8…É¸°í,
+ssquid:UnusedPrivateMethodç"ARemove this unused private "calculatePercentageFromRange" method.(‡ì»Œûÿÿÿÿ8¤„±í,
+Ssquid:S1066Ñ"/Merge this if statement with the enclosing one.(Òâ«°şÿÿÿÿ8ÇëË·í,
+Nsquid:S1066Û"/Merge this if statement with the enclosing one.(Ô¶¼Â8½©·í,
+Ysquid:S1659y";Declare "yValuePercentageRightJoystick" on a separate line.(—ê‰8Êğ²¯í,

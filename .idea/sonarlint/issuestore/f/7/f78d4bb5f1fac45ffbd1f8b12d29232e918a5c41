@@ -1,0 +1,11 @@
+
+Lsquid:S1659D")Declare "workerGroup" on a separate line.(Ôä¦İûÿÿÿÿ8‚ñÒ¸ë,
+Ssquid:S1133W"5Do not forget to remove this deprecated code someday.(Ÿ‚‹ğ8‚ñÒ¸ë,
+Ÿsquid:S1186W"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Ÿ‚‹ğ8‚ñÒ¸ë,
+Wsquid:MissingDeprecatedCheckW"(Add the missing @deprecated Javadoc tag.(Ÿ‚‹ğ8‚ñÒ¸ë,
+Gsquid:S1659#"$Declare "HEIGHT" on a separate line.(îáúÏÿÿÿÿÿ8‚ñÒ¸ë,
+Xsquid:S2864©"4Iterate over the "entrySet" instead of the "keySet".(Ô·œüùÿÿÿÿ8ÅÿŠí,
+rsquid:ModifiersOrderCheck¨"EReorder the modifiers to comply with the Java Language Specification.(‡Ú¹°8ÅÿŠí,
+dsquid:S2142c"FEither re-interrupt this method or rethrow the "InterruptedException".(ä ¹€8ÅÿŠí,
+esquid:S2142Ÿ"FEither re-interrupt this method or rethrow the "InterruptedException".(ä ¹€8ÅÿŠí,
+esquid:S2142"FEither re-interrupt this method or rethrow the "InterruptedException".(ä ¹€8ÅÿŠí,

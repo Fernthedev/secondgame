@@ -1,0 +1,9 @@
+
+Esquid:S1068"'Remove this unused "hud" private field.(ÈÕŠÌ8ëİ²ë,
+]squid:S1161k":Add the "@Override" annotation above this method signature(˜ó¨¯øÿÿÿÿ8¢äË‘ì,
+]squid:S1161@":Add the "@Override" annotation above this method signature(íÌÆğüÿÿÿÿ8ì†¢Ší,
+Msquid:S1066`"/Merge this if statement with the enclosing one.(¸µÙà8¡Ñ¿ìê,
+Isquid:S1068"+Remove this unused "handler" private field.(Ìöñœ8ç–›Ší,
+Csquid:S1948"%Make "hud" transient or serializable.(ÈÕŠÌ8¢äË‘ì,
+Gsquid:S1948")Make "handler" transient or serializable.(Ìöñœ8¢äË‘ì,
+Msquid:S1066Y"/Merge this if statement with the enclosing one.(¸µÙà8¡Ñ¿ìê,
