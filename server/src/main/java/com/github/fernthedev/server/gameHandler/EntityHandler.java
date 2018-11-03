@@ -5,7 +5,9 @@ import com.github.fernthedev.packets.ObjectUpdates.SendObjectsList;
 import com.github.fernthedev.packets.PlayerUpdates.SetCurrentPlayer;
 import com.github.fernthedev.server.ClientPlayer;
 import com.github.fernthedev.server.Server;
-import com.github.fernthedev.universal.*;
+import com.github.fernthedev.universal.GameObject;
+import com.github.fernthedev.universal.ThingHandler;
+import com.github.fernthedev.universal.UniversalHandler;
 import com.github.fernthedev.universal.entity.Trail;
 import com.github.fernthedev.universal.entity.UniversalPlayer;
 import io.netty.channel.Channel;
@@ -25,6 +27,8 @@ public class EntityHandler implements ThingHandler,Runnable {
     public Map<Integer, GameObject> getGameObjectMap() {
         return gameObjectMap;
     }
+
+    private boolean toChange = false;
 
     public void setGameObjectMap(Map<Integer, GameObject> gameObjectMap) {
         EntityHandler.gameObjectMap = gameObjectMap;
@@ -77,7 +81,7 @@ public class EntityHandler implements ThingHandler,Runnable {
             //System.out.println(universalPlayer + " old is " + gameObjectOld + " and players are" + noTraiLlist(gameObjects));
 
 
-            onChanged();
+            updatePlayerInfo(clientPlayer);
         }
     }
 
@@ -93,7 +97,7 @@ public class EntityHandler implements ThingHandler,Runnable {
 
 
         playerClientMap.put(clientPlayer, gameObject);
-        onChanged();
+        toChange = true;
 
         //HashMap<ClientPlayer,UniversalPlayer> playerUniversalPlayerHashMap = new HashMap<>(playerClientMap);
 
@@ -147,14 +151,16 @@ public class EntityHandler implements ThingHandler,Runnable {
             addPlayerObject(new NetPlayer(new UniversalPlayer(gameObject)));
           //  if(netPlayer.getObjectID() == serverGameObject.getObjectID()) addPlayerObject(netPlayer);
         }*/
-        onChanged();
+        toChange = true;
         //Server.sendObjectToAllPlayers(new SendObjectsList(gameObjects));
     }
 
     public void removeEntityObject(GameObject serverGameObject) {
 
         gameObjects.remove(serverGameObject);
+        if(serverGameObject != null)
         gameObjectMap.remove(serverGameObject.getObjectID(), serverGameObject);
+
 
         if(serverGameObject instanceof UniversalPlayer)
         if(playerClientMap.containsValue(serverGameObject)) {
@@ -165,8 +171,7 @@ public class EntityHandler implements ThingHandler,Runnable {
                 unsupportedMethodForType.printStackTrace();
             }
         }
-
-        onChanged();
+        toChange = true;
 
        // Server.sendObjectToAllPlayers(new SendObjectsList(gameObjects));
     }
@@ -175,27 +180,57 @@ public class EntityHandler implements ThingHandler,Runnable {
         List<GameObject> objects = new ArrayList<>(gameObjects);
 
 
-
         //    if(Game.gameState != Game.STATE.Hosting) objects = ClientEntityHandler.gameObjects;
         //       else objects = EntityHandler.gameObjects;
         if (!objects.isEmpty())
             for (GameObject tempObject : objects) {
                 tempObject.tick();
             }
+
+        onChanged();
     }
 
-    private synchronized void onChanged() {
+    private synchronized void updatePlayerInfo(ClientPlayer clientPlayer) {
+
         String list = null;
         ArrayList<GameObject> gameObjectList = new ArrayList<>(gameObjects);
         try {
             list = UniversalHandler.gson.toJson(gameObjectList);
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
-
         }
+        SendObjectsList sendObjectsList = new SendObjectsList(list);
 
-        Server.sendObjectToAllPlayers(new SendObjectsList(list));
-      //  Server.sendObjectToAllPlayers(new SendObjectsList(gameObjects));
+        Server.sendObjectToAllPlayers(sendObjectsList);
+
+        /*
+        for (Channel channel : Server.socketList.keySet()) {
+            //  System.out.println(packet);
+            ClientPlayer tempPlayer = Server.socketList.get(channel);
+
+            if (tempPlayer == clientPlayer) continue;
+
+
+            tempPlayer.sendObject(sendObjectsList);
+        }*/
+
+    }
+
+    private synchronized void onChanged() {
+        if (toChange) {
+            toChange = false;
+
+            String list = null;
+            ArrayList<GameObject> gameObjectList = new ArrayList<>(gameObjects);
+            try {
+                list = UniversalHandler.gson.toJson(gameObjectList);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
+
+            Server.sendObjectToAllPlayers(new SendObjectsList(list));
+            //  Server.sendObjectToAllPlayers(new SendObjectsList(gameObjects));
+        }
     }
 
 

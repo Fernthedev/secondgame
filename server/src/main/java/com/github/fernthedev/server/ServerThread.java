@@ -2,7 +2,6 @@ package com.github.fernthedev.server;
 
 import com.github.fernthedev.packets.Packet;
 import com.github.fernthedev.packets.PingPacket;
-import com.github.fernthedev.server.gameHandler.ServerGameHandler;
 import com.github.fernthedev.universal.UniversalHandler;
 import io.netty.channel.Channel;
 
@@ -24,6 +23,7 @@ public class ServerThread implements Runnable {
     private final ClientPlayer clientPlayer;
 
 
+
     private final Channel channel;
 
     private final Thread thread;
@@ -32,7 +32,7 @@ public class ServerThread implements Runnable {
     public ServerThread(Server server, Channel channel, ClientPlayer clientPlayer) {
         this.clientPlayer = clientPlayer;
         thread = Thread.currentThread();
-        running = true;
+        running = UniversalHandler.running;
         isConnected = true;
 
         this.channel = channel;
@@ -118,8 +118,8 @@ public class ServerThread implements Runnable {
     public void run() {
         if(!running) {
             close(false);
-
         }
+
         System.out.println("Checking for " + clientPlayer + " socket " + channel);
 
 
@@ -135,7 +135,7 @@ public class ServerThread implements Runnable {
         }, 0, 1000);
 
 
-        while (running && clientPlayer.isConnected()) {
+        while (isRunning() && clientPlayer.isConnected()) {
 
             if(secondsPassed >= 5) {
                 sendObject(new PingPacket());
@@ -143,10 +143,6 @@ public class ServerThread implements Runnable {
                // long nowtime = (System.nanoTime() - time) / 1000000;
                // time = System.nanoTime();
                // System.out.println("Took " + TimeUnit.NANOSECONDS.toMillis(nowtime) + " ms");
-            }
-
-            if(clientPlayer.getPlayerObject().getHealth() <= 0) {
-                ServerGameHandler.getEntityHandler().removePlayerEntityObject(clientPlayer,clientPlayer.getPlayerObject());
             }
 
             /*try{
@@ -161,7 +157,7 @@ public class ServerThread implements Runnable {
                         System.out.println("Detected something " + in.available());
                         Object data = in.readObject();
                         System.out.println(data + " was received");
-                        listener.recieved(data, clientSocket.getInetAddress());
+                        listener.received(data, clientSocket.getInetAddress());
                     }
 
                     //sendObject(new PingPacket());
@@ -200,7 +196,7 @@ public class ServerThread implements Runnable {
     }
 
     boolean isRunning() {
-        return running;
+        return UniversalHandler.running;
     }
 
 /*
@@ -247,7 +243,7 @@ public class ServerThread implements Runnable {
                                 System.out.println(data + " was received");
                             }
 
-                            listener.recieved(data, clientSocket.getInetAddress());
+                            listener.received(data, clientSocket.getInetAddress());
 
                     } catch (UnknownHostException e) {
                         System.out.println("Lost player from ip.");

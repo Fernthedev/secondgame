@@ -61,6 +61,10 @@ public class Spawn {
                 ServerGameHandler.getEntityHandler().addEntityObject(new SmartEnemy(r.nextInt(UniversalHandler.WIDTH - 50), r.nextInt(UniversalHandler.HEIGHT - 50), ID.SmartEnemy, GameObject.entities));
            //     handler.addObject(new SmartEnemy(r.nextInt(UniversalHandler.WIDTH - 50), r.nextInt(UniversalHandler.HEIGHT - 50), ID.SmartEnemy, handler));
             }*/
+            }else{
+                EntityHandler.gameObjects.clear();
+                EntityHandler.playerClientMap.clear();
+                EntityHandler.playerMap.clear();
             }
         }
 

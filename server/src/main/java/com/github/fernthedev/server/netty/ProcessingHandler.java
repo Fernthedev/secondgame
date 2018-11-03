@@ -26,47 +26,15 @@ public class ProcessingHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-
-        System.out.println(msg);
         Packet requestData = (Packet) msg;
 
-        /*if(eventListener == null) {
-            packetsLost.add(msg);
-        }*/
-        /*boolean found = false;
-        for(Channel channel : EntityHandler.playerMap.keySet()) {
-            if(channel == ctx.channel()) {
-              //  System.out.println("Found the current channel");
-                found = true;
-            }
-        }
-
-        if(!found) {
-            System.out.println("No channel associated with me?");
-        }*/
-
-
-
         EventListener eventListener = new EventListener(Server.socketList.get(ctx.channel()));
-        eventListener.recieved(requestData);
+        eventListener.received(requestData);
 
-       // System.out.println(ctx.channel());
 
-        //eventListener.recieved(requestData);
-
-        //ChannelFuture future = ctx.writeAndFlush(responseData);
-        //future.addListener(ChannelFutureListener.CLOSE);
-        /*if(!(requestData instanceof PongPacket))
-        System.out.println("Received this packet " + msg);*/
         ctx.fireChannelRead(msg);
-        //ctx.flush();
+
     }
-    /*
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) {
-        ctx.flush();
-        ctx.fireChannelReadComplete();
-    }*/
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) {

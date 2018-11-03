@@ -32,10 +32,6 @@ public class ServerGameObject extends GameObject {
                 if(!(gameObject instanceof MenuParticle))
                     return new MenuParticle(gameObject);
                 else return gameObject;
-            case Trail:
-                if(!(gameObject instanceof Trail))
-                    return new Trail(gameObject);
-                else return gameObject;
             case Coin:
                 if(!(gameObject instanceof UniversalCoin))
                     return new UniversalCoin(gameObject);

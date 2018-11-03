@@ -37,7 +37,7 @@ public class GameMechanics implements Runnable {
         }*/
     }
 
-    private void collisionCheck(UniversalPlayer playerObject) {
+    private synchronized void collisionCheck(UniversalPlayer playerObject) {
 
         HashMap<ClientPlayer, UniversalPlayer> playerUniversalPlayerHashMap = new HashMap<>(EntityHandler.playerClientMap);
         List<GameObject> objects = new ArrayList<>(EntityHandler.gameObjects);

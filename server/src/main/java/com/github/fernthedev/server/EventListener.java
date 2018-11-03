@@ -17,9 +17,9 @@ public class EventListener {
      this.clientPlayer = clientPlayer;
     }
 
-    public void recieved(Object p) {
+    public void received(Object p) {
 
-        System.out.println(p + " is the packet");
+        //System.out.println(p + " is the packet");
 
         if(p instanceof PongPacket) {
             PongPacket packet = (PongPacket) p;

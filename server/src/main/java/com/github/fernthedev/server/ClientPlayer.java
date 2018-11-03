@@ -36,6 +36,7 @@ public class ClientPlayer {
     public ClientPlayer(Channel channel,UniversalPlayer universalPlayer) {
         this.channel = channel;
         playerObject = universalPlayer;
+        connected = true;
     }
 
     protected ClientPlayer() {}
