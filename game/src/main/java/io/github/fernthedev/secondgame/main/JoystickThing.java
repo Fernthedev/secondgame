@@ -36,7 +36,7 @@ public class JoystickThing {
         if (glfwJoystickPresent(GLFW_JOYSTICK_1)) {
             boolean toUpdate = false;
             ByteBuffer buttons = GLFW.glfwGetJoystickButtons(GLFW_JOYSTICK_1);
-            if (Game.mainPlayer != null && buttons != null) {
+            if (UniversalHandler.mainPlayer != null && buttons != null) {
 
 
                 List<Byte> buttonsList = new ArrayList<>();
@@ -54,7 +54,7 @@ public class JoystickThing {
                 if (buttons.get(10) != (byte) 0 && !joystick[0]) {
                     ifJoystick = true;
                     joystick[0] = true;
-                    Game.mainPlayer.setVelY(-5);
+                    UniversalHandler.mainPlayer.setVelY(-5);
                     toUpdate = true;
 
                 } else {
@@ -67,7 +67,7 @@ public class JoystickThing {
                 if (buttons.get(11) != (byte) 0 && !joystick[2]) {
                     ifJoystick = true;
                     joystick[2] = true;
-                    Game.mainPlayer.setVelX(5);
+                    UniversalHandler.mainPlayer.setVelX(5);
                     toUpdate = true;
                 } else {
                     if (ifJoystick) {
@@ -79,7 +79,7 @@ public class JoystickThing {
                 if (buttons.get(12) != (byte) 0 && !joystick[1]) {
                     ifJoystick = true;
                     joystick[1] = true;
-                    Game.mainPlayer.setVelY(5);
+                    UniversalHandler.mainPlayer.setVelY(5);
                     toUpdate = true;
                 } else {
                     if (ifJoystick) {
@@ -91,7 +91,7 @@ public class JoystickThing {
                 if (buttons.get(13) != (byte) 0 && !joystick[3]) {
                     ifJoystick = true;
                     joystick[3] = true;
-                    Game.mainPlayer.setVelX(-5);
+                    UniversalHandler.mainPlayer.setVelX(-5);
                     toUpdate = true;
                 } else {
                     if (ifJoystick) {
@@ -106,13 +106,13 @@ public class JoystickThing {
     }
 
     private void update() {
-        if(Game.gameState == Game.STATE.Game || Game.gameState == Game.STATE.InServer || Game.gameState == Game.STATE.Hosting) {
-            UniversalHandler.getThingHandler().updatePlayerObject(Game.getServerClientObject(),Game.mainPlayer);
-            System.out.println("Updated " + Game.mainPlayer);
+        if(Game.gameState == Game.STATE.GAME || Game.gameState == Game.STATE.IN_SERVER || Game.gameState == Game.STATE.HOSTING) {
+            UniversalHandler.getThingHandler().updatePlayerObject(null,UniversalHandler.mainPlayer);
+            System.out.println("Updated " + UniversalHandler.mainPlayer);
         }
 
-        if(Game.gameState == Game.STATE.InServer) {
-            Game.sendPacket(new SendPlayerInfoPacket(new UniversalPlayer(Game.mainPlayer)));
+        if(Game.gameState == Game.STATE.IN_SERVER) {
+            Game.sendPacket(new SendPlayerInfoPacket(new UniversalPlayer(UniversalHandler.mainPlayer)));
         }
     }
 

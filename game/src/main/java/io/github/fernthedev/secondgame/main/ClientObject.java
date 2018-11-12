@@ -2,12 +2,8 @@ package io.github.fernthedev.secondgame.main;
 
 import com.github.fernthedev.universal.GameObject;
 import com.github.fernthedev.universal.ID;
-import com.github.fernthedev.universal.entity.BasicEnemy;
-import com.github.fernthedev.universal.entity.FastEnemy;
-import com.github.fernthedev.universal.entity.MenuParticle;
-import com.github.fernthedev.universal.entity.Trail;
+import com.github.fernthedev.universal.entity.*;
 import io.github.fernthedev.secondgame.main.entities.Coin;
-import io.github.fernthedev.secondgame.main.entities.Player;
 import io.github.fernthedev.secondgame.main.entities.SmartEnemy;
 
 import java.awt.*;
@@ -24,20 +20,17 @@ public class ClientObject extends GameObject {
         }
 
         public static GameObject getObjectType(GameObject gameObject) {
-            //if(gameObject.id == ID.SmartEnemy) {
-        ///        return new SmartEnemy(gameObject);
-       //     }
             switch (gameObject.id) {
                 case Player:
-                    if(!(gameObject instanceof Player))
-                    return new Player(gameObject,Game.getHandler(),Game.getHud());
+                    if(!(gameObject instanceof UniversalPlayer))
+                    return new UniversalPlayer(gameObject);
                     else return gameObject;
                 case BasicEnemey:
                     if(!(gameObject instanceof BasicEnemy))
                     return new BasicEnemy(gameObject);
                     else return gameObject;
                 case Coin:
-                    if(!(gameObject instanceof Coin))
+                    if(!(gameObject instanceof UniversalCoin))
                     return new Coin(gameObject);
                     else return gameObject;
                 case FastEnemy:
@@ -60,6 +53,27 @@ public class ClientObject extends GameObject {
                     return gameObject;
             }
         }
+
+    public static GameObject getObjectType(GsonObject gameObject) {
+        switch (gameObject.id) {
+            case Player:
+                return new UniversalPlayer(gameObject);
+            case BasicEnemey:
+                return new BasicEnemy(gameObject);
+            case Coin:
+                return new Coin(gameObject);
+            case FastEnemy:
+                return new FastEnemy(gameObject);
+            case SmartEnemy:
+                return new SmartEnemy(gameObject);
+            case MenuParticle:
+                return new MenuParticle(gameObject);
+            case Trail:
+                return new Trail(gameObject);
+            default:
+                return gameObject;
+        }
+    }
 
         @Override
         public void tick() {

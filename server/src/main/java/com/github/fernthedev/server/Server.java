@@ -247,6 +247,7 @@ public class Server implements Runnable {
 
 
     synchronized void shutdownServer() {
+        UniversalHandler.isServer = false;
         UniversalHandler.running = false;
         UniversalHandler.threads.remove(Thread.currentThread());
         for (ServerThread thread : serverThreads) {
@@ -303,7 +304,9 @@ public class Server implements Runnable {
                                 processingHandler);
                     }
                 }).option(ChannelOption.SO_BACKLOG, 128)
-                .childOption(ChannelOption.SO_KEEPALIVE, true).childOption(ChannelOption.TCP_NODELAY,true).childOption(ChannelOption.CONNECT_TIMEOUT_MILLIS,5000);
+                .childOption(ChannelOption.SO_KEEPALIVE, true)
+                .childOption(ChannelOption.TCP_NODELAY,true)
+                .childOption(ChannelOption.CONNECT_TIMEOUT_MILLIS,5000);
 
 
                  /*finally {
@@ -311,9 +314,9 @@ public class Server implements Runnable {
                     bossGroup.shutdownGracefully();
                 }*/
 
-                 Runtime.getRuntime().addShutdownHook(new Thread(this::shutdownServer));
+        Runtime.getRuntime().addShutdownHook(new Thread(this::shutdownServer));
 
-
+        UniversalHandler.isServer = true;
        // UniversalHandler.running = true;
         System.out.println("Server socket registered");
         //  new Thread(new ServerBackground(this)).start();

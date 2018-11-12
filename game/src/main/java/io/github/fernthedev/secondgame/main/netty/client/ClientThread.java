@@ -3,7 +3,6 @@ package io.github.fernthedev.secondgame.main.netty.client;
 import com.github.fernthedev.packets.Packet;
 import com.github.fernthedev.universal.UniversalHandler;
 import io.github.fernthedev.secondgame.main.Game;
-import io.github.fernthedev.secondgame.main.entities.Player;
 import io.github.fernthedev.secondgame.main.netty.client.netty.ClientHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -15,7 +14,6 @@ import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 
 public class ClientThread implements Runnable {
-    private Player player;
 
     private boolean isRegistered() {
         return client.registered;
@@ -82,7 +80,7 @@ public class ClientThread implements Runnable {
 
         if (future.isSuccess() && future.channel().isActive()) {
             System.out.println("SOCKET CONNECTED!");
-            Game.gameState = Game.STATE.InServer;
+            Game.gameState = Game.STATE.IN_SERVER;
 
 
 
@@ -149,7 +147,7 @@ public class ClientThread implements Runnable {
         System.out.println("Disconnecting from server");
         try {
 
-            future.channel().closeFuture().sync();
+           // future.channel().closeFuture().sync();
             workerGroup.shutdownGracefully();
             Thread.currentThread().join();
             System.out.println("Disconnected");
@@ -218,7 +216,7 @@ public class ClientThread implements Runnable {
                                 sendObject(new NullClass());
                             } else {
                                 client.print("Recieved");
-                                listener.recieved(data);
+                                listener.received(data);
                             }
                         }
 
@@ -306,7 +304,7 @@ public class ClientThread implements Runnable {
                                     if (!(data instanceof PingPacket)) {
                                         client.print("Recieved");
                                     }
-                                    listener.recieved(data);
+                                    listener.received(data);
                                 }
 
                         }

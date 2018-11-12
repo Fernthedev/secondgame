@@ -11,7 +11,7 @@ public class SetCoin extends Packet {
     }
 
     public SetCoin(int coins) {
-
+        this.coins = coins;
     }
 
 }

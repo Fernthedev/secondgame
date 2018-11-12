@@ -1,5 +1,6 @@
 package com.github.fernthedev.universal;
 
+import com.github.fernthedev.universal.entity.UniversalPlayer;
 import com.google.gson.Gson;
 
 import java.util.Vector;
@@ -16,6 +17,10 @@ public class UniversalHandler {
 
     public static boolean running = false;
 
+    public static boolean isServer = false;
+
+    public static UniversalPlayer mainPlayer = null;
+
     public static Gson gson = new Gson();
 
     public static final Vector<Thread> threads = new Vector<>();
@@ -31,7 +36,7 @@ public class UniversalHandler {
 
 
     public static synchronized ThingHandler getThingHandler() {
-        return thingHandler;
+        return thingHandler == null ? thingHandler = new ThingHandler() : thingHandler;
     }
 
     /**

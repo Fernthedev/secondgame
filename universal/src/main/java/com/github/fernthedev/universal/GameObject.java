@@ -60,17 +60,6 @@ public abstract class GameObject implements Serializable {
 
         if(entities < gameObjectList.size()) entities = gameObjectList.size() + 1;
 
-        /*
-        HashMap<Integer,GameObject> gameObjectHashMap = new HashMap<>(UniversalHandler.getThingHandler().getGameObjectMap());
-        if(gameObjectHashMap.size() != entities)
-            entities = 0;
-
-        for(int i = 0;i < gameObjectHashMap.size();i++) {
-            if(!gameObjectHashMap.containsKey(i)) {
-                entities = i;
-                break;
-            }
-        }*/
         return entities;
     }
 
@@ -145,6 +134,6 @@ public abstract class GameObject implements Serializable {
 
       @Override
     public String toString() {
-        return x + " " + y + " " + velX + " " + velY + " " + id + " " + objectID + " " + entities;
+          return x + "X " + y + "Y " + velX + "velX " + velY + " velY" + id + "ID " + objectID + "ObjectID " + entities;
     }
 }

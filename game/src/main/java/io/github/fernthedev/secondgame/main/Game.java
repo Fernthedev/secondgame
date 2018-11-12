@@ -12,12 +12,9 @@ import com.github.fernthedev.universal.UniversalHandler;
 import com.github.fernthedev.universal.entity.BasicEnemy;
 import com.github.fernthedev.universal.entity.MenuParticle;
 import io.github.fernthedev.secondgame.main.entities.Coin;
-import io.github.fernthedev.secondgame.main.entities.Player;
 import io.github.fernthedev.secondgame.main.inputs.joystick.JoystickHandler;
 import io.github.fernthedev.secondgame.main.inputs.keyboard.KeyInput;
 import io.github.fernthedev.secondgame.main.netty.client.Client;
-import io.github.fernthedev.secondgame.main.netty.client.ClientEntityHandler;
-import io.github.fernthedev.secondgame.main.netty.client.ServerClientObject;
 import org.lwjgl.Version;
 
 import java.awt.*;
@@ -42,8 +39,6 @@ public class Game extends Canvas implements Runnable {
 
     public static int fern$;
 
-    public static Player mainPlayer;
-
     /**
      * STATE OF PAUSED
      */
@@ -63,22 +58,22 @@ public class Game extends Canvas implements Runnable {
      * GAME STATES
      */
     public enum STATE {
-        Menu,
-        Help,
-        End,
-        Game,
-        Multiplayer,
-        Hosting,
-        GettingConnect,
-        InServer,
-        Joining
+        MENU,
+        HELP,
+        END,
+        GAME,
+        MULTIPLAYER,
+        HOSTING,
+        GETTING_CONNECT,
+        IN_SERVER,
+        JOINING
     }
 
 
     /**
      * VARIABLE FOR ACCESSING STATES
      */
-    public static STATE gameState = STATE.Menu;
+    public static STATE gameState = STATE.MENU;
 
 
     public static void sendPacket(Packet packet) {
@@ -94,8 +89,6 @@ public class Game extends Canvas implements Runnable {
         System.out.println("Loaded icon");
 
         hud = new HUD();
-
-        UniversalHandler.getInstance().setup(new ClientEntityHandler());
 
         handler = new Handler(hud);
 
@@ -119,7 +112,7 @@ public class Game extends Canvas implements Runnable {
 
 
         spawnner = new Spawn(handler, hud, this);
-        if (gameState == STATE.Game) {
+        if (gameState == STATE.GAME) {
             //handler.addObject(new Player(WIDTH/2-32,HEIGHT/2-32, ID.Player,handler,hud,0));
             handler.addObject(new BasicEnemy(r.nextInt(WIDTH - 50),r.nextInt(HEIGHT - 50),ID.BasicEnemey, GameObject.entities));
             handler.addObject(new Coin(r.nextInt(Game.WIDTH - 50), r.nextInt(Game.HEIGHT - 50), ID.Coin, GameObject.entities));
@@ -182,7 +175,6 @@ public class Game extends Canvas implements Runnable {
             delta += (now - lastTime) / ns;
             lastTime = now;
 
-
            // long updateLength = now - lastLoopTime;
            // lastLoopTime = now;
 
@@ -221,7 +213,7 @@ public class Game extends Canvas implements Runnable {
     private void tick() {
         try {
 
-            if (gameState == STATE.Game || gameState == STATE.Hosting || gameState == STATE.InServer) {
+            if (gameState == STATE.GAME || gameState == STATE.HOSTING || gameState == STATE.IN_SERVER) {
                 //System.out.println("Running thing");
 
                 if (!paused) {
@@ -229,13 +221,13 @@ public class Game extends Canvas implements Runnable {
                   //  System.out.println(UniversalHandler.running);
                     hud.tick();
 
-                    if (gameState == STATE.Game) {
+                    if (gameState == STATE.GAME) {
                         handler.tick();
                         spawnner.tick();
                     }
 
 
-                    if (gameState == STATE.InServer || gameState == STATE.Hosting) {
+                    if (gameState == STATE.IN_SERVER || gameState == STATE.HOSTING) {
 
                         handler.serverTick();
 
@@ -245,9 +237,9 @@ public class Game extends Canvas implements Runnable {
                     keyInput.tick();
                     testJoyStick.tick();
 
-                    if (HUD.HEALTH <= 0 && gameState == STATE.Game) {
-                        HUD.HEALTH = 100;
-                        gameState = STATE.End;
+                    if (UniversalHandler.mainPlayer != null && UniversalHandler.mainPlayer.getHealth() <= 0 && gameState == STATE.GAME) {
+                        UniversalHandler.mainPlayer.setHealth(100);
+                        gameState = STATE.END;
                         handler.clearEnemies();
                         int amount = r.nextInt(15);
                         if (amount < 10) amount = 10;
@@ -257,7 +249,7 @@ public class Game extends Canvas implements Runnable {
                     }
 
                 }
-            } else if (gameState == STATE.Menu || gameState == STATE.End || gameState == STATE.Help || gameState == STATE.Multiplayer || gameState == STATE.GettingConnect) {
+            } else if (gameState == STATE.MENU || gameState == STATE.END || gameState == STATE.HELP || gameState == STATE.MULTIPLAYER || gameState == STATE.GETTING_CONNECT) {
                 menu.tick();
                 handler.tick();
                 testJoyStick.tick();
@@ -282,20 +274,21 @@ public class Game extends Canvas implements Runnable {
         g.setColor(Color.black);
         g.fillRect(0,0,WIDTH,HEIGHT);
 
+
         handler.render(g);
 
         if(paused){
             g.setColor(Color.WHITE);
             g.drawString("Paused",100,100);
         }
-        if(gameState == STATE.Game || gameState == STATE.InServer || gameState == STATE.Hosting) {
+        if(gameState == STATE.GAME || gameState == STATE.IN_SERVER || gameState == STATE.HOSTING) {
             hud.render(g);
-        }else if(gameState == STATE.Menu
-                || gameState == STATE.Help
-                || gameState == STATE.End
-                || gameState ==  STATE.Multiplayer
-                || gameState ==  STATE.Joining
-                || gameState == STATE.GettingConnect) {
+        }else if(gameState == STATE.MENU
+                || gameState == STATE.HELP
+                || gameState == STATE.END
+                || gameState ==  STATE.MULTIPLAYER
+                || gameState ==  STATE.JOINING
+                || gameState == STATE.GETTING_CONNECT) {
             menu.render(g);
         }
 
@@ -336,28 +329,17 @@ public class Game extends Canvas implements Runnable {
      * Threads
      */
     public synchronized void start() {
+        UniversalHandler.running = true;
         thread = new Thread(this);
         thread.start();
         UniversalHandler.threads.add(thread);
         System.out.println(UniversalHandler.threads.size() + " threads");
-        UniversalHandler.running = true;
     }
 
     public static HUD getHud() {
         return hud;
     }
 
-    private static ServerClientObject serverClientObject;
-
-    public static ServerClientObject getServerClientObject() {
-        if(Game.gameState == STATE.Game) return null;
-
-        return serverClientObject;
-    }
-
-    public static void setServerClientObject(ServerClientObject serverClientObject) {
-        Game.serverClientObject = serverClientObject;
-    }
 
     /**
      * Stopping game threads

@@ -4,7 +4,6 @@ import com.github.fernthedev.universal.GameObject;
 import com.github.fernthedev.universal.ID;
 import com.github.fernthedev.universal.UniversalHandler;
 import com.github.fernthedev.universal.entity.Trail;
-import io.github.fernthedev.secondgame.main.Game;
 
 import java.awt.*;
 
@@ -33,7 +32,7 @@ public class SmartEnemy extends GameObject {
         x +=velX;
         y +=velY;
 
-        player = Game.mainPlayer;
+        player = UniversalHandler.mainPlayer;
 
         if(player != null) {
 
@@ -44,8 +43,8 @@ public class SmartEnemy extends GameObject {
             velX = ((-1 / distance) * diffX);
             velY = ((-1 / distance) * diffY);
         }
-        //if(x <= 0 || x >= Game.WIDTH - 16)  velX *= -1;
-        //if(y <= 0 || y >= Game.HEIGHT - 32)  velY *= -1;
+        //if(x <= 0 || x >= GAME.WIDTH - 16)  velX *= -1;
+        //if(y <= 0 || y >= GAME.HEIGHT - 32)  velY *= -1;
 
         UniversalHandler.getThingHandler().addEntityObject(new Trail(x,y,ID.Trail,Color.green,16,16,0.02f, GameObject.entities));
 

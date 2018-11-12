@@ -3,17 +3,17 @@ package com.github.fernthedev.universal.entity;
 import com.github.fernthedev.universal.*;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class UniversalPlayer extends GameObject {
     protected Random r = new Random();
 
-    protected Color color = Color.WHITE;
+    protected Color color;
     protected int health = 100;
     protected int coin;
 
-   protected UniversalPlayer() {
-    }
 
     /**
      * This is used for keeping velocity while using different coordinates.
@@ -24,9 +24,11 @@ public class UniversalPlayer extends GameObject {
         this.velX = keepPlayer.getVelX();
         this.velY = keepPlayer.getVelY();
 
-            this.health = newPlayer.getHealth();
+        this.health = newPlayer.getHealth();
+        this.color = newPlayer.getColor();
 
         this.coin = newPlayer.coin;
+        this.objectID = newPlayer.getObjectID();
         this.id = ID.Player;
 
         this.x = newPlayer.getX();
@@ -44,6 +46,7 @@ public class UniversalPlayer extends GameObject {
     public UniversalPlayer(GameObject gameObject) {
         super(gameObject);
 
+
         if(gameObject instanceof UniversalPlayer) {
             UniversalPlayer player = (UniversalPlayer) gameObject;
             this.health = player.health;
@@ -57,42 +60,93 @@ public class UniversalPlayer extends GameObject {
         }
     }
 
+    public UniversalPlayer(GsonObject gameObject) {
+        super(gameObject);
+
+
+            this.health = gameObject.getHealth();
+            this.color = gameObject.getColor();
+            this.coin = gameObject.getCoin();
+
+            this.velY = gameObject.getVelY();
+            this.velX = gameObject.getVelX();
+            this.health = gameObject.getHealth();
+
+    }
+
     public UniversalPlayer(int x, int y, ID id,int objectID) {
         super(x, y, id,objectID);
+        this.color = new Color(r.nextInt(255),r.nextInt(255),r.nextInt(255));
     }
 
     public UniversalPlayer(int x, int y, ID id,Velocity velX,Velocity velY,int objectID) {
         super(x, y, id,objectID,velX,velY);
-    }
-/*
-    @Deprecated
-    public UniversalPlayer(NetPlayer netPlayer) {
-        super((int)netPlayer.getX(),(int)netPlayer.getY(),netPlayer.id,netPlayer.getObjectID(),(int)netPlayer.getVelX(),(int)netPlayer.getVelY());
+
+        this.color = new Color(r.nextInt(255),r.nextInt(255),r.nextInt(255));
     }
 
-    public UniversalPlayer(NetPlayer netPlayer, Color color) {
-        super((int)netPlayer.getX(),(int)netPlayer.getY(),netPlayer.id,netPlayer.getObjectID(),(int)netPlayer.getVelX(),(int)netPlayer.getVelY());
+    /////////////////////////////////////////////////////////////////////////////////////
 
-        this.color = color;
-    }*/
+
+    public UniversalPlayer(UniversalPlayer universalPlayer) {
+        super(universalPlayer);
+        this.color = universalPlayer.getColor();
+        this.health = universalPlayer.getHealth();
+        this.coin = universalPlayer.getCoin();
+    }
 
     public void tick() {
-      //  System.out.println("Ticked");
-        this.x = x + velX;
-        this.y = y + velY;
+        UniversalHandler.getThingHandler().addEntityObject(new Trail(x,y,ID.Trail,color,32,32,0.05f, GameObject.entities));
+            this.x = x + velX;
+            this.y = y + velY;
 
-        //System.out.println(x + " " + y + " " + velX + " " + velY + " oooooooooooooooooooooooooooold " + (x + velX) + " " + (y + velY));
-        x = UniversalHandler.clamp(x,0,UniversalHandler.WIDTH - 37f);
-        y = UniversalHandler.clamp(y,0,UniversalHandler.HEIGHT - 60f);
-        UniversalHandler.getThingHandler().addEntityObject(new Trail(x,y,ID.Trail,Color.WHITE,32,32,0.05f, GameObject.entities));
+           // System.out.println(x + " " + y + " " + velX + " " + velY + " oooooooooooooooooooooooooooold " + (x + velX) + " " + (y + velY));
+            x = UniversalHandler.clamp(x,0,UniversalHandler.WIDTH - 37f);
+            y = UniversalHandler.clamp(y,0,UniversalHandler.HEIGHT - 60f);
 
-        //System.out.println(x + " " + y + " " + velX + " " + velY + " newwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww" + (x + velX) + " " + (y + velY) + "\n");
+
+        /*
+        x += velX;
+        y += velY;
+        x = Game.clamp(x,0,Game.WIDTH - 37f);
+        y = Game.clamp(y,0,Game.HEIGHT - 60f);
+        if(Game.gameState == Game.STATE.Game) {
+            handler.addObject(new Trail(x, y, ID.Trail, Color.WHITE, 32, 32, 0.05f, GameObject.entities));
+            collision();
+
+        }*/
 
     }
 
-    @Override
-    public void render(Graphics g) {
+    @Deprecated
+    private void collision() {
+        List<GameObject> gameObjects = new ArrayList<>(UniversalHandler.getThingHandler().getGameObjects());
+        for (GameObject tempObject : gameObjects) {
+            if (tempObject.getId() == ID.BasicEnemey || tempObject.getId() == ID.FastEnemy || tempObject.getId() == ID.SmartEnemy) {
+                if (getBounds().intersects(tempObject.getBounds())) {
+                    //COLLISION CODE
+                    health -= 2;
+                }
+            }
 
+            /*
+            if (tempObject.getId() == ID.Coin) {
+                if (getBounds().intersects(tempObject.getBounds())) {
+                    Game.getHud().plusCoin();
+                    UniversalHandler.getThingHandler().removeEntityObject(tempObject);
+                    System.out.println("COllision checking! COIN");
+                    // this.handler.removeObject(tempObject);
+                }
+            }*/
+
+
+        }
+    }
+
+
+    public void render(Graphics g) {
+        g.setColor(color);
+        g.fillRect((int) x, (int) y, 32, 32);
     }
 
 

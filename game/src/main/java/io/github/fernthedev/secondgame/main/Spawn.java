@@ -35,7 +35,7 @@ class Spawn {
         if (hud.getScore() == coinspawn) {
             UniversalHandler.getThingHandler().addEntityObject(
                     new Coin(r.nextInt(Game.WIDTH - 50), r.nextInt(Game.HEIGHT - 50), ID.Coin, GameObject.entities));
-            //handler.addObject(new Coin(r.nextInt(Game.WIDTH - 50), r.nextInt(Game.HEIGHT - 50), ID.Coin, GameObject.entities));
+            //handler.addObject(new Coin(r.nextInt(GAME.WIDTH - 50), r.nextInt(GAME.HEIGHT - 50), ID.Coin, GameObject.entities));
         }
 
         if (scoreKeep >= 250) {
@@ -56,7 +56,7 @@ class Spawn {
             }
 
             if (mob == 3) {
-                handler.addObject(new SmartEnemy(r.nextInt(Game.WIDTH - 50), r.nextInt(Game.HEIGHT - 50), ID.SmartEnemy, GameObject.entities,Game.mainPlayer));
+                handler.addObject(new SmartEnemy(r.nextInt(Game.WIDTH - 50), r.nextInt(Game.HEIGHT - 50), ID.SmartEnemy, GameObject.entities,UniversalHandler.mainPlayer));
             }
         }
 

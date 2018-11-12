@@ -212,7 +212,7 @@ public class JoystickHandler {
                         }
                     }
 
-                    if(Game.gameState == Game.STATE.Game || Game.gameState == Game.STATE.InServer || Game.gameState == Game.STATE.Hosting) {
+                    if(Game.gameState == Game.STATE.GAME || Game.gameState == Game.STATE.IN_SERVER || Game.gameState == Game.STATE.HOSTING) {
 
 
 
@@ -239,22 +239,22 @@ public class JoystickHandler {
 
         System.out.println("Updating player");
 
-        Game.mainPlayer.setVelY(vertical);
-        Game.mainPlayer.setVelX(horizontal);
+        UniversalHandler.mainPlayer.setVelY(vertical);
+        UniversalHandler.mainPlayer.setVelX(horizontal);
     }
 
     public void update() {
 
 
-        if(Game.gameState == Game.STATE.Game || Game.gameState == Game.STATE.InServer || Game.gameState == Game.STATE.Hosting) {
-            UniversalHandler.getThingHandler().updatePlayerObject(Game.getServerClientObject(),Game.mainPlayer);
-            System.out.println("Updated " + Game.mainPlayer);
+        if(Game.gameState == Game.STATE.GAME || Game.gameState == Game.STATE.IN_SERVER || Game.gameState == Game.STATE.HOSTING) {
+            UniversalHandler.getThingHandler().updatePlayerObject(null,UniversalHandler.mainPlayer);
+            System.out.println("Updated " + UniversalHandler.mainPlayer);
         }
 
 
 
-        if(Game.gameState == Game.STATE.InServer) {
-            Game.sendPacket(new SendToGetInfo(new UniversalPlayer(Game.mainPlayer)));
+        if(Game.gameState == Game.STATE.IN_SERVER) {
+            Game.sendPacket(new SendToGetInfo(new UniversalPlayer(UniversalHandler.mainPlayer)));
         }
     }
 }

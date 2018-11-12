@@ -6,10 +6,9 @@
 package io.github.fernthedev.secondgame.main;
 
 import com.github.fernthedev.universal.GameObject;
-import com.github.fernthedev.universal.ID;
+import com.github.fernthedev.universal.ThingHandler;
 import com.github.fernthedev.universal.UniversalHandler;
 import com.github.fernthedev.universal.entity.UniversalPlayer;
-import io.github.fernthedev.secondgame.main.netty.client.ClientEntityHandler;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -25,36 +24,41 @@ public class Handler {
     public void serverTick() {
 
 
-        List<GameObject> gameObjects = new ArrayList<>(ClientEntityHandler.gameObjects);
+        List<GameObject> gameObjects = new ArrayList<>(UniversalHandler.getThingHandler().getGameObjects());
         for (Iterator<GameObject> iterator = gameObjects.iterator(); iterator.hasNext(); ) {
             GameObject tempObject = iterator.next();
-            if (tempObject.id != ID.Trail) {
+           // if (tempObject.id == ID.Trail) {
                // System.out.println(tempObject.getObjectID());
                 tempObject.tick();
-            }
+         //   }
         }
     }
 
     public void tick() {
 
-    //    if(Game.gameState != Game.STATE.Hosting) objects = ClientEntityHandler.gameObjects;
+    //    if(GAME.gameState != GAME.STATE.HOSTING) objects = ClientEntityHandler.gameObjects;
  //       else objects = EntityHandler.gameObjects;
 
 
 
-        List<GameObject> gameObjects = new ArrayList<>(ClientEntityHandler.gameObjects);
+        List<GameObject> gameObjects = new ArrayList<>(UniversalHandler.getThingHandler().getGameObjects());
         for (Iterator<GameObject> iterator = gameObjects.iterator(); iterator.hasNext(); ) {
             GameObject tempObject = iterator.next();
 
             tempObject.tick();
+
+            if(tempObject instanceof UniversalPlayer)
+                UniversalHandler.getThingHandler().collisionCheck((UniversalPlayer) tempObject);
         }
+
+
+
     }
 
     public void render(Graphics g) {
 
-        //System.out.println("Rendering objects " + gameObjectList);
-
         List<GameObject> gameObjects = new ArrayList<>(UniversalHandler.getThingHandler().getGameObjects());
+
         for (Iterator<GameObject> iterator = gameObjects.iterator(); iterator.hasNext(); ) {
             GameObject tempObject = iterator.next();
             if (tempObject != null) {
@@ -91,8 +95,8 @@ public class Handler {
         System.out.println("Clearing ");
 
 
-        ClientEntityHandler.gameObjects.clear();
-        ClientEntityHandler.gameObjectMap.clear();
+        ThingHandler.gameObjects.clear();
+        ThingHandler.gameObjectMap.clear();
 
     }
 
@@ -102,14 +106,14 @@ public class Handler {
         System.out.println("Clearing ");
 
 
-        ClientEntityHandler.gameObjects.clear();
-        ClientEntityHandler.gameObjectMap.clear();
+        ThingHandler.gameObjects.clear();
+        ThingHandler.gameObjectMap.clear();
 
 
 
 
-        if (Game.gameState != Game.STATE.End) {
-            addObject(Game.mainPlayer);
+        if (Game.gameState != Game.STATE.END) {
+            addObject(UniversalHandler.mainPlayer);
             System.out.println("Added the player due to clear");
         }
     }
@@ -119,7 +123,7 @@ public class Handler {
     public void setPlayerInfo(UniversalPlayer player) {
 
         if(player != null) {
-            UniversalHandler.getThingHandler().updatePlayerObject(Game.getServerClientObject(),player);
+            UniversalHandler.getThingHandler().updatePlayerObject(null,player);
         }
        // addObject(player);
     }

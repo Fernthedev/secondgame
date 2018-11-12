@@ -3,9 +3,9 @@ package io.github.fernthedev.secondgame.main.netty.client.netty;
 import com.github.fernthedev.packets.Packet;
 import com.github.fernthedev.universal.GameObject;
 import com.github.fernthedev.universal.ID;
+import com.github.fernthedev.universal.UniversalHandler;
 import com.github.fernthedev.universal.entity.MenuParticle;
 import io.github.fernthedev.secondgame.main.Game;
-import io.github.fernthedev.secondgame.main.HUD;
 import io.github.fernthedev.secondgame.main.netty.client.Client;
 import io.github.fernthedev.secondgame.main.netty.client.EventListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -56,8 +56,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     private void resetGame() {
         Game.getHandler().clearObjects();
-        Game.gameState = Game.STATE.Menu;
-        HUD.HEALTH = 100;
+        Game.gameState = Game.STATE.MENU;
+        UniversalHandler.mainPlayer.setHealth(100);
         Random r = new Random();
         int amount = r.nextInt(15);
         if (amount < 10) amount = 10;

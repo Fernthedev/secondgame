@@ -7,10 +7,8 @@ import com.github.fernthedev.universal.GameObject;
 import com.github.fernthedev.universal.ID;
 import com.github.fernthedev.universal.UniversalHandler;
 import com.github.fernthedev.universal.entity.BasicEnemy;
-import io.github.fernthedev.secondgame.main.entities.Player;
+import com.github.fernthedev.universal.entity.UniversalPlayer;
 import io.github.fernthedev.secondgame.main.netty.client.Client;
-import io.github.fernthedev.secondgame.main.netty.client.ClientEntityHandler;
-import io.github.fernthedev.secondgame.main.netty.client.ServerClientObject;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -30,24 +28,24 @@ class Menu extends MouseAdapter {
 
     public void render(Graphics g) {
         MouseOverUI button;
-        if(Game.gameState == Game.STATE.Menu) {
+        if(Game.gameState == Game.STATE.MENU) {
             mouseOverUIList = new ArrayList<>();
             Font fnt = new Font("arial", Font.BOLD, 50);
             Font fnt2 = new Font("arial", Font.BOLD, 30);
 
             g.setFont(fnt);
             g.setColor(Color.WHITE);
-            g.drawString("Menu", 240, 70);
+            g.drawString("MENU", 240, 70);
 
             g.setFont(fnt2);
             g.setColor(Color.WHITE);
 
 
 
-            button = new MouseOverUI(g,210,150,200,64, Game.STATE.Menu) {
+            button = new MouseOverUI(g,210,150,200,64, Game.STATE.MENU) {
                 @Override
                 void onClick() {
-                    Game.gameState = Game.STATE.Game;
+                    Game.gameState = Game.STATE.GAME;
                     startGame();
                 }
             };
@@ -63,30 +61,30 @@ class Menu extends MouseAdapter {
            // g.drawRect(210, 150, 200, 64);
         //    g.drawString("Helpi", 270, 190);
 
-            button = new MouseOverUI(g, 210, 70, 200, 64, Game.STATE.Menu) {
+            button = new MouseOverUI(g, 210, 70, 200, 64, Game.STATE.MENU) {
                 @Override
                 void onClick() {
-                    Game.gameState = Game.STATE.Multiplayer;
+                    Game.gameState = Game.STATE.MULTIPLAYER;
                 }
             };
-            button.drawString("Multiplayer",230,110);
+            button.drawString("MULTIPLAYER",230,110);
             mouseOverUIList.add(button);
 
 
-            button = new MouseOverUI(g,210,250,200,64, Game.STATE.Menu) {
+            button = new MouseOverUI(g,210,250,200,64, Game.STATE.MENU) {
                 @Override
                 void onClick() {
-                    Game.gameState = Game.STATE.Help;
+                    Game.gameState = Game.STATE.HELP;
                 }
             };
 
-            button.drawString("Help",270,290);
+            button.drawString("HELP",270,290);
             mouseOverUIList.add(button);
 
            // g.drawRect(210, 250, 200, 64);
-       //     g.drawString("Help", 270, 290);
+       //     g.drawString("HELP", 270, 290);
 
-            button = new MouseOverUI(g,210,350,200,64, Game.STATE.Menu) {
+            button = new MouseOverUI(g,210,350,200,64, Game.STATE.MENU) {
                 @Override
                 void onClick() {
                     System.exit(0);
@@ -98,7 +96,7 @@ class Menu extends MouseAdapter {
         //    g.drawString("Quit", 270, 390);
 
 
-        }else if(Game.gameState == Game.STATE.Help) {
+        }else if(Game.gameState == Game.STATE.HELP) {
             mouseOverUIList = new ArrayList<>();
 
             Font fnt = new Font("arial", Font.BOLD, 50);
@@ -106,7 +104,7 @@ class Menu extends MouseAdapter {
 
             g.setFont(fnt);
             g.setColor(Color.WHITE);
-            g.drawString("Help", 240, 70);
+            g.drawString("HELP", 240, 70);
 
             g.setFont(fnt2);
             g.drawString("Use WASD or arrow keys please",150,200);
@@ -114,10 +112,10 @@ class Menu extends MouseAdapter {
 
             g.setFont(fnt2);
 
-            button = new MouseOverUI(g,210,350,200,64, Game.STATE.Help) {
+            button = new MouseOverUI(g,210,350,200,64, Game.STATE.HELP) {
                 @Override
                 void onClick() {
-                    Game.gameState = Game.STATE.Menu;
+                    Game.gameState = Game.STATE.MENU;
                 }
             };
             button.drawString("Back",270,390);
@@ -125,7 +123,7 @@ class Menu extends MouseAdapter {
 
            // /g.drawRect(210, 350, 200, 64);
           //  g.drawString("Back", 270, 390);
-        }else if(Game.gameState == Game.STATE.End) {
+        }else if(Game.gameState == Game.STATE.END) {
             mouseOverUIList = new ArrayList<>();
 
             Font fnt = new Font("arial", Font.BOLD, 50);
@@ -133,20 +131,20 @@ class Menu extends MouseAdapter {
 
             g.setFont(fnt);
             g.setColor(Color.WHITE);
-            g.drawString("Game Over", 180, 70);
+            g.drawString("GAME Over", 180, 70);
 
             g.setFont(fnt2);
             g.drawString("Score: " + hud.getScore(),150,200);
             g.drawString("Level: " + hud.getLevel(),150,230);
-            g.drawString("Coin: " + Game.getHud().coin,150,260);
+            g.drawString("Coin: " + Game.getHud().getCoin(),150,260);
 
 
 
 
-            button = new MouseOverUI(g,210,350,200,64, Game.STATE.End) {
+            button = new MouseOverUI(g,210,350,200,64, Game.STATE.END) {
                 @Override
                 void onClick() {
-                    Game.gameState = Game.STATE.Menu;
+                    Game.gameState = Game.STATE.MENU;
                     hud.setLevel(1);
                     hud.setScore(0);
                 }
@@ -159,7 +157,7 @@ class Menu extends MouseAdapter {
         //    g.drawString("Try Again", 245, 390);
 
 
-        }else if (Game.gameState == Game.STATE.Multiplayer) {
+        }else if (Game.gameState == Game.STATE.MULTIPLAYER) {
             mouseOverUIList = new ArrayList<>();
 
             Font fnt = new Font("arial", Font.BOLD, 50);
@@ -167,15 +165,15 @@ class Menu extends MouseAdapter {
 
             g.setFont(fnt);
             g.setColor(Color.WHITE);
-            g.drawString("Multiplayer", 240, 70);
+            g.drawString("MULTIPLAYER", 240, 70);
 
             g.setFont(fnt2);
 
 
-            button = new MouseOverUI(g,210,250,200,64,Game.STATE.Multiplayer) {
+            button = new MouseOverUI(g,210,250,200,64,Game.STATE.MULTIPLAYER) {
                 @Override
                 void onClick() {
-                    Game.gameState = Game.STATE.Joining;
+                    Game.gameState = Game.STATE.JOINING;
                     startGame();
 
                     Client client = new Client("localhost",2000);
@@ -188,22 +186,19 @@ class Menu extends MouseAdapter {
 
             button.drawString("Join");
 
-            button = new MouseOverUI(g,210,350,200,64, Game.STATE.Multiplayer) {
+            button = new MouseOverUI(g,210,350,200,64, Game.STATE.MULTIPLAYER) {
                 @Override
                 void onClick() {
-                    Game.gameState = Game.STATE.Hosting;
+                    Game.gameState = Game.STATE.HOSTING;
                     System.out.println(Game.gameState + "\n");
                     startGame();
                     EntityHandler entityHandler = new EntityHandler();
                     UniversalHandler.getInstance().setup(entityHandler);
 
-                    Game.setServerClientObject(new ServerClientObject());
-
-
-
+                    UniversalHandler.isServer = true;
 
                     Server server = new Server(2000,entityHandler);
-                    server.setPlayerStarter(ServerGameObject.getObjectType(new ServerGameObject(Game.mainPlayer)));
+                    server.setPlayerStarter(ServerGameObject.getObjectType(new ServerGameObject(UniversalHandler.mainPlayer)));
 
                     Thread thread = new Thread(server);
                     thread.start();
@@ -217,7 +212,7 @@ class Menu extends MouseAdapter {
             button.drawString("Host",270,390);
             //mouseOverUIList.add(button);
 
-        } else if(Game.gameState == Game.STATE.Joining) {
+        } else if(Game.gameState == Game.STATE.JOINING) {
 
         }
     }
@@ -233,9 +228,9 @@ class Menu extends MouseAdapter {
 
     private void startGame() {
 
-        if(Game.gameState != Game.STATE.Joining) {
-            Player player = new Player(Game.WIDTH / 2 - 32, Game.HEIGHT / 2 - 32, ID.Player, handler, hud, GameObject.entities);
-            Game.mainPlayer = player;
+        if(Game.gameState != Game.STATE.JOINING) {
+            UniversalPlayer player = new UniversalPlayer(Game.WIDTH / 2 - 32, Game.HEIGHT / 2 - 32, ID.Player, GameObject.entities);
+            UniversalHandler.mainPlayer = player;
 
             handler.addObject(player);
         }
@@ -243,15 +238,13 @@ class Menu extends MouseAdapter {
 
             handler.clearObjects();
 
-        if(Game.gameState == Game.STATE.Joining) {
-            UniversalHandler.getInstance().setup(new ClientEntityHandler());
-
+        if(Game.gameState == Game.STATE.JOINING) {
+            UniversalHandler.isServer = true;
         }
       //  handler.clearEnemies();
 
-        if(Game.gameState == Game.STATE.Game) {
-
-            UniversalHandler.getInstance().setup(new ClientEntityHandler());
+        if(Game.gameState == Game.STATE.GAME) {
+            UniversalHandler.isServer = false;
             handler.addObject(new BasicEnemy(r.nextInt(Game.WIDTH - 50), r.nextInt(Game.HEIGHT - 50), ID.BasicEnemey, GameObject.entities));
         }
     }
@@ -260,7 +253,7 @@ class Menu extends MouseAdapter {
         int mx = e.getX();
         int my = e.getY();
 
-        //System.out.println(Game.gameState);
+        //System.out.println(GAME.gameState);
         for(MouseOverUI mouseOverUI : mouseOverUIList) {
             if(mouseOverUI.state == Game.gameState) {
                 boolean result = mouseOver(mx, my, mouseOverUI);
@@ -275,7 +268,7 @@ class Menu extends MouseAdapter {
         }
 
 /*
-            if (Game.gameState == Game.STATE.Menu) {
+            if (GAME.gameState == GAME.STATE.MENU) {
                 //PLAY BUTTON
                 if (mouseOver(mx, my, 210, 150, 200, 64)) {
 
@@ -292,14 +285,14 @@ class Menu extends MouseAdapter {
 
 
             //BACK FOR HELP
-            if (Game.gameState == Game.STATE.Help) {
+            if (GAME.gameState == GAME.STATE.HELP) {
                 if (mouseOver(mx, my, 210, 350, 200, 64)) {
 
                 }
             }*/
 
             //BACK FOR END
-           /* if (Game.gameState == Game.STATE.End) {
+           /* if (GAME.gameState == GAME.STATE.END) {
                 if (mouseOver(mx, my, 210, 350, 200, 64)) {
 
                 }

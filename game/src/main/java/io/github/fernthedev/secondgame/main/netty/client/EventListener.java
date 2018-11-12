@@ -1,22 +1,25 @@
 package io.github.fernthedev.secondgame.main.netty.client;
 
 
-import com.github.fernthedev.packets.*;
+import com.github.fernthedev.packets.GameOverPacket;
 import com.github.fernthedev.packets.ObjectUpdates.SendGameObject;
 import com.github.fernthedev.packets.ObjectUpdates.SendObjectsList;
 import com.github.fernthedev.packets.ObjectUpdates.SetCoin;
-import com.github.fernthedev.packets.PlayerUpdates.*;
+import com.github.fernthedev.packets.PingPacket;
+import com.github.fernthedev.packets.PlayerUpdates.GetToSendInfo;
+import com.github.fernthedev.packets.PlayerUpdates.SendPlayerInfoPacket;
+import com.github.fernthedev.packets.PlayerUpdates.SetCurrentPlayer;
+import com.github.fernthedev.packets.PongPacket;
 import com.github.fernthedev.universal.GameObject;
 import com.github.fernthedev.universal.ID;
 import com.github.fernthedev.universal.UniversalHandler;
 import com.github.fernthedev.universal.entity.MenuParticle;
+import com.github.fernthedev.universal.entity.Trail;
 import com.github.fernthedev.universal.entity.UniversalPlayer;
 import com.google.gson.reflect.TypeToken;
 import io.github.fernthedev.secondgame.main.ClientObject;
 import io.github.fernthedev.secondgame.main.Game;
-import io.github.fernthedev.secondgame.main.HUD;
-import io.github.fernthedev.secondgame.main.entities.Player;
-import io.github.fernthedev.secondgame.main.netty.client.netty.GsonObject;
+import com.github.fernthedev.universal.entity.GsonObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -47,12 +50,12 @@ public class EventListener {
 
             //System.out.println("Setting new player data");
 
-            Game.mainPlayer = new Player(playerPacket.getUniversalPlayer(),Game.getHandler(),Game.getHud());
+            UniversalHandler.mainPlayer = new UniversalPlayer(playerPacket.getUniversalPlayer());
 
-            UniversalHandler.getThingHandler().updatePlayerObject(null,Game.mainPlayer);
+            UniversalHandler.getThingHandler().updatePlayerObject(null,UniversalHandler.mainPlayer);
 
-           // Game.getHandler().removeObject(Game.mainPlayer);
-          //  Game.mainPlayer = new Player(playerPacket.getKeepPlayer(),Game.getHandler(),Game.getHud(),playerPacket.getKeepPlayer().getColor());
+           // GAME.getHandler().removeObject(GAME.mainPlayer);
+          //  GAME.mainPlayer = new UniversalPlayer(playerPacket.getKeepPlayer(),GAME.getHandler(),GAME.getHud(),playerPacket.getKeepPlayer().getColor());
 
         } else if (p instanceof SendPlayerInfoPacket) {
             SendPlayerInfoPacket info = (SendPlayerInfoPacket) p;
@@ -60,8 +63,8 @@ public class EventListener {
 
 
             Game.getHandler().setPlayerInfo(universalPlayer);
-            if(info.getPlayerObject().getObjectID() == Game.mainPlayer.getObjectID()) {
-                HUD.HEALTH = info.getPlayerObject().getHealth();
+            if(info.getPlayerObject().getObjectID() == UniversalHandler.mainPlayer.getObjectID()) {
+                UniversalHandler.mainPlayer.setHealth(info.getPlayerObject().getHealth());
             }
         }else if (p instanceof SetCoin) {
             SetCoin coins = (SetCoin) p;
@@ -72,48 +75,76 @@ public class EventListener {
         } else if (p instanceof SendObjectsList) {
             SendObjectsList list = (SendObjectsList) p;
 
-            List<GameObject> gameObjectsNew = new ArrayList<>();
+            List<GameObject> objectsAsInstanceFromPacket = new ArrayList<>();
 
             UniversalPlayer universalPlayer = null;
 
             Type listType = new TypeToken<ArrayList<GsonObject>>(){}.getType();
 
-            List<GameObject> gameObjects = UniversalHandler.gson.fromJson(list.getObjectList(), listType);
+            List<GsonObject> gameObjects = UniversalHandler.gson.fromJson(list.getObjectList(), listType);
 
+            //System.out.println(list.getObjectList());
 
-            for(GameObject gameObject : gameObjects) {
-                gameObjectsNew.add(ClientObject.getObjectType(gameObject));
-                if(Game.mainPlayer != null)
-                if(gameObject.getObjectID() == Game.mainPlayer.getObjectID() && gameObject instanceof UniversalPlayer) universalPlayer = (UniversalPlayer) gameObject;
+            List<GameObject> finalGameObjects;
+
+            List<GameObject> newObjects = new ArrayList<>();
+            List<GameObject> removeObjects = new ArrayList<>();
+
+            for(GsonObject gameObject : gameObjects) {
+                GameObject checkedObject = ClientObject.getObjectType(gameObject);
+
+                objectsAsInstanceFromPacket.add(checkedObject);
+
+                if(UniversalHandler.mainPlayer != null)
+                if(checkedObject.getObjectID() == UniversalHandler.mainPlayer.getObjectID() && checkedObject instanceof UniversalPlayer) universalPlayer = (UniversalPlayer) checkedObject;
                // System.out.println(ClientObject.getObjectType(gameObject));
             }
 
-            UniversalHandler.getThingHandler().setGameObjects(gameObjectsNew);
+
+           for(GameObject gameObject : objectsAsInstanceFromPacket) {
+               if(!UniversalHandler.getThingHandler().getGameObjects().contains(gameObject)) {
+                   newObjects.add(gameObject);
+               }
+           }
+           List<GameObject> currentGameObjects = new ArrayList<>(UniversalHandler.getThingHandler().getGameObjects());
+           for(GameObject gameObject : currentGameObjects) {
+               if(!objectsAsInstanceFromPacket.contains(gameObject) && !(gameObject instanceof Trail)) {
+                   removeObjects.add(gameObject);
+               }
+           }
+
+           finalGameObjects = new ArrayList<>(currentGameObjects);
+
+           finalGameObjects.removeAll(removeObjects);
+           finalGameObjects.addAll(newObjects);
+
+           UniversalHandler.getThingHandler().setGameObjects(finalGameObjects);
 
 
-            if(universalPlayer != null) {
-                Player player = new Player(universalPlayer,Game.getHandler(),Game.getHud());
+           // UniversalHandler.getThingHandler().setGameObjects(objectsAsInstanceFromPacket);
 
+
+            if(universalPlayer != null && list.doUpdatePlayer()) {
                 UniversalHandler.getThingHandler().removeEntityObject(universalPlayer);
-                UniversalHandler.getThingHandler().addEntityObject(player);
+                UniversalHandler.getThingHandler().addEntityObject(universalPlayer);
 
                 UniversalHandler.getThingHandler().updatePlayerObject(null,universalPlayer);
-                Game.mainPlayer = player;
+                UniversalHandler.mainPlayer = universalPlayer;
             }
         } else if (p instanceof GetToSendInfo) {
             GetToSendInfo info = (GetToSendInfo) p;
 
-            Player player = new Player(info.getKeepPlayer(),info.getNewPlayer(),Game.getHandler(),Game.getHud());
+            UniversalPlayer player = new UniversalPlayer(info.getKeepPlayer(),info.getNewPlayer());
 
             UniversalHandler.getThingHandler().updatePlayerObject(null,player);
-            Game.mainPlayer = player;
+            UniversalHandler.mainPlayer = player;
 
-            Game.sendPacket(new SendPlayerInfoPacket(new UniversalPlayer(Game.mainPlayer)));
+            Game.sendPacket(new SendPlayerInfoPacket(new UniversalPlayer(UniversalHandler.mainPlayer)));
         } else if (p instanceof GameOverPacket) {
-            Game.mainPlayer.setHealth(0);
+            UniversalHandler.mainPlayer.setHealth(0);
 
-            HUD.HEALTH = 100;
-            Game.gameState = Game.STATE.End;
+            UniversalHandler.mainPlayer.setHealth(100);
+            Game.gameState = Game.STATE.END;
             Game.getHandler().clearEnemies();
 
             Random r = new Random();

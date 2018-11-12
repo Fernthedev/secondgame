@@ -4,7 +4,6 @@ import com.github.fernthedev.exceptions.UnsupportedMethodForType;
 import com.github.fernthedev.packets.ObjectUpdates.SendObjectsList;
 import com.github.fernthedev.packets.PlayerUpdates.SetCurrentPlayer;
 import com.github.fernthedev.server.ClientPlayer;
-import com.github.fernthedev.server.Server;
 import com.github.fernthedev.universal.GameObject;
 import com.github.fernthedev.universal.ThingHandler;
 import com.github.fernthedev.universal.UniversalHandler;
@@ -14,7 +13,7 @@ import io.netty.channel.Channel;
 
 import java.util.*;
 
-public class EntityHandler implements ThingHandler,Runnable {
+public class EntityHandler extends ThingHandler implements Runnable {
 
     public static Vector<GameObject> gameObjects = new Vector<>();
 
@@ -29,6 +28,7 @@ public class EntityHandler implements ThingHandler,Runnable {
     }
 
     private boolean toChange = false;
+    private boolean playerChanged = false;
 
     public void setGameObjectMap(Map<Integer, GameObject> gameObjectMap) {
         EntityHandler.gameObjectMap = gameObjectMap;
@@ -80,12 +80,12 @@ public class EntityHandler implements ThingHandler,Runnable {
 
             //System.out.println(universalPlayer + " old is " + gameObjectOld + " and players are" + noTraiLlist(gameObjects));
 
-
+            playerChanged = true;
             updatePlayerInfo(clientPlayer);
         }
     }
 
-    public void addPlayerEntityObject(ClientPlayer clientPlayer,UniversalPlayer gameObject) {
+    public synchronized void addPlayerEntityObject(ClientPlayer clientPlayer,UniversalPlayer gameObject) {
 
         if(gameObject == null) throw new NullPointerException();
 
@@ -106,16 +106,19 @@ public class EntityHandler implements ThingHandler,Runnable {
        // System.out.println("Added player " + gameObject + " to " + clientPlayer + " " + playerUniversalPlayerHashMap.containsKey(clientPlayer) + playerUniversalPlayerHashMap);
     }
 
-    public void removePlayerEntityObject(ClientPlayer clientPlayer,GameObject gameObject) {
+    public synchronized void removePlayerEntityObject(ClientPlayer clientPlayer,GameObject gameObject) {
 
         if(gameObject == null) throw new NullPointerException();
 
+
         playerClientMap.remove(clientPlayer);
+
+
         removeEntityObject(gameObject);
     //    System.out.println("Removed player " + gameObject);
     }
 
-    public void removePlayerEntityObject(ClientPlayer clientPlayer) {
+    public synchronized void removePlayerEntityObject(ClientPlayer clientPlayer) {
         UniversalPlayer universalPlayer = playerClientMap.get(clientPlayer);
         playerClientMap.remove(clientPlayer);
         removeEntityObject(universalPlayer);
@@ -124,14 +127,15 @@ public class EntityHandler implements ThingHandler,Runnable {
     }
 
     @Override
-    public void addEntityObject(GameObject serverGameObject) {
-        GameObject gameObject = ServerGameObject.getObjectType(serverGameObject);
+    public synchronized void addEntityObject(GameObject gameObject) {
+
+        if(gameObject instanceof Trail) return;
 
         if(!gameObjects.contains(gameObject))
         gameObjects.add(gameObject);
 
         if(!gameObjectMap.containsValue(gameObject))
-        gameObjectMap.put(serverGameObject.getObjectID(),gameObject);
+        gameObjectMap.put(gameObject.getObjectID(),gameObject);
 
         if(gameObject instanceof UniversalPlayer) {
             try {
@@ -165,11 +169,14 @@ public class EntityHandler implements ThingHandler,Runnable {
         if(serverGameObject instanceof UniversalPlayer)
         if(playerClientMap.containsValue(serverGameObject)) {
             System.out.println("Why isn't this deleted yet? " + serverGameObject);
-            try {
-                throw new UnsupportedMethodForType();
-            } catch (UnsupportedMethodForType unsupportedMethodForType) {
-                unsupportedMethodForType.printStackTrace();
+
+            for(ClientPlayer clientPlayer : playerClientMap.keySet()) {
+                if(playerClientMap.get(clientPlayer) == serverGameObject) {
+                    System.out.println(clientPlayer + " is responsible " + playerClientMap);
+                    break;
+                }
             }
+
         }
         toChange = true;
 
@@ -191,29 +198,24 @@ public class EntityHandler implements ThingHandler,Runnable {
     }
 
     private synchronized void updatePlayerInfo(ClientPlayer clientPlayer) {
+        toChange = false;
 
         String list = null;
-        ArrayList<GameObject> gameObjectList = new ArrayList<>(gameObjects);
+        ArrayList<GameObject> gameObjectList = new ArrayList<>(noTraiLlist(gameObjects));
+
+
+        List<GameObject> gameObjectsWithoutPlayer = new ArrayList<>(gameObjectList);
+
+        if (!playerChanged)
+            gameObjectsWithoutPlayer.remove(playerClientMap.get(clientPlayer));
+
         try {
-            list = UniversalHandler.gson.toJson(gameObjectList);
+            list = UniversalHandler.gson.toJson(gameObjectsWithoutPlayer);
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
-        SendObjectsList sendObjectsList = new SendObjectsList(list);
 
-        Server.sendObjectToAllPlayers(sendObjectsList);
-
-        /*
-        for (Channel channel : Server.socketList.keySet()) {
-            //  System.out.println(packet);
-            ClientPlayer tempPlayer = Server.socketList.get(channel);
-
-            if (tempPlayer == clientPlayer) continue;
-
-
-            tempPlayer.sendObject(sendObjectsList);
-        }*/
-
+        clientPlayer.sendObject(new SendObjectsList(list,playerChanged));
     }
 
     private synchronized void onChanged() {
@@ -221,14 +223,25 @@ public class EntityHandler implements ThingHandler,Runnable {
             toChange = false;
 
             String list = null;
-            ArrayList<GameObject> gameObjectList = new ArrayList<>(gameObjects);
-            try {
-                list = UniversalHandler.gson.toJson(gameObjectList);
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
+            ArrayList<GameObject> gameObjectList = new ArrayList<>(noTraiLlist(gameObjects));
+
+
+            for (ClientPlayer clientPlayer : playerClientMap.keySet()) {
+                List<GameObject> gameObjectsWithoutPlayer = new ArrayList<>(gameObjectList);
+
+                if (!playerChanged)
+                    gameObjectsWithoutPlayer.remove(playerClientMap.get(clientPlayer));
+
+                try {
+                    list = UniversalHandler.gson.toJson(gameObjectsWithoutPlayer);
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                }
+
+                clientPlayer.sendObject(new SendObjectsList(list,playerChanged));
             }
 
-            Server.sendObjectToAllPlayers(new SendObjectsList(list));
+
             //  Server.sendObjectToAllPlayers(new SendObjectsList(gameObjects));
         }
     }
