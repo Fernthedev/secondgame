@@ -1,6 +1,6 @@
 package com.github.fernthedev.universal;
 
-import com.github.fernthedev.universal.entity.UniversalPlayer;
+import com.github.fernthedev.universal.entity.EntityPlayer;
 import com.google.gson.Gson;
 
 import java.util.Vector;
@@ -19,7 +19,7 @@ public class UniversalHandler {
 
     public static boolean isServer = false;
 
-    public static UniversalPlayer mainPlayer = null;
+    public static EntityPlayer mainPlayer = null;
 
     public static Gson gson = new Gson();
 
@@ -56,17 +56,12 @@ public class UniversalHandler {
      */
 
     public static float clamp(float var, float min, float max) {
+        //System.out.println(min + " is min");
+        //System.out.println(var + " is normal");
         if(var >= max) {
           //  System.out.println(max + " is max");
             return max;
         }
-        else if(var <= min) {
-            //System.out.println(min + " is min");
-            return min;
-        }
-        else {
-            //System.out.println(var + " is normal");
-            return var;
-        }
+        else return Math.max(var, min);
     }
 }

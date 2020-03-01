@@ -7,7 +7,7 @@ package io.github.fernthedev.secondgame.main.inputs.keyboard;
 
 import com.github.fernthedev.packets.PlayerUpdates.SendToGetInfo;
 import com.github.fernthedev.universal.UniversalHandler;
-import com.github.fernthedev.universal.entity.UniversalPlayer;
+import com.github.fernthedev.universal.entity.EntityPlayer;
 import io.github.fernthedev.secondgame.main.Game;
 import io.github.fernthedev.secondgame.main.Handler;
 import io.github.fernthedev.secondgame.main.inputs.InputHandler;
@@ -153,14 +153,14 @@ public class KeyInput extends KeyAdapter {
 
     private void update() {
         toUpdate = false;
-        if(Game.gameState == Game.STATE.GAME || Game.gameState == Game.STATE.IN_SERVER || Game.gameState == Game.STATE.HOSTING) {
+        /*if(Game.gameState == Game.STATE.GAME || Game.gameState == Game.STATE.IN_SERVER || Game.gameState == Game.STATE.HOSTING) {
             UniversalHandler.getThingHandler().updatePlayerObject(null,UniversalHandler.mainPlayer);
             //System.out.println("Updated " + GAME.mainPlayer);
-        }
+        }*/
 
         if(Game.gameState == Game.STATE.IN_SERVER) {
-            UniversalHandler.mainPlayer.setHealth(UniversalHandler.mainPlayer.getHealth());
-            Game.sendPacket(new SendToGetInfo(new UniversalPlayer(UniversalHandler.mainPlayer)));
+           // UniversalHandler.mainPlayer.setHealth(UniversalHandler.mainPlayer.getHealth());
+            Game.sendPacket(new SendToGetInfo(new EntityPlayer(UniversalHandler.mainPlayer)));
             System.out.println("Updated player");
         }
     }

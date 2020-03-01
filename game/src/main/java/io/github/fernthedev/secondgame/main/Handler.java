@@ -8,7 +8,7 @@ package io.github.fernthedev.secondgame.main;
 import com.github.fernthedev.universal.GameObject;
 import com.github.fernthedev.universal.ThingHandler;
 import com.github.fernthedev.universal.UniversalHandler;
-import com.github.fernthedev.universal.entity.UniversalPlayer;
+import com.github.fernthedev.universal.entity.EntityPlayer;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -47,8 +47,8 @@ public class Handler {
 
             tempObject.tick();
 
-            if(tempObject instanceof UniversalPlayer)
-                UniversalHandler.getThingHandler().collisionCheck((UniversalPlayer) tempObject);
+            if(tempObject instanceof EntityPlayer)
+                UniversalHandler.getThingHandler().collisionCheck((EntityPlayer) tempObject);
         }
 
 
@@ -120,7 +120,7 @@ public class Handler {
 
 
 
-    public void setPlayerInfo(UniversalPlayer player) {
+    public void setPlayerInfo(EntityPlayer player) {
 
         if(player != null) {
             UniversalHandler.getThingHandler().updatePlayerObject(null,player);

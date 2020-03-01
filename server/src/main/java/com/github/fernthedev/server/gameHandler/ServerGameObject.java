@@ -17,8 +17,8 @@ public class ServerGameObject extends GameObject {
         //     }
         switch (gameObject.id) {
             case Player:
-                if(!(gameObject instanceof UniversalPlayer))
-                    return new UniversalPlayer(gameObject);
+                if(!(gameObject instanceof EntityPlayer))
+                    return new EntityPlayer(gameObject);
                 else return gameObject;
             case BasicEnemey:
                 if(!(gameObject instanceof BasicEnemy))

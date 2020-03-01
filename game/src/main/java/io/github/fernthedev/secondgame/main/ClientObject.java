@@ -22,8 +22,8 @@ public class ClientObject extends GameObject {
         public static GameObject getObjectType(GameObject gameObject) {
             switch (gameObject.id) {
                 case Player:
-                    if(!(gameObject instanceof UniversalPlayer))
-                    return new UniversalPlayer(gameObject);
+                    if(!(gameObject instanceof EntityPlayer))
+                    return new EntityPlayer(gameObject);
                     else return gameObject;
                 case BasicEnemey:
                     if(!(gameObject instanceof BasicEnemy))
@@ -57,7 +57,7 @@ public class ClientObject extends GameObject {
     public static GameObject getObjectType(GsonObject gameObject) {
         switch (gameObject.id) {
             case Player:
-                return new UniversalPlayer(gameObject);
+                return new EntityPlayer(gameObject);
             case BasicEnemey:
                 return new BasicEnemy(gameObject);
             case Coin:

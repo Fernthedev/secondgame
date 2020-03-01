@@ -30,7 +30,7 @@ public class Spawn {
       //  }
         scoreKeep++;
         int coinspawn = ServerGameHandler.score + r.nextInt(512);
-        if (ServerGameHandler.score == coinspawn && (!EntityHandler.playerMap.isEmpty())) {
+        if (ServerGameHandler.score == coinspawn && (!Server.socketList.isEmpty())) {
             ServerGameHandler.getEntityHandler().addEntityObject(ServerGameObject.getObjectType(new ServerGameObject(r.nextInt(Server.WIDTH - 50), r.nextInt(Server.HEIGHT - 50), ID.Coin, GameObject.entities)));
         }
 
@@ -39,7 +39,7 @@ public class Spawn {
             timer++;
             scoreKeep = 0;
 
-            if(!EntityHandler.playerMap.isEmpty()) {
+            if(!Server.socketList.isEmpty()) {
                 int mob = r.nextInt(4);
                 if (mob == 0) mob++;
 
@@ -63,8 +63,6 @@ public class Spawn {
             }*/
             }else{
                 EntityHandler.gameObjects.clear();
-                EntityHandler.playerClientMap.clear();
-                EntityHandler.playerMap.clear();
             }
         }
 

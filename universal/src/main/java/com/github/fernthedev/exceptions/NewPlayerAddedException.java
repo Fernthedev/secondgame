@@ -1,16 +1,16 @@
 package com.github.fernthedev.exceptions;
 
-import com.github.fernthedev.universal.entity.UniversalPlayer;
+import com.github.fernthedev.universal.entity.EntityPlayer;
 
 public class NewPlayerAddedException extends Exception {
 
-    private UniversalPlayer universalPlayer;
+    private EntityPlayer universalPlayer;
 
-    public NewPlayerAddedException(UniversalPlayer universalPlayer) {
+    public NewPlayerAddedException(EntityPlayer universalPlayer) {
         this.universalPlayer = universalPlayer;
     }
 
-    public UniversalPlayer getUniversalPlayer() {
+    public EntityPlayer getUniversalPlayer() {
         return universalPlayer;
     }
 }

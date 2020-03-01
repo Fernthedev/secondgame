@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class UniversalPlayer extends GameObject {
+public class EntityPlayer extends GameObject {
     protected Random r = new Random();
 
     protected Color color;
@@ -20,7 +20,7 @@ public class UniversalPlayer extends GameObject {
      * @param keepPlayer The player with the velocity to keep
      * @param newPlayer The player with the coordinates to keep
      */
-    public UniversalPlayer(UniversalPlayer keepPlayer, UniversalPlayer newPlayer) {
+    public EntityPlayer(EntityPlayer keepPlayer, EntityPlayer newPlayer) {
         this.velX = keepPlayer.getVelX();
         this.velY = keepPlayer.getVelY();
 
@@ -43,12 +43,12 @@ public class UniversalPlayer extends GameObject {
         this.coin = coin;
     }
 
-    public UniversalPlayer(GameObject gameObject) {
+    public EntityPlayer(GameObject gameObject) {
         super(gameObject);
 
 
-        if(gameObject instanceof UniversalPlayer) {
-            UniversalPlayer player = (UniversalPlayer) gameObject;
+        if(gameObject instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer) gameObject;
             this.health = player.health;
             this.color = player.color;
 
@@ -60,7 +60,7 @@ public class UniversalPlayer extends GameObject {
         }
     }
 
-    public UniversalPlayer(GsonObject gameObject) {
+    public EntityPlayer(GsonObject gameObject) {
         super(gameObject);
 
 
@@ -74,12 +74,12 @@ public class UniversalPlayer extends GameObject {
 
     }
 
-    public UniversalPlayer(int x, int y, ID id,int objectID) {
+    public EntityPlayer(int x, int y, ID id, int objectID) {
         super(x, y, id,objectID);
         this.color = new Color(r.nextInt(255),r.nextInt(255),r.nextInt(255));
     }
 
-    public UniversalPlayer(int x, int y, ID id,Velocity velX,Velocity velY,int objectID) {
+    public EntityPlayer(int x, int y, ID id, Velocity velX, Velocity velY, int objectID) {
         super(x, y, id,objectID,velX,velY);
 
         this.color = new Color(r.nextInt(255),r.nextInt(255),r.nextInt(255));
@@ -88,7 +88,7 @@ public class UniversalPlayer extends GameObject {
     /////////////////////////////////////////////////////////////////////////////////////
 
 
-    public UniversalPlayer(UniversalPlayer universalPlayer) {
+    public EntityPlayer(EntityPlayer universalPlayer) {
         super(universalPlayer);
         this.color = universalPlayer.getColor();
         this.health = universalPlayer.getHealth();

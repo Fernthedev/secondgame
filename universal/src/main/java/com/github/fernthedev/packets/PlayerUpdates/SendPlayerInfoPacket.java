@@ -1,19 +1,19 @@
 package com.github.fernthedev.packets.PlayerUpdates;
 
 import com.github.fernthedev.packets.Packet;
-import com.github.fernthedev.universal.entity.UniversalPlayer;
+import com.github.fernthedev.universal.entity.EntityPlayer;
 
 public class SendPlayerInfoPacket extends Packet {
 
-    private final UniversalPlayer playerObject;
+    private final EntityPlayer playerObject;
 
-    public SendPlayerInfoPacket(UniversalPlayer playerObject) {
+    public SendPlayerInfoPacket(EntityPlayer playerObject) {
         this.playerObject = playerObject;
 
         //new DebugException("SendPlayerInfo has been called.").printStackTrace();
     }
 
-    public UniversalPlayer getPlayerObject() {
+    public EntityPlayer getPlayerObject() {
         return playerObject;
     }
 }

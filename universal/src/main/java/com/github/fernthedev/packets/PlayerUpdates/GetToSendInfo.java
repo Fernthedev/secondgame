@@ -1,27 +1,27 @@
 package com.github.fernthedev.packets.PlayerUpdates;
 
 import com.github.fernthedev.packets.Packet;
-import com.github.fernthedev.universal.entity.UniversalPlayer;
+import com.github.fernthedev.universal.entity.EntityPlayer;
 
 public class GetToSendInfo extends Packet {
 
-    private UniversalPlayer keepPlayer;
-    private UniversalPlayer newPlayer;
+    private EntityPlayer keepPlayer;
+    private EntityPlayer newPlayer;
 
     /**
      * This is used for ping pong player info. This is the request.
      * @param keepPlayer
      */
-    public GetToSendInfo(UniversalPlayer keepPlayer,UniversalPlayer newPlayer) {
+    public GetToSendInfo(EntityPlayer keepPlayer, EntityPlayer newPlayer) {
         this.keepPlayer = keepPlayer;
         this.newPlayer = newPlayer;
     }
 
-    public UniversalPlayer getKeepPlayer() {
+    public EntityPlayer getKeepPlayer() {
         return keepPlayer;
     }
 
-    public UniversalPlayer getNewPlayer() {
+    public EntityPlayer getNewPlayer() {
         return newPlayer;
     }
 }

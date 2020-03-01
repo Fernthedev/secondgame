@@ -2,7 +2,7 @@ package io.github.fernthedev.secondgame.main;
 
 import com.github.fernthedev.packets.PlayerUpdates.SendPlayerInfoPacket;
 import com.github.fernthedev.universal.UniversalHandler;
-import com.github.fernthedev.universal.entity.UniversalPlayer;
+import com.github.fernthedev.universal.entity.EntityPlayer;
 import org.lwjgl.glfw.GLFW;
 
 import java.nio.ByteBuffer;
@@ -112,7 +112,7 @@ public class JoystickThing {
         }
 
         if(Game.gameState == Game.STATE.IN_SERVER) {
-            Game.sendPacket(new SendPlayerInfoPacket(new UniversalPlayer(UniversalHandler.mainPlayer)));
+            Game.sendPacket(new SendPlayerInfoPacket(new EntityPlayer(UniversalHandler.mainPlayer)));
         }
     }
 

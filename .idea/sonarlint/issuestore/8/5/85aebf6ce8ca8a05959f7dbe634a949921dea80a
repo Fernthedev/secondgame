@@ -1,28 +1,28 @@
 
-lsquid:S00100–"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(†ÿƒíøÿÿÿÿ
-Vsquid:S1068/"8Remove this unused "controllerArrayIndex" private field.(á×§Ä8ï•°í,
+squid:S1319¦"pThe return type of this method should be an interface such as "List" rather than the implementation "ArrayList".(¡ìêıÿÿÿÿ
+ˆsquid:S1488Ù"pImmediately return this expression instead of assigning it to the temporary variable "yRotationValuePercentage".(ñ—¯¡
 nsquid:S00117h"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ûÑÑûùÿÿÿÿ
+^squid:S1126‚"AReplace this if-then-else statement by a single return statement.(¾ˆ«şÿÿÿÿ
+„squid:S1488é"lImmediately return this expression instead of assigning it to the temporary variable "yAxisValuePercentage".(œÎ†ò
+gsquid:S00100£"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Ášé·
+nsquid:S00117M"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¨¨ƒëÿÿÿÿÿ
 lsquid:S00100†"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(à½âøÿÿÿÿ
 usquid:S00117Y"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(àÏ„şÿÿÿÿÿ8ùŒ°¯í,
-ˆsquid:S1488½"pImmediately return this expression instead of assigning it to the temporary variable "xRotationValuePercentage".(÷øó§
 Zsquid:S10680"7Remove this unused "controllerTypeIndex" private field.(ş¦šßüÿÿÿÿ8ß†–°í,
-„squid:S1488¡"lImmediately return this expression instead of assigning it to the temporary variable "zAxisValuePercentage".(àÔØ‡
-ˆsquid:S1488…"pImmediately return this expression instead of assigning it to the temporary variable "zRotationValuePercentage".(‘’·«
 gsquid:S00100û"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(±¼«
-gsquid:S00100Ï"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(›»õ¸
-squid:S1319¦"pThe return type of this method should be an interface such as "List" rather than the implementation "ArrayList".(¡ìêıÿÿÿÿ
-gsquid:S00100ë"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(çì¤Ì
-^squid:S1126‚"AReplace this if-then-else statement by a single return statement.(¾ˆ«şÿÿÿÿ
+lsquid:S00100´"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ç‹°¸ûÿÿÿÿ
 Msquid:S1066p"/Merge this if statement with the enclosing one.(´Ìô8ïĞ°í,
-gsquid:S00100£"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Ášé·
+ˆsquid:S1488…"pImmediately return this expression instead of assigning it to the temporary variable "zRotationValuePercentage".(‘’·«
+lsquid:S00100–"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(†ÿƒíøÿÿÿÿ
+gsquid:S00100ë"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(çì¤Ì
+lsquid:S00100ˆ"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(›°åøÿÿÿÿ
+„squid:S1488¡"lImmediately return this expression instead of assigning it to the temporary variable "zAxisValuePercentage".(àÔØ‡
+Vsquid:S1068/"8Remove this unused "controllerArrayIndex" private field.(á×§Ä8ï•°í,
 |
 squid:S135ƒ"YReduce the total number of break and continue statements in this loop to use at most one.(¢ÿ¤Ÿùÿÿÿÿ8á×¡°í,
+nsquid:S00117M"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¨¨ƒëÿÿÿÿÿ
+ˆsquid:S1488½"pImmediately return this expression instead of assigning it to the temporary variable "xRotationValuePercentage".(÷øó§
+gsquid:S00100Ï"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(›»õ¸
 ‰squid:S1488Í"lImmediately return this expression instead of assigning it to the temporary variable "xAxisValuePercentage".(™ºÖÏùÿÿÿÿ
-lsquid:S00100ˆ"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(›°åøÿÿÿÿ
-nsquid:S00117h"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ûÑÑûùÿÿÿÿ
-ˆsquid:S1488Ù"pImmediately return this expression instead of assigning it to the temporary variable "yRotationValuePercentage".(ñ—¯¡
-lsquid:S00100´"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ç‹°¸ûÿÿÿÿ
-„squid:S1488é"lImmediately return this expression instead of assigning it to the temporary variable "yAxisValuePercentage".(œÎ†ò
-nsquid:S00117M"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¨¨ƒëÿÿÿÿÿ
 usquid:S00117Y"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(àÏ„şÿÿÿÿÿ8ùŒ°¯í,
-nsquid:S00117M"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¨¨ƒëÿÿÿÿÿ
+nsquid:S00117h"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ûÑÑûùÿÿÿÿ

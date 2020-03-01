@@ -7,7 +7,7 @@ import com.github.fernthedev.server.gameHandler.ServerGameHandler;
 import com.github.fernthedev.server.netty.ProcessingHandler;
 import com.github.fernthedev.universal.GameObject;
 import com.github.fernthedev.universal.UniversalHandler;
-import com.github.fernthedev.universal.entity.UniversalPlayer;
+import com.github.fernthedev.universal.entity.EntityPlayer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -52,7 +52,7 @@ public class Server implements Runnable {
     private Thread serverBackgroundThread = null;
 
     public void setPlayerStarter(GameObject gameObject) {
-        if(gameObject instanceof UniversalPlayer) {
+        if(gameObject instanceof EntityPlayer) {
             starterPlayer = gameObject;
         }
     }

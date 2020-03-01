@@ -11,6 +11,7 @@ import com.github.fernthedev.universal.ID;
 import com.github.fernthedev.universal.UniversalHandler;
 import com.github.fernthedev.universal.entity.BasicEnemy;
 import com.github.fernthedev.universal.entity.MenuParticle;
+import io.github.fernthedev.secondgame.main.UI.Menu;
 import io.github.fernthedev.secondgame.main.entities.Coin;
 import io.github.fernthedev.secondgame.main.inputs.joystick.JoystickHandler;
 import io.github.fernthedev.secondgame.main.inputs.keyboard.KeyInput;
@@ -94,7 +95,7 @@ public class Game extends Canvas implements Runnable {
 
         testJoyStick = new JoystickHandler(this);
 
-        menu = new Menu(this,handler,hud);
+        menu = new io.github.fernthedev.secondgame.main.UI.Menu(this,handler,hud);
         System.out.println("LWJGL Version " + Version.getVersion() + " is working.");
         keyInput = new KeyInput(handler,this);
 
@@ -131,33 +132,6 @@ public class Game extends Canvas implements Runnable {
      * RUNNABLE METHOD
      */
     public void run() {
-/*        this.requestFocus();
-        long lastTime= System.nanoTime();
-        double amountOfTicks = 60.0;
-        double ns = 1000000000 / amountOfTicks;
-        double delta = 0;
-        long timer = System.currentTimeMillis();
-        //int frames = this.frames;
-        int frames = 0;
-        while(running) {
-            long now = System.nanoTime();
-            delta += (now - lastTime) / ns;
-            lastTime = now;
-            while(delta >= 1) {
-                tick();
-                delta--;
-            }
-            if(running)
-                render();
-            frames++;
-
-            if(System.currentTimeMillis() - timer > 1000) {
-                timer += 1000;
-                //System.out.println("FPS: " + frames + " or formmated: " + NumberFormat.getNumberInstance(Locale.US).format(frames));
-                frames = 0;
-            }
-        }
-        stop();*/
         this.requestFocus();
         long lastTime = System.nanoTime();
         double amountOfTicks = 60.0;

@@ -1,8 +1,8 @@
 
-Hsquid:S3010"*Remove this assignment of "entityHandler".(¹„³÷8ñÛ¹¸ë,
-Esquid:S3010""Remove this assignment of "spawn".(³¶µÁûÿÿÿÿ8ñÛ¹¸ë,
-Isquid:S1481"+Remove this unused "frames" local variable.(ˆ¥¨è8ñÛ¹¸ë,
-Hsquid:S3010"*Remove this assignment of "gameMechanics".(ï¨íÄ8ñÛ¹¸ë,
 Hsquid:S00108?")Either remove or fill this block of code.(Şá›¨8ºş›áì,
-Isquid:S1481G"+Remove this unused "before" local variable.(Æ‰Ë•8©¼Ú¸ë,
 Jsquid:S1659",Declare "mechanicThread" on a separate line.(Ëå™Ü8”ØÉ’ì,
+Hsquid:S3010"*Remove this assignment of "gameMechanics".(ï¨íÄ8ñÛ¹¸ë,
+Esquid:S3010""Remove this assignment of "spawn".(³¶µÁûÿÿÿÿ8ñÛ¹¸ë,
+Isquid:S1481G"+Remove this unused "before" local variable.(Æ‰Ë•8©¼Ú¸ë,
+Hsquid:S3010"*Remove this assignment of "entityHandler".(¹„³÷8ñÛ¹¸ë,
+Isquid:S1481"+Remove this unused "frames" local variable.(ˆ¥¨è8ñÛ¹¸ë,

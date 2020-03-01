@@ -1,8 +1,7 @@
 package com.github.fernthedev.server;
 
 import com.github.fernthedev.packets.Packet;
-import com.github.fernthedev.server.gameHandler.EntityHandler;
-import com.github.fernthedev.universal.entity.UniversalPlayer;
+import com.github.fernthedev.universal.entity.EntityPlayer;
 import io.netty.channel.Channel;
 
 import static com.github.fernthedev.server.Server.socketList;
@@ -17,11 +16,13 @@ public class ClientPlayer {
 
     private boolean connected;
 
+    public boolean isChanged;
+
     public void setConnected(boolean connected) {
         this.connected = connected;
     }
 
-    private UniversalPlayer playerObject;
+    private EntityPlayer playerObject;
 
     public Channel channel = null;
 
@@ -33,7 +34,7 @@ public class ClientPlayer {
         return connected;
     }
 
-    public ClientPlayer(Channel channel,UniversalPlayer universalPlayer) {
+    public ClientPlayer(Channel channel, EntityPlayer universalPlayer) {
         this.channel = channel;
         playerObject = universalPlayer;
         connected = true;
@@ -89,13 +90,13 @@ public class ClientPlayer {
         }
     }
 
-    public UniversalPlayer getPlayerObject() {
+    public EntityPlayer getPlayerObject() {
         return playerObject;
     }
 
 
 
-    public synchronized void setPlayerObject(UniversalPlayer playerObject) {
+    public synchronized void setPlayerObject(EntityPlayer playerObject) {
         this.playerObject = playerObject;
     }
 
@@ -115,19 +116,8 @@ public class ClientPlayer {
             return channel.remoteAddress().toString();
         }
 
-        public static ClientPlayer getPlayerFromObject(int id) {
-        ClientPlayer clientPlayerReturn = null;
-
-
-            for(ClientPlayer clientPlayer : EntityHandler.playerClientMap.keySet()) {
-                if(clientPlayer.getPlayerObject().getObjectID() == id) return clientPlayer;
-            }
-
-            return null;
-        }
-
-        public static ClientPlayer getPlayerFromObject(UniversalPlayer universalPlayer) {
-            for (ClientPlayer clientPlayer : EntityHandler.playerClientMap.keySet()) {
+        public static ClientPlayer getPlayerFromObject(EntityPlayer universalPlayer) {
+            for (ClientPlayer clientPlayer : Server.socketList.values()) {
                 if (clientPlayer.getPlayerObject() == universalPlayer) return clientPlayer;
             }
 

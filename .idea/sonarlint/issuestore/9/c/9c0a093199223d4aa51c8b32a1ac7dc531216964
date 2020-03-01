@@ -1,6 +1,6 @@
 
-Rsquid:S1066;"/Merge this if statement with the enclosing one.(¿Ï¥§üÿÿÿÿ8ĞÓë,
-Rsquid:S10662"/Merge this if statement with the enclosing one.(¿Ï¥§üÿÿÿÿ8ĞÓë,
-Isquid:S1481S"+Remove this unused "frames" local variable.(ˆ¥¨è8ÄÇÅ’ì,
-Hsquid:S00108e")Either remove or fill this block of code.(Şá›¨8ÂÒœáì,
-Zsquid:UnusedPrivateMethod".Remove this unused private "getBounds" method.(€ŞÂÕ8¿¹‹Ëí,
+Hsquid:S00108d")Either remove or fill this block of code.(Şá›¨8ÂÒœáì,
+Zsquid:UnusedPrivateMethod".Remove this unused private "getBounds" method.(€ŞÂÕ8©‹²ğñ,
+Isquid:S1481R"+Remove this unused "frames" local variable.(ˆ¥¨è8ÄÇÅ’ì,
+Rsquid:S1066:"/Merge this if statement with the enclosing one.(¿Ï¥§üÿÿÿÿ8ĞÓë,
+Rsquid:S10661"/Merge this if statement with the enclosing one.(¿Ï¥§üÿÿÿÿ8ĞÓë,

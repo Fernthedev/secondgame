@@ -3,14 +3,14 @@ package com.github.fernthedev.server.gameHandler;
 import com.github.fernthedev.packets.GameOverPacket;
 import com.github.fernthedev.packets.ObjectUpdates.SetCoin;
 import com.github.fernthedev.server.ClientPlayer;
+import com.github.fernthedev.server.Server;
 import com.github.fernthedev.universal.GameObject;
 import com.github.fernthedev.universal.ID;
 import com.github.fernthedev.universal.UniversalHandler;
-import com.github.fernthedev.universal.entity.UniversalPlayer;
+import com.github.fernthedev.universal.entity.EntityPlayer;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class GameMechanics implements Runnable {
@@ -24,8 +24,8 @@ public class GameMechanics implements Runnable {
         ArrayList<GameObject> objects = new ArrayList<>(EntityHandler.gameObjects);
 
         for(GameObject gameObject : objects) {
-            if(gameObject instanceof UniversalPlayer) {
-                collisionCheck((UniversalPlayer) gameObject);
+            if(gameObject instanceof EntityPlayer) {
+                collisionCheck((EntityPlayer) gameObject);
 
             }
         }
@@ -37,12 +37,11 @@ public class GameMechanics implements Runnable {
         }*/
     }
 
-    private synchronized void collisionCheck(UniversalPlayer playerObject) {
+    private synchronized void collisionCheck(EntityPlayer playerObject) {
 
-        HashMap<ClientPlayer, UniversalPlayer> playerUniversalPlayerHashMap = new HashMap<>(EntityHandler.playerClientMap);
         List<GameObject> objects = new ArrayList<>(EntityHandler.gameObjects);
 
-        for (ClientPlayer clientPlayer : playerUniversalPlayerHashMap.keySet()) {
+        for (ClientPlayer clientPlayer : Server.socketList.values()) {
             for (GameObject tempObject : objects) {
 
 

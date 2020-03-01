@@ -2,7 +2,7 @@ package io.github.fernthedev.secondgame.main.inputs.joystick;
 
 import com.github.fernthedev.packets.PlayerUpdates.SendToGetInfo;
 import com.github.fernthedev.universal.UniversalHandler;
-import com.github.fernthedev.universal.entity.UniversalPlayer;
+import com.github.fernthedev.universal.entity.EntityPlayer;
 import io.github.fernthedev.secondgame.main.Game;
 import io.github.fernthedev.secondgame.main.inputs.InputHandler;
 import io.github.fernthedev.secondgame.main.inputs.InputType;
@@ -254,7 +254,7 @@ public class JoystickHandler {
 
 
         if(Game.gameState == Game.STATE.IN_SERVER) {
-            Game.sendPacket(new SendToGetInfo(new UniversalPlayer(UniversalHandler.mainPlayer)));
+            Game.sendPacket(new SendToGetInfo(new EntityPlayer(UniversalHandler.mainPlayer)));
         }
     }
 }

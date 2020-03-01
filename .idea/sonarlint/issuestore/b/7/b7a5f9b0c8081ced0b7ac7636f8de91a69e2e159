@@ -1,7 +1,7 @@
 
-Isquid:S1068"+Remove this unused "scanner" private field.(Ù‘Ğ8µµĞîê,
-Msquid:S3010""*Remove this assignment of "currentThread".(ÑëĞªüÿÿÿÿ8Š¿Ïîê,
-Gsquid:S3010!")Remove this assignment of "clientThread".(ã“ÈÏ8°Úñê,
 \squid:MissingDeprecatedCheck5"(Add the missing @deprecated Javadoc tag.(·òşÿÿÿÿ8º¾Í•ë,
+Msquid:S3010""*Remove this assignment of "currentThread".(ÑëĞªüÿÿÿÿ8Š¿Ïîê,
+Isquid:S1068"+Remove this unused "scanner" private field.(Ù‘Ğ8µµĞîê,
 ¤squid:S11865"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(·òşÿÿÿÿ8¶Î•ë,
 Xsquid:S11335"5Do not forget to remove this deprecated code someday.(·òşÿÿÿÿ8º¾Í•ë,
+Gsquid:S3010!")Remove this assignment of "clientThread".(ã“ÈÏ8°Úñê,

@@ -4,17 +4,19 @@ package com.github.fernthedev.server.netty;
 import com.github.fernthedev.packets.Packet;
 import com.github.fernthedev.packets.PlayerUpdates.SetCurrentPlayer;
 import com.github.fernthedev.server.*;
-import com.github.fernthedev.server.gameHandler.EntityHandler;
 import com.github.fernthedev.server.gameHandler.ServerGameHandler;
 import com.github.fernthedev.universal.GameObject;
 import com.github.fernthedev.universal.ID;
 import com.github.fernthedev.universal.UniversalHandler;
 import com.github.fernthedev.universal.Velocity;
-import com.github.fernthedev.universal.entity.UniversalPlayer;
+import com.github.fernthedev.universal.entity.EntityPlayer;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @ChannelHandler.Sharable
 public class ProcessingHandler extends ChannelInboundHandlerAdapter {
@@ -52,7 +54,7 @@ public class ProcessingHandler extends ChannelInboundHandlerAdapter {
         if (channel != null) {
             Server server = Server.channelServerHashMap.get(ctx.channel());
 
-            UniversalPlayer universalPlayer = new UniversalPlayer(Server.WIDTH / 2 - 32, Server.HEIGHT / 2 - 32, ID.Player,new Velocity(0),new Velocity(0), GameObject.entities);
+            EntityPlayer universalPlayer = new EntityPlayer(Server.WIDTH / 2 - 32, Server.HEIGHT / 2 - 32, ID.Player,new Velocity(0),new Velocity(0), GameObject.entities);
             ClientPlayer clientPlayer = new ClientPlayer(channel,universalPlayer);
             clientPlayer.setConnected(true);
 
@@ -86,7 +88,6 @@ public class ProcessingHandler extends ChannelInboundHandlerAdapter {
 
 
             ServerGameHandler.getEntityHandler().addPlayerEntityObject(clientPlayer,universalPlayer);
-            EntityHandler.playerMap.put(channel,universalPlayer);
 
                 clientPlayer.sendObject(new SetCurrentPlayer(universalPlayer));
 
@@ -133,18 +134,17 @@ public class ProcessingHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void close(ChannelHandlerContext ctx) {
-        ClientPlayer clientPlayer = Server.socketList.get(ctx.channel());
+        Map<Channel,ClientPlayer> sockets = new HashMap<>(Server.socketList);
+        ClientPlayer clientPlayer = sockets.get(ctx.channel());
 
-        if(clientPlayer != null)
-        clientPlayer.close();
-
+        if(clientPlayer != null) {
+            clientPlayer.close();
+            ServerGameHandler.getEntityHandler().removePlayerEntityObject(clientPlayer.getPlayerObject());
+        }
         ctx.close();
 
         Server.socketList.remove(ctx.channel());
         Server.channelServerHashMap.remove(ctx.channel());
-        EntityHandler.playerMap.remove(ctx.channel());
-        EntityHandler.playerClientMap.remove(clientPlayer);
-        ServerGameHandler.getEntityHandler().removePlayerEntityObject(clientPlayer);
     }
 
 }

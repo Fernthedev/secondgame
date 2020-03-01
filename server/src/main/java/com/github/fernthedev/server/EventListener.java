@@ -3,13 +3,12 @@ package com.github.fernthedev.server;
 import com.github.fernthedev.packets.PlayerUpdates.SendPlayerInfoPacket;
 import com.github.fernthedev.packets.PlayerUpdates.SendToGetInfo;
 import com.github.fernthedev.packets.PongPacket;
-import com.github.fernthedev.server.gameHandler.EntityHandler;
 import com.github.fernthedev.server.gameHandler.ServerGameHandler;
 import com.github.fernthedev.universal.GameObject;
 import com.github.fernthedev.universal.ID;
 import com.github.fernthedev.universal.UniversalHandler;
 import com.github.fernthedev.universal.Velocity;
-import com.github.fernthedev.universal.entity.UniversalPlayer;
+import com.github.fernthedev.universal.entity.EntityPlayer;
 
 import java.util.concurrent.TimeUnit;
 public class EventListener {
@@ -42,11 +41,11 @@ public class EventListener {
         } else if (p instanceof SendToGetInfo) {
             SendToGetInfo info = (SendToGetInfo) p;
 
-            UniversalPlayer oldPlayer = EntityHandler.playerClientMap.get(clientPlayer);
+            EntityPlayer oldPlayer = clientPlayer.getPlayerObject();
 
-            if(oldPlayer == null) oldPlayer = new UniversalPlayer(Server.WIDTH / 2 - 32, Server.HEIGHT / 2 - 32, ID.Player,new Velocity(0),new Velocity(0), GameObject.entities);
+            if(oldPlayer == null) oldPlayer = new EntityPlayer(Server.WIDTH / 2 - 32, Server.HEIGHT / 2 - 32, ID.Player,new Velocity(0),new Velocity(0), GameObject.entities);
 
-            UniversalPlayer player = new UniversalPlayer(info.getKeepPlayer(), oldPlayer);
+            EntityPlayer player = new EntityPlayer(info.getKeepPlayer(), oldPlayer);
 
             UniversalHandler.getThingHandler().updatePlayerObject(clientPlayer,player);
 

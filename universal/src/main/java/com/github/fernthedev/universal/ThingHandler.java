@@ -1,9 +1,8 @@
 package com.github.fernthedev.universal;
 
 import com.github.fernthedev.exceptions.NewPlayerAddedException;
+import com.github.fernthedev.universal.entity.EntityPlayer;
 import com.github.fernthedev.universal.entity.Trail;
-import com.github.fernthedev.universal.entity.UniversalCoin;
-import com.github.fernthedev.universal.entity.UniversalPlayer;
 
 import java.util.*;
 
@@ -31,7 +30,7 @@ public class ThingHandler {
 
     public void setGameObjects(List<GameObject> gameObjects) {
 
-       ThingHandler.gameObjects = new Vector<>(gameObjects);
+        ThingHandler.gameObjects = new Vector<>(gameObjects);
     }
 
 
@@ -40,13 +39,9 @@ public class ThingHandler {
      * @param clientPlayerE This is null
      * @param universalPlayer The player instance to use.
      */
-    public void updatePlayerObject(Object clientPlayerE, UniversalPlayer universalPlayer) {
-
+    public void updatePlayerObject(Object clientPlayerE, EntityPlayer universalPlayer) {
 
         GameObject gameObjectOld = gameObjectMap.get(universalPlayer.getObjectID());
-
-
-        // System.out.println("\n" + noTraiLlist() + " old " + gameObjectOld);
 
         if(gameObjectOld != null)
             removeEntityObject(gameObjectOld);
@@ -54,20 +49,14 @@ public class ThingHandler {
         addEntityObject(universalPlayer);
 
 
-        if(universalPlayer == UniversalHandler.mainPlayer || gameObjectOld == UniversalHandler.mainPlayer || UniversalHandler.mainPlayer.getObjectID() == universalPlayer.getObjectID()) {
+        boolean isMainPlayer = universalPlayer == UniversalHandler.mainPlayer || gameObjectOld == UniversalHandler.mainPlayer || UniversalHandler.mainPlayer.getObjectID() == universalPlayer.getObjectID();
+
+        if(isMainPlayer) {
             UniversalHandler.mainPlayer = universalPlayer;
         }
-
-      /*  if(Game.gameState == Game.STATE.InServer) {
-            Game.sendPacket(new SendPlayerInfoPacket(new UniversalPlayer(Game.mainPlayer)));
-        }*/
-
-
     }
 
     public void addEntityObject(GameObject gameObject) {
-        //if(!(gameObject instanceof Trail)) System.out.println(gameObject);
-
 
         if(gameObject == null) throw new NullPointerException("Added a null pointer");
 
@@ -79,9 +68,9 @@ public class ThingHandler {
 
 
 
-        if(gameObject instanceof UniversalPlayer)
+        if(gameObject instanceof EntityPlayer)
             try {
-                throw new NewPlayerAddedException((UniversalPlayer) gameObject);
+                throw new NewPlayerAddedException((EntityPlayer) gameObject);
             } catch (NewPlayerAddedException e) {
                 // e.printStackTrace();
             }
@@ -94,18 +83,7 @@ public class ThingHandler {
 
 
     public void removeEntityObject(GameObject gameObject) {
-
-        // GameObject gameObject = ClientObject.getObjectType(serverGameObject);
-
-
-
-        //   if(!(gameObject instanceof Trail)) System.out.println(serverGameObject);
-
-        //      if(gameObject == null) throw new NullPointerException("Added a null pointer");
-
-        if(gameObject instanceof UniversalCoin) System.out.println("Removing the coin.");
-
-
+        if(gameObject == null) throw new NullPointerException();
 
         gameObjects.remove(gameObject);
         gameObjectMap.remove(gameObject.getObjectID(), gameObject);
@@ -114,18 +92,24 @@ public class ThingHandler {
             System.out.println("Failed to delete variable");
             throw new NullPointerException();
         }
-        //    if(serverGameObject.id != ID.Trail)
-        //   System.out.println(serverGameObject.id);
 
-     /*   if(!(serverGameObject instanceof Trail)) {
-            System.out.println(noTraiLlist(gameObjects) + "\n is the list and removed " + gameObject);
-
-            System.out.println(gameObjects.contains(gameObject));
-        }*/
 
     }
 
-    public void collisionCheck(UniversalPlayer universalPlayer) {
+
+    public void tick() {
+        List<GameObject> objects = new ArrayList<>(UniversalHandler.getThingHandler().getGameObjects());
+
+        if (!objects.isEmpty())
+            for (GameObject tempObject : objects) {
+                tempObject.tick();
+
+                if(tempObject instanceof EntityPlayer)
+                    UniversalHandler.getThingHandler().collisionCheck((EntityPlayer) tempObject);
+            }
+    }
+
+    public void collisionCheck(EntityPlayer universalPlayer) {
         List<GameObject> gameObjects = new ArrayList<>(UniversalHandler.getThingHandler().getGameObjects());
         for (GameObject tempObject : gameObjects) {
             if (tempObject.getId() == ID.BasicEnemey || tempObject.getId() == ID.FastEnemy || tempObject.getId() == ID.SmartEnemy) {

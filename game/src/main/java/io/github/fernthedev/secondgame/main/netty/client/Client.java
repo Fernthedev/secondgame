@@ -2,13 +2,13 @@ package io.github.fernthedev.secondgame.main.netty.client;
 
 
 import com.github.fernthedev.exceptions.LostConnectionServer;
-import com.github.fernthedev.universal.entity.UniversalPlayer;
+import com.github.fernthedev.universal.entity.EntityPlayer;
 
 import java.util.Scanner;
 
 public class Client implements Runnable {
 
-    UniversalPlayer player;
+    EntityPlayer player;
     public boolean registered;
     private Scanner scanner;
      final int port;
