@@ -1,4 +1,8 @@
 
-Bsquid:S1659"$Declare "height" on a separate line.(ô…ğ­8‘ÿèğê,
-esquid:S001079"AConstructor has 8 parameters, which is greater than 7 authorized.(èºÆºıÿÿÿÿ8‘ÿèğê,
-Msquid:S1481N"*Remove this unused "thing" local variable.(èç°Âøÿÿÿÿ8ı®Ùí,
+b	java:S1079"AConstructor has 8 parameters, which is greater than 7 authorized.(Ğç§¯øÿÿÿÿ8„ ¿ÀŠ.
+M
+java:S2160	"+Override the "equals" method in this class.(ş¬ƒÂşÿÿÿÿ8„ ¿ÀŠ.
+[
+java:S1854N"9Remove this useless assignment to local variable "thing".(èç°Âøÿÿÿÿ8„ ¿ÀŠ.
+L
+java:S1481N"*Remove this unused "thing" local variable.(èç°Âøÿÿÿÿ8„ ¿ÀŠ.

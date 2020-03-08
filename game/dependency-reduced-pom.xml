@@ -24,7 +24,7 @@
         <version>0.0.7</version>
         <executions>
           <execution>
-            <id>unpacknatives</id>
+            <entityId>unpacknatives</entityId>
             <goals>
               <goal>copy</goal>
             </goals>
@@ -59,7 +59,7 @@
         <enabled>false</enabled>
       </releases>
       <snapshots />
-      <id>central-snapshots</id>
+      <entityId>central-snapshots</entityId>
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </repository>
   </repositories>

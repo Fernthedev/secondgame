@@ -5,40 +5,43 @@
 
 package io.github.fernthedev.secondgame.main;
 
-import com.github.fernthedev.universal.GameObject;
-import com.github.fernthedev.universal.ID;
+import com.github.fernthedev.universal.EntityID;
 import com.github.fernthedev.universal.UniversalHandler;
 import com.github.fernthedev.universal.entity.BasicEnemy;
+import com.github.fernthedev.universal.entity.Coin;
 import com.github.fernthedev.universal.entity.FastEnemy;
-import io.github.fernthedev.secondgame.main.entities.Coin;
-import io.github.fernthedev.secondgame.main.entities.SmartEnemy;
+import com.github.fernthedev.universal.entity.SmartEnemy;
+import io.github.fernthedev.secondgame.main.logic.NewClientEntityRegistry;
 
 import java.util.Random;
 
 class Spawn {
 
-    private final Handler handler;
     private final HUD hud;
+    private final Game game;
+
     private int scoreKeep = 0;
-    private final Random r = new Random();
+    private final Random r = UniversalHandler.RANDOM;
     private int timer;
     private int nexttimer;
 
-    public Spawn(Handler handler, HUD hud, Game game) {
-        this.handler = handler;
+    public Spawn(HUD hud, Game game) {
         this.hud = hud;
+        this.game = game;
     }
 
     public void tick() {
+        NewClientEntityRegistry handler = game.getStaticEntityRegistry();
         scoreKeep++;
         int coinspawn = hud.getScore() + r.nextInt(512);
         if (hud.getScore() == coinspawn) {
-            UniversalHandler.getThingHandler().addEntityObject(
-                    new Coin(r.nextInt(Game.WIDTH - 50), r.nextInt(Game.HEIGHT - 50), ID.Coin, GameObject.entities));
-            //handler.addObject(new Coin(r.nextInt(GAME.WIDTH - 50), r.nextInt(GAME.HEIGHT - 50), ID.Coin, GameObject.entities));
+            Game.getStaticEntityRegistry().addEntityObject(
+                    new Coin(r.nextInt(Game.WIDTH - 50), r.nextInt(Game.HEIGHT - 50), EntityID.Coin));
+            //handler.addObject(new Coin(r.nextInt(GAME.WIDTH - 50), r.nextInt(GAME.HEIGHT - 50), EntityID.Coin, GameObject.entities));
         }
 
         if (scoreKeep >= 250) {
+
             hud.setLevel(hud.getLevel() + 1);
             timer++;
             scoreKeep = 0;
@@ -48,22 +51,22 @@ class Spawn {
 
             //System.out.println(mob);
             if (mob == 1) {
-                handler.addObject(new BasicEnemy(r.nextInt(Game.WIDTH - 50), r.nextInt(Game.HEIGHT - 50), ID.BasicEnemey, GameObject.entities));
+                handler.addEntityObject(new BasicEnemy(r.nextInt(Game.WIDTH - 50), r.nextInt(Game.HEIGHT - 50), EntityID.ENEMY));
             }
 
             if (mob == 2) {
-                handler.addObject(new FastEnemy(r.nextInt(Game.WIDTH - 50), r.nextInt(Game.HEIGHT - 50), ID.FastEnemy, GameObject.entities));
+                handler.addEntityObject(new FastEnemy(r.nextInt(Game.WIDTH - 50), r.nextInt(Game.HEIGHT - 50), EntityID.ENEMY));
             }
 
             if (mob == 3) {
-                handler.addObject(new SmartEnemy(r.nextInt(Game.WIDTH - 50), r.nextInt(Game.HEIGHT - 50), ID.SmartEnemy, GameObject.entities,UniversalHandler.mainPlayer));
+                handler.addEntityObject(new SmartEnemy(r.nextInt(Game.WIDTH - 50), r.nextInt(Game.HEIGHT - 50), EntityID.ENEMY, Game.getMainPlayer()));
             }
         }
 
         if (timer >= nexttimer) {
             nexttimer = r.nextInt(15) + 7;
             timer = 0;
-            handler.clearEnemies();
+            handler.resetLevel();
             scoreKeep = 250;
             hud.setLevel(hud.getLevel() - 1);
         }

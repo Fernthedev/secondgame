@@ -1,5 +1,15 @@
 
-Qsquid:S1172".Remove this unused method parameter "handler".(éÒÉ¾úÿÿÿÿ8€»Ã±ë,
-Wsquid:S1161)":Add the "@Override" annotation above this method signature(Ý¼õA8Èâîê,
-Rsquid:S1066S"/Merge this if statement with the enclosing one.(œËéÑùÿÿÿÿ8Ž·Ñï,
-]squid:S1161^":Add the "@Override" annotation above this method signature(˜Â½€øÿÿÿÿ8Ž·Ñï,
+L
+java:S10664"/Merge this if statement with the enclosing one.(Æ‘êë8Ì‰Ä½Š.
+V
+java:S1161,":Add the "@Override" annotation above this method signature(Ý¼õA8Ì‰Ä½Š.
+Y
+java:S2589i"7Remove this expression which always evaluates to "true"(Ç½šˆøÿÿÿÿ8õíÇ½Š.
+P
+java:S1172".Remove this unused method parameter "handler".(éÒÉ¾úÿÿÿÿ8Ì‰Ä½Š.
+>
+java:S1116U"Remove this empty statement.(ôŸŽìúÿÿÿÿ8Ì‰Ä½Š.
+j
+java:S3824Q"NReplace this "Map.get()" and condition with a call to "Map.computeIfAbsent()".(½ñÀ8Æû‰ÁŠ.
+\
+java:S1161?":Add the "@Override" annotation above this method signature(˜Â½€øÿÿÿÿ8Ì‰Ä½Š.

@@ -5,8 +5,6 @@
 
 package io.github.fernthedev.secondgame.main;
 
-import com.github.fernthedev.universal.UniversalHandler;
-
 import java.awt.*;
 
 public class HUD {
@@ -18,49 +16,62 @@ public class HUD {
     }
 
     public void tick() {
-        if(Game.gameState == Game.STATE.GAME) {
-            UniversalHandler.mainPlayer.setHealth( (int)Game.clamp((float) UniversalHandler.mainPlayer.getHealth(), 0.0F, 100.0F) );
-            //  System.out.println(GAME.mainPlayer + " " + UniversalHandler.mainPlayer.getHealth());
-            if (UniversalHandler.mainPlayer != null)
-                UniversalHandler.mainPlayer.setHealth(UniversalHandler.mainPlayer.getHealth());
+
+        if (Game.getMainPlayer() != null) {
+            Game.getMainPlayer().setHealth((int) Game.clamp((float) Game.getMainPlayer().getHealth(), 0.0F, 100.0F));
+            //  System.out.println(GAME.mainPlayer + " " + Game.mainPlayer.getHealth());
+            Game.getMainPlayer().setHealth(Game.getMainPlayer().getHealth());
+
 
             this.greenvalue = (int) Game.clamp((float) this.greenvalue, 0.0F, 255.0F);
-            this.greenvalue = UniversalHandler.mainPlayer.getHealth() * 2;
-            ++this.score;
+            this.greenvalue = Game.getMainPlayer().getHealth() * 2;
+            this.score++;
         }
 
-        if(Game.gameState == Game.STATE.IN_SERVER || Game.gameState == Game.STATE.HOSTING) {
-            if(UniversalHandler.mainPlayer != null) {
-                UniversalHandler.mainPlayer.setHealth(UniversalHandler.mainPlayer.getHealth());
 
-                UniversalHandler.mainPlayer.setHealth( (int) Game.clamp((float) UniversalHandler.mainPlayer.getHealth(), 0.0F, 100.0F));
-
-
-                this.greenvalue = (int) Game.clamp((float) this.greenvalue, 0.0F, 255.0F);
-                this.greenvalue = UniversalHandler.mainPlayer.getHealth() * 2;
-            }
-        }
+//        if(Game.gameState == Game.STATE.GAME) {
+//            Game.mainPlayer.setHealth( (int)Game.clamp((float) Game.mainPlayer.getHealth(), 0.0F, 100.0F) );
+//            //  System.out.println(GAME.mainPlayer + " " + Game.mainPlayer.getHealth());
+//            if (Game.mainPlayer != null)
+//                Game.mainPlayer.setHealth(Game.mainPlayer.getHealth());
+//
+//            this.greenvalue = (int) Game.clamp((float) this.greenvalue, 0.0F, 255.0F);
+//            this.greenvalue = Game.mainPlayer.getHealth() * 2;
+//            this.score++;
+//        }
+//
+//        if(Game.gameState == Game.STATE.IN_SERVER || Game.gameState == Game.STATE.HOSTING) {
+//            if(Game.mainPlayer != null) {
+//                Game.mainPlayer.setHealth(Game.mainPlayer.getHealth());
+//
+//                Game.mainPlayer.setHealth( (int) Game.clamp((float) Game.mainPlayer.getHealth(), 0.0F, 100.0F));
+//
+//
+//                this.greenvalue = (int) Game.clamp((float) this.greenvalue, 0.0F, 255.0F);
+//                this.greenvalue = Game.mainPlayer.getHealth() * 2;
+//            }
+//        }
     }
 
     public void setCoin(int coins) {
-        UniversalHandler.mainPlayer.setCoin(coins);
+        Game.getMainPlayer().setCoin(coins);
     }
 
     public void plusCoin() {
-        UniversalHandler.mainPlayer.setCoin(UniversalHandler.mainPlayer.getCoin() +1);
+        Game.getMainPlayer().setCoin(Game.getMainPlayer().getCoin() +1);
     }
 
     public int getCoin() {
-        return UniversalHandler.mainPlayer.getCoin();
+        return Game.getMainPlayer().getCoin();
     }
 
     public void render(Graphics g) {
-        if (UniversalHandler.mainPlayer != null) {
+        if (Game.getMainPlayer() != null) {
             g.setColor(Color.GRAY);
             g.fillRect(15, 15, 200, 32);
             g.setColor(new Color(75, this.greenvalue, 0));
-            g.fillRect(15, 15, UniversalHandler.mainPlayer.getHealth() * 2, 32);
-            if (UniversalHandler.mainPlayer.getHealth() == 0) {
+            g.fillRect(15, 15, Game.getMainPlayer().getHealth() * 2, 32);
+            if (Game.getMainPlayer().getHealth() == 0) {
                 g.setColor(Color.RED);
                 g.drawRect(15, 15, 200, 32);
             } else {

@@ -1,6 +1,7 @@
 
-nsquid:HiddenFieldCheck˜"?Rename "gameObjects" which hides the field declared at line 12.(æ²Ø•ÿÿÿÿÿ8éœíĞï,
-Msquid:S1066|"/Merge this if statement with the enclosing one.(Œ©¯¯8ôÆ¬ğñ,
-Msquid:S1066t"/Merge this if statement with the enclosing one.(Œ©¯¯8ôÆ¬ğñ,
-nsquid:HiddenFieldCheck‹"?Rename "gameObjects" which hides the field declared at line 12.(ƒ¢‡şÿÿÿÿ8éœíĞï,
-msquid:HiddenFieldCheckq"?Rename "gameObjects" which hides the field declared at line 12.(æ²Ø•ÿÿÿÿÿ8ôÆ¬ğñ,
+Y
+java:S2589("7Remove this expression which always evaluates to "true"(Œ©àşÿÿÿÿ8ÿĞÌ½Š.
+L
+java:S1066y"/Merge this if statement with the enclosing one.(Œ©¯¯8ÿĞÌ½Š.
+L
+java:S1066q"/Merge this if statement with the enclosing one.(Œ©¯¯8ÿĞÌ½Š.

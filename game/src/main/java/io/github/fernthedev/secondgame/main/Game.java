@@ -5,38 +5,92 @@
 
 package io.github.fernthedev.secondgame.main;
 
-import com.github.fernthedev.packets.Packet;
-import com.github.fernthedev.universal.GameObject;
-import com.github.fernthedev.universal.ID;
+import com.github.fernthedev.CommonUtil;
+import com.github.fernthedev.IGame;
+import com.github.fernthedev.INewEntityRegistry;
+import com.github.fernthedev.client.Client;
+import com.github.fernthedev.config.common.Config;
+import com.github.fernthedev.config.gson.GsonConfig;
+import com.github.fernthedev.core.StaticHandler;
+import com.github.fernthedev.core.api.event.api.EventHandler;
+import com.github.fernthedev.core.api.event.api.Listener;
+import com.github.fernthedev.game.server.GameServer;
+import com.github.fernthedev.game.server.NewServerEntityRegistry;
+import com.github.fernthedev.server.event.ServerStartupEvent;
 import com.github.fernthedev.universal.UniversalHandler;
-import com.github.fernthedev.universal.entity.BasicEnemy;
-import com.github.fernthedev.universal.entity.MenuParticle;
-import io.github.fernthedev.secondgame.main.UI.Menu;
-import io.github.fernthedev.secondgame.main.entities.Coin;
+import com.github.fernthedev.universal.entity.EntityPlayer;
 import io.github.fernthedev.secondgame.main.inputs.joystick.JoystickHandler;
 import io.github.fernthedev.secondgame.main.inputs.keyboard.KeyInput;
-import io.github.fernthedev.secondgame.main.netty.client.Client;
+import io.github.fernthedev.secondgame.main.logic.NewClientEntityRegistry;
+import io.github.fernthedev.secondgame.main.logic.Settings;
+import io.github.fernthedev.secondgame.main.netty.client.PacketHandler;
+import io.github.fernthedev.secondgame.main.ui.MouseHandler;
+import io.github.fernthedev.secondgame.main.ui.api.Screen;
+import io.github.fernthedev.secondgame.main.ui.screens.EndScreen;
+import io.github.fernthedev.secondgame.main.ui.screens.MainMenu;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.Version;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.text.NumberFormat;
+import java.util.Arrays;
+import java.util.Locale;
 import java.util.Random;
+import java.util.UUID;
 
-public class Game extends Canvas implements Runnable {
-    public static final int WIDTH = 640,HEIGHT =  WIDTH / 12*9;
-    private static final long serialVersionUID = -7016397730883067077L;
+public class Game extends Canvas implements Runnable, IGame {
+    public static final int WIDTH = 640, HEIGHT =   WIDTH / 12 * 9;
+    private static final long serialVersionUID = -7376944666695581278L;
 
-    private Thread thread;
 
-    private static Handler handler;
-    private final Random r;
-    private static HUD hud;
-    private final Spawn spawnner;
-    private final Menu menu;
-    private final KeyInput keyInput;
+    private transient Thread thread;
+    private boolean running = true;
 
-    private JoystickHandler testJoyStick;
+//    @Deprecated
+//    private static transient Handler handler;
+
+    private static final transient Random r = UniversalHandler.RANDOM;
+    private static transient HUD hud;
+    private final transient Spawn spawnner;
+//    private final Menu menu;
+    private final transient KeyInput keyInput;
+
+    private final Window window;
+
+    @Nullable
+    @Getter
+    private static Screen screen;
+
+    @Getter
+    private static Config<Settings> gameSettings;
+
+    @Setter
+    @Getter
+    private static EntityPlayer mainPlayer;
+
+    private transient JoystickHandler testJoyStick;
+
+    @Getter
+    @Setter
+    @Nullable
+    private static Client client;
+
+    @Getter
+    @Nullable
+    @Setter
+    private static GameServer gameServer;
+
+    @NonNull
+    @Getter
+    private static NewClientEntityRegistry staticEntityRegistry;
+
+
 
     public static int fern$;
 
@@ -55,31 +109,32 @@ public class Game extends Canvas implements Runnable {
     //public static int frames = 0;
 
 
-    /**
-     * GAME STATES
-     */
-    public enum STATE {
-        MENU,
-        HELP,
-        END,
-        GAME,
-        MULTIPLAYER,
-        HOSTING,
-        GETTING_CONNECT,
-        IN_SERVER,
-        JOINING
-    }
+//    /**
+//     * GAME STATES
+//     */
+//    @Deprecated
+//    public enum STATE {
+//        MENU,
+//        HELP,
+//        END,
+//        GAME,
+//        MULTIPLAYER,
+//        HOSTING,
+//        GETTING_CONNECT,
+//        IN_SERVER,
+//        JOINING;
+//
+//        boolean isGame() {
+//            return this == GAME || this == HOSTING || this == IN_SERVER;
+//        }
+//    }
 
 
-    /**
-     * VARIABLE FOR ACCESSING STATES
-     */
-    public static STATE gameState = STATE.MENU;
+//    /**
+//     * VARIABLE FOR ACCESSING STATES
+//     */
+//    public static STATE gameState = STATE.MENU;
 
-
-    public static void sendPacket(Packet packet) {
-        Client.getClientThread().sendObject(packet);
-    }
 
     /**
      * MAIN
@@ -89,43 +144,43 @@ public class Game extends Canvas implements Runnable {
         BufferedImage sprite_sheet = loader.loadImage("/icon.png");
         System.out.println("Loaded icon");
 
+        UniversalHandler.setIGame(this);
+
+        gameSettings = new GsonConfig<>(new Settings(), new File("./config_settings.json"));
         hud = new HUD();
 
-        handler = new Handler(hud);
+//        handler = new Handler(hud);
+        staticEntityRegistry = new NewClientEntityRegistry();
 
         testJoyStick = new JoystickHandler(this);
 
-        menu = new io.github.fernthedev.secondgame.main.UI.Menu(this,handler,hud);
+
+        setScreen(new MainMenu());
+//        menu = new io.github.fernthedev.secondgame.main.ui.Menu(this,handler,hud);
         System.out.println("LWJGL Version " + Version.getVersion() + " is working.");
-        keyInput = new KeyInput(handler,this);
+//        GLFWErrorCallback.createPrint(System.err).set();
+
+        // Initialize GLFW. Most GLFW functions will not work before doing this.
+//        if ( !glfwInit() )
+//            throw new IllegalStateException("Unable to initialize GLFW");
+
+        keyInput = new KeyInput(this);
 
         this.addKeyListener(keyInput);
-        this.addMouseListener(menu);
+        this.addMouseListener(new MouseHandler());
 
-        new Window(WIDTH, HEIGHT, "A NEW GAME", this);
+        window = new Window(WIDTH, HEIGHT, "A NEW GAME", this);
 
-
-        this.r = new Random();
-        fern$ = this.r.nextInt(100);
+        fern$ = r.nextInt(100);
 
 
         System.out.println(fern$);
 
 
-        spawnner = new Spawn(handler, hud, this);
-        if (gameState == STATE.GAME) {
-            //handler.addObject(new Player(WIDTH/2-32,HEIGHT/2-32, ID.Player,handler,hud,0));
-            handler.addObject(new BasicEnemy(r.nextInt(WIDTH - 50),r.nextInt(HEIGHT - 50),ID.BasicEnemey, GameObject.entities));
-            handler.addObject(new Coin(r.nextInt(Game.WIDTH - 50), r.nextInt(Game.HEIGHT - 50), ID.Coin, GameObject.entities));
-        }else {
-            int amount = r.nextInt(15);
-            if (amount < 10) amount = 10;
-            for (int i = 0; i < amount; i++) {
-                handler.addObject(new MenuParticle(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.MenuParticle, GameObject.entities));
-            }
-        }
-
+        spawnner = new Spawn(hud, this);
     }
+
+
 
 
     /**
@@ -140,11 +195,11 @@ public class Game extends Canvas implements Runnable {
         long timer = System.currentTimeMillis();
         int frames = 0;
 
-        final int TARGET_FPS = 60;
-        final long OPTIMAL_TIME = 1000000000 / TARGET_FPS;
+//        final int TARGET_FPS = 60;
+//        final long OPTIMAL_TIME = 1000000000 / TARGET_FPS;
       //  long lastLoopTime = System.nanoTime();
 
-        while(UniversalHandler.running) {
+        while(running) {
             long now = System.nanoTime();
             delta += (now - lastTime) / ns;
             lastTime = now;
@@ -154,29 +209,30 @@ public class Game extends Canvas implements Runnable {
 
             while(delta >= 1) {
                     tick();
-                //System.out.println(UniversalHandler.running);
-                //updates++;
-                delta--;
+                    delta--;
             }
-            render();
+
+            if (running)
+                render();
+
             frames++;
 
             if(System.currentTimeMillis() - timer > 1000) {
                 timer += 1000;
+                System.out.println("FPS: " + NumberFormat.getNumberInstance(Locale.US).format(frames));
                 frames = 0;
                 //updates = 0;
             }
 
 
 
-            try {Thread.sleep(UniversalHandler.tickWait);} catch(Exception e) {}
+            try {Thread.sleep(UniversalHandler.TICK_WAIT);} catch(InterruptedException e) {
+                e.printStackTrace();
+                Thread.currentThread().interrupt();
+            }
 
             //try { Thread.sleep((lastLoopTime - System.nanoTime() + OPTIMAL_TIME) / 1000000); } catch (InterruptedException e) {e.printStackTrace(); }
         }
-
-
-
-
 
     }
 
@@ -187,48 +243,53 @@ public class Game extends Canvas implements Runnable {
     private void tick() {
         try {
 
-            if (gameState == STATE.GAME || gameState == STATE.HOSTING || gameState == STATE.IN_SERVER) {
+            if (getScreen() == null) {
                 //System.out.println("Running thing");
 
                 if (!paused) {
 
-                  //  System.out.println(UniversalHandler.running);
+                    //  System.out.println(UniversalHandler.running);
                     hud.tick();
 
-                    if (gameState == STATE.GAME) {
-                        handler.tick();
+                    staticEntityRegistry.tick();
+//                    handler.tick();
+                    if (gameServer == null && client == null) {
                         spawnner.tick();
+
+                        if (mainPlayer != null && mainPlayer.getHealth() <= 0) {
+                            mainPlayer.setHealth(100);
+                            setScreen(new EndScreen());
+//                        handler.clearEnemies();
+//                        int amount = r.nextInt(15);
+//                        if (amount < 10) amount = 10;
+//                        for (int i = 0; i < amount; i++) {
+//                            handler.addObject(new MenuParticle(r.nextInt(WIDTH), r.nextInt(HEIGHT), EntityID.MenuParticle, GameObject.entities));
+//                        }
+                        }
                     }
 
 
-                    if (gameState == STATE.IN_SERVER || gameState == STATE.HOSTING) {
-
-                        handler.serverTick();
-
-                    }
+//                    if (gameServer != null) {
+//
+////                        handler.serverTick();
+//
+//                    }
 
 
                     keyInput.tick();
                     testJoyStick.tick();
 
-                    if (UniversalHandler.mainPlayer != null && UniversalHandler.mainPlayer.getHealth() <= 0 && gameState == STATE.GAME) {
-                        UniversalHandler.mainPlayer.setHealth(100);
-                        gameState = STATE.END;
-                        handler.clearEnemies();
-                        int amount = r.nextInt(15);
-                        if (amount < 10) amount = 10;
-                        for (int i = 0; i < amount; i++) {
-                            handler.addObject(new MenuParticle(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.MenuParticle, GameObject.entities));
-                        }
-                    }
+
 
                 }
-            } else if (gameState == STATE.MENU || gameState == STATE.END || gameState == STATE.HELP || gameState == STATE.MULTIPLAYER || gameState == STATE.GETTING_CONNECT) {
-                menu.tick();
-                handler.tick();
-                testJoyStick.tick();
+            } else {
+                staticEntityRegistry.tick();
             }
-        } catch (Throwable e) {
+
+//            handler.tick();
+            testJoyStick.tick();
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -237,34 +298,39 @@ public class Game extends Canvas implements Runnable {
      * RENDERING OBJECTS AND GAME
      */
     private void render() {
-        BufferStrategy bs = this.getBufferStrategy();
-        if(bs == null) {
-            this.createBufferStrategy(3);
+        if (getBufferStrategy() == null) {
+            createBufferStrategy(3);
             return;
         }
 
+        BufferStrategy bs = this.getBufferStrategy();
         Graphics g = bs.getDrawGraphics();
 
         g.setColor(Color.black);
-        g.fillRect(0,0,WIDTH,HEIGHT);
+        g.fillRect(0, 0, WIDTH, HEIGHT);
 
+        staticEntityRegistry.render(g);
+//        handler.render(g);
 
-        handler.render(g);
-
-        if(paused){
+        if (paused) {
             g.setColor(Color.WHITE);
-            g.drawString("Paused",100,100);
+            g.drawString("Paused", 100, 100);
         }
-        if(gameState == STATE.GAME || gameState == STATE.IN_SERVER || gameState == STATE.HOSTING) {
-            hud.render(g);
-        }else if(gameState == STATE.MENU
+//        if(gameState == STATE.GAME || gameState == STATE.IN_SERVER || gameState == STATE.HOSTING) {
+//            hud.render(g);
+//        } else {
+        if (screen != null) screen.render(g);
+        else hud.render(g);
+//        }
+
+        /*else if(gameState == STATE.MENU
                 || gameState == STATE.HELP
                 || gameState == STATE.END
                 || gameState ==  STATE.MULTIPLAYER
                 || gameState ==  STATE.JOINING
                 || gameState == STATE.GETTING_CONNECT) {
             menu.render(g);
-        }
+        } */
 
         g.dispose();
         bs.show();
@@ -291,45 +357,105 @@ public class Game extends Canvas implements Runnable {
      * STARTING METHOD
      */
     public static void main(String[] args) {
+
+        if (Arrays.stream(args).parallel().anyMatch(s -> s.equals("-debug"))) StaticHandler.setDebug(true);
+
         new Game();
     }
 
 
-    public static Handler getHandler() {
-        return handler;
-    }
+//    public static Handler getHandler() {
+//        return handler;
+//    }
 
     /**
      * Threads
      */
     public synchronized void start() {
-        UniversalHandler.running = true;
-        thread = new Thread(this);
+        thread = new Thread(this, "MainGameThread");
         thread.start();
-        UniversalHandler.threads.add(thread);
-        System.out.println(UniversalHandler.threads.size() + " threads");
     }
 
     public static HUD getHud() {
         return hud;
     }
 
-
     /**
      * Stopping game threads
      */
     public synchronized void stop() {
 
-        try{
-            UniversalHandler.running = false;
-            for(Thread threade : UniversalHandler.threads) {
-                System.out.println("Closing " + threade);
-                threade.join();
-            }
+        try {
+            UniversalHandler.setRunning(false);
+            running = false;
             thread.join();
             System.exit(0);
         }catch(Exception e){
             e.printStackTrace();
         }
+    }
+
+
+    public static void setupJoiningMultiplayer() {
+//        newClientEntityRegistry.startGame();
+
+        getStaticEntityRegistry().clearObjects();
+        Game.setScreen(null);
+
+        Client client = new Client(getGameSettings().getConfigData().getHost(), getGameSettings().getConfigData().getPort());
+        Game.setClient(client);
+
+        CommonUtil.registerPackets();
+
+        PacketHandler packetHandler = new PacketHandler();
+        client.getPluginManager().registerEvents(packetHandler);
+        client.addPacketHandler(packetHandler);
+        UUID uuid = UUID.randomUUID();
+        StaticHandler.getCore().getLogger().debug("Using uuid name: {}", uuid.toString());
+        client.setName(uuid.toString());
+
+        mainPlayer = null;
+
+        Thread thread = new Thread(() -> {
+            try {
+                client.connect();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                Thread.currentThread().interrupt();
+            }
+        });
+
+        thread.start();
+    }
+
+
+    public static void setupHostingMultiplayer() {
+        staticEntityRegistry.startGame();
+//        EntityHandler entityHandler = new EntityHandler();
+//        UniversalHandler.getInstance().setup(entityHandler);
+
+        staticEntityRegistry.setServerEntityRegistry(new NewServerEntityRegistry());
+
+        GameServer server = new GameServer(new String[0], UniversalHandler.MULTIPLAYER_PORT, staticEntityRegistry.getServerEntityRegistry());
+
+        Game.setGameServer(server);
+
+        server.getServer().getPluginManager().registerEvents(new Listener() {
+            @EventHandler
+            public void onEvent(ServerStartupEvent e) {
+                staticEntityRegistry.addEntityObject(Game.mainPlayer);
+//                server.getServerGameHandler().getEntityHandler().addEntityObject(Game.getMainPlayer());
+            }
+        });
+    }
+
+    public static void setScreen(@Nullable Screen screen) {
+        if (screen != null && screen.isSetParentScreenOnSet()) screen.setParentScreen(Game.screen);
+        Game.screen = screen;
+    }
+
+    @Override
+    public INewEntityRegistry getEntityRegistry() {
+        return staticEntityRegistry;
     }
 }

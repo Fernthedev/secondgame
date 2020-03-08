@@ -1,0 +1,4 @@
+
+dependencies {
+    implementation "com.github.Fernthedev.light-chat:core:$lightchat"
+}
