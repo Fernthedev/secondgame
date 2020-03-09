@@ -7,5 +7,5 @@ dependencies {
 }
 
 application {
-    mainClassName = "com.github.fernthedev.server.Main"
+    mainClassName = "com.github.fernthedev.game.server.GameServer"
 }
