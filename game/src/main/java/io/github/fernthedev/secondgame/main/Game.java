@@ -147,6 +147,7 @@ public class Game extends Canvas implements Runnable, IGame {
         UniversalHandler.setIGame(this);
 
         gameSettings = new GsonConfig<>(new Settings(), new File("./config_settings.json"));
+        gameSettings.load();
         hud = new HUD();
 
 //        handler = new Handler(hud);
