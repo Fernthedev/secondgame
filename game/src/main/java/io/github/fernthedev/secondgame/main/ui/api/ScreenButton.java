@@ -103,7 +103,7 @@ public class ScreenButton {
         g.setColor(buttonFont.getColor());
 
         g.drawRect(buttonDrawLocation.getX(), buttonDrawLocation.getY(), buttonSize.getWidth(), buttonSize.getHeight());
-        g.drawString(string + "     " + buttonSize.getWidth() + " " + stringX + " " + stringY, stringX, stringY);
+        g.drawString(string, stringX, stringY);
 
         return returnStatus;
     }
