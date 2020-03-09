@@ -133,6 +133,7 @@ public class KeyInput extends KeyAdapter {
             if(toUpdate) {
                 Game.getMainPlayer().setVelX(velX);
                 Game.getMainPlayer().setVelY(velY);
+                Game.getStaticEntityRegistry().setPlayerInfo(Game.getMainPlayer());
                 update();
             }
 
@@ -168,7 +169,7 @@ public class KeyInput extends KeyAdapter {
             //System.out.println("Updated " + GAME.mainPlayer);
         }*/
 
-        if(Game.getScreen() == null && Game.getClient() != null && Game.getClient().isRegistered()) {
+        if(Game.getScreen() == null && Game.getClient() != null && Game.getClient().isRegistered() && Game.getMainPlayer() != null) {
            // Game.mainPlayer.setHealth(Game.mainPlayer.getHealth());
             Game.getClient().sendObject(new SendPlayerInfoPacket(Game.getMainPlayer()));
             System.out.println("Updated player");

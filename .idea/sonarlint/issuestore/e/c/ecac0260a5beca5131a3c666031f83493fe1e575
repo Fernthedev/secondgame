@@ -1,17 +1,6 @@
 
-R
-java:S1133K"5Do not forget to remove this deprecated code someday.(¦¼š‚8—Ø±ÀŠ.
+b	java:S1071"AConstructor has 9 parameters, which is greater than 7 authorized.(ÖïØÉşÿÿÿÿ8œõı§‹.
 E
-java:S1123<"(Add the missing @deprecated Javadoc tag.(Äıãé8—Ø±ÀŠ.
-E
-java:S1123!"(Add the missing @deprecated Javadoc tag.(ñŞÛ€8—Ø±ÀŠ.
+java:S1123T"(Add the missing @deprecated Javadoc tag.(Äıãé8—Ø±ÀŠ.
 R
-java:S1133<"5Do not forget to remove this deprecated code someday.(Äıãé8—Ø±ÀŠ.
-K
-java:S1444!".Make this "public static entities" field final(ñŞÛ€8—Ø±ÀŠ.
-R
-java:S1133!"5Do not forget to remove this deprecated code someday.(ñŞÛ€8—Ø±ÀŠ.
-R
-java:S2209L"5Change this instance-reference to a static reference.(¨ùˆ8—Ø±ÀŠ.
-R
-java:S2209@"5Change this instance-reference to a static reference.(ŞÜ™Í8—Ø±ÀŠ.
+java:S1133T"5Do not forget to remove this deprecated code someday.(Äıãé8—Ø±ÀŠ.

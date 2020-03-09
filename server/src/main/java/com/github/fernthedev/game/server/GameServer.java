@@ -3,17 +3,18 @@ package com.github.fernthedev.game.server;
 
 import com.github.fernthedev.CommonUtil;
 import com.github.fernthedev.IGame;
-import com.github.fernthedev.INewEntityRegistry;
 import com.github.fernthedev.core.ColorCode;
 import com.github.fernthedev.core.api.event.api.EventHandler;
 import com.github.fernthedev.core.api.event.api.Listener;
 import com.github.fernthedev.exceptions.DebugException;
 import com.github.fernthedev.game.server.game_handler.GameNetworkProcessingHandler;
 import com.github.fernthedev.game.server.game_handler.ServerGameHandler;
+import com.github.fernthedev.server.SenderInterface;
 import com.github.fernthedev.server.Server;
 import com.github.fernthedev.server.event.ServerShutdownEvent;
 import com.github.fernthedev.server.event.ServerStartupEvent;
 import com.github.fernthedev.terminal.server.ServerTerminal;
+import com.github.fernthedev.terminal.server.command.Command;
 import com.github.fernthedev.universal.UniversalHandler;
 import lombok.Getter;
 
@@ -42,6 +43,7 @@ public class GameServer extends ServerTerminal implements IGame {
         if (UniversalHandler.getIGame() == null) UniversalHandler.setIGame(this);
 
         ServerTerminal.main(args);
+        server.setMaxPacketId(CommonUtil.MAX_PACKET_IDS);
 
         server.addPacketHandler(new ServerPacketHandler(this));
 
@@ -51,7 +53,7 @@ public class GameServer extends ServerTerminal implements IGame {
                 UniversalHandler.setRunning(true);
                 Server.getLogger().info("Running game startup code");
 
-                CommonUtil.registerPackets();
+                CommonUtil.registerNetworking();
 
                 serverThread = server.getServerThread();
                 processHandler = new GameNetworkProcessingHandler(GameServer.this);
@@ -62,6 +64,26 @@ public class GameServer extends ServerTerminal implements IGame {
                 Thread thread = new Thread(serverGameHandler);
                 thread.start();
                 System.out.println(thread + " is from " + serverGameHandler);
+
+                registerCommand(new Command("start") {
+                    @Override
+                    public void onCommand(SenderInterface sender, String[] args) {
+                        if (getAuthenticationManager().authenticate(sender)) {
+                            getServerGameHandler().setStarted(true);
+                        }
+                    }
+                });
+
+                registerCommand(new Command("stop") {
+                    @Override
+                    public void onCommand(SenderInterface sender, String[] args) {
+                        if (getAuthenticationManager().authenticate(sender)) {
+                            getServerGameHandler().setStarted(false);
+                            getEntityRegistry().removeRespawnAllPlayers();
+
+                        }
+                    }
+                });
 
 
             }
@@ -88,7 +110,7 @@ public class GameServer extends ServerTerminal implements IGame {
     }
 
     @Override
-    public INewEntityRegistry getEntityRegistry() {
+    public NewServerEntityRegistry getEntityRegistry() {
         return serverGameHandler.getEntityHandler();
     }
 }

@@ -1,14 +1,13 @@
 package com.github.fernthedev.game.deprecated.server;
 
 import com.github.fernthedev.exceptions.NonPacketException;
+import com.github.fernthedev.game.deprecated.server.netty.ProcessingHandler;
 import com.github.fernthedev.game.server.game_handler.EntityHandler;
 import com.github.fernthedev.game.server.game_handler.ServerGameHandler;
-import com.github.fernthedev.game.deprecated.server.netty.ProcessingHandler;
 import com.github.fernthedev.universal.GameObject;
 import com.github.fernthedev.universal.UniversalHandler;
 import com.github.fernthedev.universal.entity.EntityPlayer;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;

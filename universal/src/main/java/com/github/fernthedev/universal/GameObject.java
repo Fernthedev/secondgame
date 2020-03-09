@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.awt.*;
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.UUID;
 
 @Data
@@ -12,27 +13,23 @@ import java.util.UUID;
 @EqualsAndHashCode()
 public abstract class GameObject implements Serializable {
 
-
+    @EqualsAndHashCode.Exclude
     private static final long serialVersionUID = 9102545992378004553L;
 
     @Getter
     @Setter
-    @EqualsAndHashCode.Include
     protected float x, y;
 
     @Getter
     @Setter
-    @EqualsAndHashCode.Include
     public EntityID entityId;
 
     @Getter
     @Setter
-    @EqualsAndHashCode.Include
     protected double velX = 0, velY = 0;
 
     @NonNull
     @Getter
-    @EqualsAndHashCode.Include
     protected UUID uniqueId = UUID.randomUUID();
 
 //    @Deprecated
@@ -40,24 +37,19 @@ public abstract class GameObject implements Serializable {
 
     @Getter
     @Setter
-    @EqualsAndHashCode.Include
     protected Color color;
 
-    @EqualsAndHashCode.Include
     protected int width, height;
 
     @Getter
-    @EqualsAndHashCode.Include
     protected boolean hasTrail = true;
 
-
-
-    protected GameObject(float x, float y, int width, int height, EntityID entityId, UUID uniqueId, Velocity velX, Velocity velY, Color color) {
+    protected GameObject(float x, float y, int width, int height, EntityID entityId, UUID uniqueId, double velX, double velY, Color color) {
         this.x = x;
         this.y = y;
         this.entityId = entityId;
-        this.velY = velY.toInt();
-        this.velX = velX.toInt();
+        this.velY = velY;
+        this.velX = velX;
 
         this.uniqueId = uniqueId;
         this.color = color;
@@ -156,7 +148,27 @@ public abstract class GameObject implements Serializable {
         return new Rectangle((int) x, (int) y, width, height);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GameObject that = (GameObject) o;
+        return Float.compare(that.x, x) == 0 &&
+                Float.compare(that.y, y) == 0 &&
+                Double.compare(that.velX, velX) == 0 &&
+                Double.compare(that.velY, velY) == 0 &&
+                width == that.width &&
+                height == that.height &&
+                hasTrail == that.hasTrail &&
+                entityId == that.entityId &&
+                uniqueId.equals(that.uniqueId) &&
+                color.equals(that.color);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y, entityId, velX, velY, uniqueId, color, width, height, hasTrail);
+    }
 //    @Override
 //    public String toString() {
 //          return x + "X " + y + "Y " + velX + "velX " + velY + " velY" + entityId + "EntityID " + objectID + "ObjectID " + entities;

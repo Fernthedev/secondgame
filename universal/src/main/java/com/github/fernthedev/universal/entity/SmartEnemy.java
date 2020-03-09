@@ -6,7 +6,6 @@ import com.github.fernthedev.universal.UniversalHandler;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.Setter;
-import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.awt.*;
@@ -41,7 +40,7 @@ public class SmartEnemy extends GameObject {
 
 
         GameObject player = null;
-        Map<@NonNull UUID, @NonNull Pair<@NonNull GameObject, Long>> objects;
+        Map<@NonNull UUID, @NonNull Pair<@NonNull GameObject, Integer>> objects;
         try {
              objects = new HashMap<>(UniversalHandler.getIGame().getEntityRegistry().getGameObjects());
         } catch (ConcurrentModificationException e) {
@@ -50,7 +49,7 @@ public class SmartEnemy extends GameObject {
         }
 
         if (!objects.containsKey(playerUUID)) {
-            Optional<@NonNull Pair<@NonNull GameObject, Long>> option = objects
+            Optional<@NonNull Pair<@NonNull GameObject, Integer>> option = objects
                     .values().parallelStream()
                     .filter(gameObjectLongPair -> gameObjectLongPair.getKey() instanceof EntityPlayer)
                     .findAny();
@@ -70,8 +69,8 @@ public class SmartEnemy extends GameObject {
 
 //        @NonNull GameObject player = playerPair.getKey();
 
-        float diffX = x - player.getX() - player.getWidth();
-        float diffY = y - player.getY() - player.getHeight();
+        float diffX = x - player.getX() - (float) player.getWidth();
+        float diffY = y - player.getY() - (float) player.getHeight();
         float distance = (float) Math.sqrt((x - player.getX()) * (x - player.getX()) + (y - player.getY()) * (y - player.getY()));
 
         velX = ((-1 / distance) * diffX);

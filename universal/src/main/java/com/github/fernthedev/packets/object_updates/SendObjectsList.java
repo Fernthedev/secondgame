@@ -6,6 +6,7 @@ import com.github.fernthedev.universal.entity.EntityPlayer;
 import com.github.fernthedev.universal.entity.NewGsonGameObject;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NonNull;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -16,12 +17,15 @@ import java.util.UUID;
 public class SendObjectsList extends Packet implements Serializable {
 
     @Getter
+    @NonNull
     private Map<UUID, NewGsonGameObject> objectList;
 
     @Getter
-    private boolean updatePlayer;
+    @NonNull
+    private boolean changed;
 
     @Getter
+    @NonNull
     private EntityPlayer mainPlayer;
 
 

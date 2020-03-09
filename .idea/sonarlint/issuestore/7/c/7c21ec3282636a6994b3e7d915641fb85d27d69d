@@ -1,21 +1,7 @@
 
 E
-java:S1123!"(Add the missing @deprecated Javadoc tag.(ş€î‹8ÏªÂ¼Š.
+java:S1123'"(Add the missing @deprecated Javadoc tag.(ş€î‹8ÏªÂ¼Š.
 :
-java:S2386!"Make this member "protected".(ş€î‹8ÏªÂ¼Š.
-v
-java:S1104"TMake tickWait a static final constant or non-public and provide accessors if needed.(Û®…¸ÿÿÿÿÿ8ÏªÂ¼Š.
-O
-java:S1444"-Make this "public static running" field final(çû†øÿÿÿÿ8ÏªÂ¼Š.
-u
-java:S1104"SMake running a static final constant or non-public and provide accessors if needed.(çû†øÿÿÿÿ8ÏªÂ¼Š.
-W
-java:S1133"5Do not forget to remove this deprecated code someday.(ÿƒªúÿÿÿÿ8ğÛŒ½Š.
-P
-java:S1444".Make this "public static isServer" field final(ÿƒªúÿÿÿÿ8ÏªÂ¼Š.
+java:S2386'"Make this member "protected".(ş€î‹8ÏªÂ¼Š.
 R
-java:S1133!"5Do not forget to remove this deprecated code someday.(ş€î‹8ÏªÂ¼Š.
-P
-java:S1444".Make this "public static tickWait" field final(Û®…¸ÿÿÿÿÿ8ÏªÂ¼Š.
-J
-java:S1123"(Add the missing @deprecated Javadoc tag.(ÿƒªúÿÿÿÿ8ğÛŒ½Š.
+java:S1133'"5Do not forget to remove this deprecated code someday.(ş€î‹8ÏªÂ¼Š.

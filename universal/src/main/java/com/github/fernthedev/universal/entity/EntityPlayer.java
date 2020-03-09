@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.awt.*;
 import java.util.Random;
+import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 public class EntityPlayer extends GameObject {
@@ -22,29 +23,16 @@ public class EntityPlayer extends GameObject {
     @Setter
     protected int coin;
 
+    public static final transient int MAX_VELOCITY = 5;
 
-    public EntityPlayer(float x, float y, EntityID entityId) {
-        super(x, y, 32, 32, entityId, new Color(r.nextInt(255),r.nextInt(255),r.nextInt(255)));
+    public EntityPlayer(float x, float y) {
+        super(x, y, 32, 32, EntityID.Player, new Color(r.nextInt(255),r.nextInt(255),r.nextInt(255)));
     }
 
-    /**
-     * This is used for keeping velocity while using different coordinates.
-     * @param keepPlayer The player with the velocity to keep
-     * @param newPlayer The player with the coordinates to keep
-     */
-    public EntityPlayer(EntityPlayer keepPlayer, EntityPlayer newPlayer) {
-        this.velX = keepPlayer.getVelX();
-        this.velY = keepPlayer.getVelY();
-
-        this.health = newPlayer.getHealth();
-        this.color = newPlayer.getColor();
-
-        this.coin = newPlayer.coin;
-        this.uniqueId = newPlayer.getUniqueId();
-        this.entityId = EntityID.Player;
-
-        this.x = newPlayer.getX();
-        this.y = newPlayer.getY();
+    public EntityPlayer(float x, float y, UUID uniqueId, double velX, double velY, Color color, int health, int coin) {
+        super(x, y, 32, 32, EntityID.Player, uniqueId, velX, velY, color);
+        this.health = health;
+        this.coin = coin;
     }
 
     protected EntityPlayer() { }
@@ -105,6 +93,5 @@ public class EntityPlayer extends GameObject {
 //
 //        }
 //    }
-
 
 }

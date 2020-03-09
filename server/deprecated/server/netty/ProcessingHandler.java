@@ -1,13 +1,9 @@
 package com.github.fernthedev.game.deprecated.server.netty;
 
 
-import com.github.fernthedev.game.deprecated.server.ClientPlayer;
-import com.github.fernthedev.game.deprecated.server.EventListener;
-import com.github.fernthedev.game.deprecated.server.FernThread;
-import com.github.fernthedev.game.deprecated.server.Server;
+import com.github.fernthedev.game.deprecated.server.*;
 import com.github.fernthedev.game.server.game_handler.ServerGameHandler;
 import com.github.fernthedev.packets.player_updates.SetCurrentPlayer;
-import com.github.fernthedev.game.deprecated.server.ServerThread;
 import com.github.fernthedev.universal.EntityID;
 import com.github.fernthedev.universal.GameObject;
 import com.github.fernthedev.universal.UniversalHandler;

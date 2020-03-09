@@ -400,18 +400,20 @@ public class Game extends Canvas implements Runnable, IGame {
 //        newClientEntityRegistry.startGame();
 
         getStaticEntityRegistry().clearObjects();
-        Game.setScreen(null);
+
 
         Client client = new Client(getGameSettings().getConfigData().getHost(), getGameSettings().getConfigData().getPort());
+        client.setMaxPacketId(CommonUtil.MAX_PACKET_IDS);
         Game.setClient(client);
+        Game.setScreen(null);
 
-        CommonUtil.registerPackets();
+        CommonUtil.registerNetworking();
 
         PacketHandler packetHandler = new PacketHandler();
         client.getPluginManager().registerEvents(packetHandler);
         client.addPacketHandler(packetHandler);
         UUID uuid = UUID.randomUUID();
-        StaticHandler.getCore().getLogger().debug("Using uuid name: {}", uuid.toString());
+        StaticHandler.getCore().getLogger().debug("Using uuid name: {}", uuid);
         client.setName(uuid.toString());
 
         mainPlayer = null;

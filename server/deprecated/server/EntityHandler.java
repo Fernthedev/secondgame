@@ -15,7 +15,6 @@ import com.github.fernthedev.universal.entity.NewGsonGameObject;
 import io.netty.channel.Channel;
 import lombok.Synchronized;
 
-import java.util.*;
 import java.util.stream.Collectors;
 
 @Deprecated

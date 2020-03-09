@@ -15,14 +15,20 @@ import java.util.stream.Collectors;
 public abstract class INewEntityRegistry extends TickRunnable {
 
     @Getter
-    protected Map<@NonNull UUID, @NonNull Pair<@NonNull GameObject, Long>> gameObjects = Collections.synchronizedMap(new HashMap<>());
+    protected Map<@NonNull UUID, @NonNull Pair<@NonNull GameObject, Integer>> gameObjects = Collections.synchronizedMap(new HashMap<>());
 
     private List<UUID> updatedPlayers = Collections.synchronizedList(new ArrayList<>());
 
 
 
-    public void addEntityObject(GameObject gameObject) {
-        gameObjects.put(gameObject.getUniqueId(), new ImmutablePair<>(gameObject, System.nanoTime()));
+    public void addEntityObject(@NonNull GameObject gameObject) {
+        if (!gameObjects.containsKey(gameObject.getUniqueId()))
+            gameObjects.put(gameObject.getUniqueId(), new ImmutablePair<>(gameObject, gameObject.hashCode()));
+        else
+            gameObjects.put(gameObject.getUniqueId(), new ImmutablePair<>(
+                    gameObject,
+                    gameObjects.get(gameObject.getUniqueId()).getRight()
+            ));
     }
 
     public void removeEntityObject(GameObject gameObject) {
@@ -61,31 +67,64 @@ public abstract class INewEntityRegistry extends TickRunnable {
 
             clampAndTP(tempObject);
 
-            if(tempObject instanceof EntityPlayer)
+            if (tempObject instanceof EntityPlayer)
                 collisionCheck((EntityPlayer) tempObject);
         }
 
         onEntityUpdate();
 
-        if(!updatedPlayers.isEmpty())
-        new ArrayList<>(updatedPlayers).parallelStream().forEach(uuid -> {
-            playerUpdate((EntityPlayer) getGameObjects().get(uuid).getKey());
-            updatedPlayers.remove(uuid);
-        });
+        if (!updatedPlayers.isEmpty())
+            new ArrayList<>(updatedPlayers).parallelStream().forEach(uuid -> {
+                playerUpdate((EntityPlayer) getGameObjects().get(uuid).getKey());
+                updatedPlayers.remove(uuid);
+            });
+
+
+        new HashMap<>(gameObjects).forEach((uuid, gameObjectIntegerPair) -> registerUpdatedObjectTime(gameObjectIntegerPair.getKey()));
     }
 
-    protected void clampAndTP(GameObject gameObject) {
+    /**
+     * Registers the object last modified time
+     */
+    protected void registerUpdatedObjectTime(GameObject gameObject) {
+        getGameObjects().put(gameObject.getUniqueId(), new ImmutablePair<>(gameObject, gameObject.hashCode()));
+    }
 
-        gameObject.setX(UniversalHandler.clamp(gameObject.getX(), 0, (float) UniversalHandler.WIDTH - (float) gameObject.getWidth()));
-        gameObject.setY(UniversalHandler.clamp(gameObject.getY(), 0, (float) UniversalHandler.HEIGHT - (float) gameObject.getHeight()*2));
+    protected String clampAndTP(GameObject gameObject) {
 
+        String result = "";
+
+        float maxX = (float) UniversalHandler.WIDTH - (float) gameObject.getWidth() - gameObject.getWidth()/2f;
+        float maxY = (float) UniversalHandler.HEIGHT - (float) gameObject.getHeight()*2f - gameObject.getWidth()/4f;
+
+        float newX = GameMathUtil.clamp(gameObject.getX(), 0, maxX);
+        float newY = GameMathUtil.clamp(gameObject.getY(), 0, maxY);
+
+        if (newX != gameObject.getX() && gameObject instanceof EntityPlayer) {
+            gameObject.setVelX(0);
+            result += "X was clamped " + newX;
+        }
+
+        if (newY != gameObject.getY() && gameObject instanceof EntityPlayer) {
+            result += " Y was clamped " + newY;
+            gameObject.setVelY(0);
+        }
+
+        if (result.isEmpty())
+            result = null;
+        else {
+            gameObject.setX(newX);
+            gameObject.setY(newY);
+        }
+
+        return result;
     }
 
     protected void addToUpdateList(EntityPlayer entityPlayer) {
         if (!updatedPlayers.contains(entityPlayer.getUniqueId())) updatedPlayers.add(entityPlayer.getUniqueId());
     }
 
-    public Map<UUID, Pair<GameObject, Long>> copyGameObjectsAsMap() {
+    public Map<UUID, Pair<GameObject, Integer>> copyGameObjectsAsMap() {
         return new HashMap<>(getGameObjects());
     }
 

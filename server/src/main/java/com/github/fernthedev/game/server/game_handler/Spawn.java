@@ -3,7 +3,6 @@ package com.github.fernthedev.game.server.game_handler;
 import com.github.fernthedev.core.StaticHandler;
 import com.github.fernthedev.game.server.GameServer;
 import com.github.fernthedev.packets.LevelUp;
-import com.github.fernthedev.server.PlayerHandler;
 import com.github.fernthedev.universal.EntityID;
 import com.github.fernthedev.universal.UniversalHandler;
 import com.github.fernthedev.universal.entity.*;
@@ -29,6 +28,7 @@ public class Spawn {
     public void tick() {
 
 //        if(true) return;
+        if (!server.getServerGameHandler().isStarted()) return;
 
 //        System.out.println(server.getServerGameHandler().getEntityHandler().isClientDataEmpty() + " is empty");
         if ((server.getServerGameHandler().getEntityHandler().isClientDataEmpty())) {
@@ -44,7 +44,7 @@ public class Spawn {
 //        scoreKeep++;
         int coinspawn = scoreKeep + r.nextInt(512);
 
-        if (scoreKeep == coinspawn && (!PlayerHandler.getChannelMap().isEmpty())) {
+        if (scoreKeep == coinspawn && (!server.getServer().getPlayerHandler().getChannelMap().isEmpty())) {
             server.getServerGameHandler().getEntityHandler().addEntityObject(new Coin(r.nextInt(UniversalHandler.WIDTH - 50) + 1, r.nextInt(UniversalHandler.HEIGHT - 50) + 1, EntityID.Coin));
         }
 
@@ -55,7 +55,7 @@ public class Spawn {
             scoreKeep = 0;
             System.out.println("RESETTING SCOREKEEP");
 
-            if (!PlayerHandler.getChannelMap().isEmpty()) {
+            if (!server.getServer().getPlayerHandler().getChannelMap().isEmpty()) {
                 int mob = r.nextInt(4);
                 if (mob == 0) mob++;
 
@@ -118,7 +118,7 @@ public class Spawn {
 //            gameObjects = new ArrayList<>(players);
 
 
-            server.getServerGameHandler().getEntityHandler().removeAllButPlayers();
+            server.getServerGameHandler().getEntityHandler().removeRespawnAllPlayers();
 
 
             levels++;

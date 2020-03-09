@@ -1,8 +1,10 @@
 package io.github.fernthedev.secondgame.main.netty.client;
 
+import com.github.fernthedev.CommonUtil;
 import com.github.fernthedev.client.api.IPacketHandler;
 import com.github.fernthedev.client.event.ServerConnectFinishEvent;
 import com.github.fernthedev.client.event.ServerDisconnectEvent;
+import com.github.fernthedev.core.StaticHandler;
 import com.github.fernthedev.core.api.event.api.EventHandler;
 import com.github.fernthedev.core.api.event.api.Listener;
 import com.github.fernthedev.core.packets.Packet;
@@ -20,10 +22,12 @@ import io.github.fernthedev.secondgame.main.ui.screens.MainMenu;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PacketHandler implements IPacketHandler, Listener {
+
     @Override
-    public void handlePacket(Packet p) {
+    public void handlePacket(Packet p, int packetId) {
         if (p instanceof SendGameObject) {
             SendGameObject gameObject = (SendGameObject) p;
 
@@ -66,6 +70,7 @@ public class PacketHandler implements IPacketHandler, Listener {
 
             EntityPlayer universalPlayer = list.getMainPlayer();
 
+
 //            for(GameObject gameObject : gameObjects) {
 //                GameObject checkedObject = ClientObject.getObjectType(gameObject);
 //
@@ -92,8 +97,9 @@ public class PacketHandler implements IPacketHandler, Listener {
 //            Game.getStaticEntityRegistry().getGameObjects().clear();
 //            Game.getStaticEntityRegistry().getGameObjects().putAll(entityMap);
 
+            AtomicBoolean doUpdate = new AtomicBoolean(true);
 
-          gameObjects.forEach((uuid, newGsonGameObject) -> {
+            gameObjects.forEach((uuid, newGsonGameObject) -> {
                 try {
 
                     if (newGsonGameObject == null) {
@@ -101,12 +107,43 @@ public class PacketHandler implements IPacketHandler, Listener {
                     } else {
                         GameObject object = newGsonGameObject.toGameObject();
                         if (object == null) Game.getStaticEntityRegistry().getGameObjects().remove(uuid);
-                        else Game.getStaticEntityRegistry().addEntityObject(object);
+                        else {
+                            assert Game.getClient() != null;
+
+                            boolean updateEntity = true;
+
+                            boolean isPlayer = Game.getMainPlayer() != null && object.getUniqueId() == Game.getMainPlayer().getUniqueId();
+
+                            if (isPlayer &&
+                                    Game.getClient().getPacketId(p.getClass()).getLeft() - 3 > packetId // If the packet received is 3 packets old
+                                    && System.currentTimeMillis() - Game.getClient().getPacketId(p.getClass()).getRight() > 900
+                            ) updateEntity = false;
+
+                            if (isPlayer && (
+                                            Math.abs(universalPlayer.getX() - Game.getMainPlayer().getX()) > CommonUtil.PLAYER_COORD_DIF ||
+                                                    Math.abs(universalPlayer.getY() - Game.getMainPlayer().getY()) > CommonUtil.PLAYER_COORD_DIF
+                            )) updateEntity = false;
+
+                            if (updateEntity) {
+                                Game.getStaticEntityRegistry().addEntityObject(object);
+                            }
+
+                            if (isPlayer) doUpdate.set(updateEntity);
+//                            if (!Game.getStaticEntityRegistry().getGameObjects().containsKey(object.getUniqueId()))
+
+                        }
                     }
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
-             }
-       });
+                }
+            });
+
+            if (list.isChanged())
+                Game.getStaticEntityRegistry().addEntityObject(universalPlayer);
+
+
+            if (doUpdate.get())
+                Game.setMainPlayer(universalPlayer);
 
 //            List<GameObject> objectsAsInstanceFromPacket = gameObjects.parallelStream().map(newGsonGameObject -> {
 //                try {
@@ -118,14 +155,11 @@ public class PacketHandler implements IPacketHandler, Listener {
 //            }).collect(Collectors.toList());
 
 
-
-
 //            finalGameObjects = new ArrayList<>(Game.getNewClientEntityRegistry().getGameObjects().values());
 //            finalGameObjects.retainAll(finalGameObjects.parallelStream()
 //                    .filter(gameObject -> gameObject instanceof Trail)
 //                    .collect(Collectors.toList()));
 //            finalGameObjects.addAll(objectsAsInstanceFromPacket);
-
 
 
 //            List<GameObject> currentGameObjects = new ArrayList<>(Game.getNewClientEntityRegistry().getGameObjects().values());
@@ -140,11 +174,10 @@ public class PacketHandler implements IPacketHandler, Listener {
 //            finalGameObjects.addAll(newObjects);
 
 
+            StaticHandler.getCore().getLogger().debug("Updating player because server asked us to " + universalPlayer);
 
+//            Game.getStaticEntityRegistry().addEntityObject(universalPlayer);
 
-            System.out.println("Updating player because server asked us to " + universalPlayer);
-            Game.getStaticEntityRegistry().addEntityObject(universalPlayer);
-            Game.setMainPlayer(universalPlayer);
 
 //            Map<UUID, GameObject> objectMap = new HashMap<>();
 //            finalGameObjects.forEach(gameObject -> objectMap.put(gameObject.getUniqueId(), gameObject));
@@ -161,10 +194,11 @@ public class PacketHandler implements IPacketHandler, Listener {
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
-        } else if(p instanceof RemoveObjectPacket) {
+        } else if (p instanceof RemoveObjectPacket) {
             RemoveObjectPacket packet = (RemoveObjectPacket) p;
             Game.getStaticEntityRegistry().getGameObjects().remove(packet.getUuid());
-        } if (p instanceof GameOverPacket) {
+        }
+        if (p instanceof GameOverPacket) {
             Objects.requireNonNull(Game.getClient()).disconnect();
 
             Game.getMainPlayer().setHealth(100);
@@ -174,7 +208,6 @@ public class PacketHandler implements IPacketHandler, Listener {
             Game.getHud().setLevel(((LevelUp) p).getLevel());
         }
     }
-
 
 
     @EventHandler

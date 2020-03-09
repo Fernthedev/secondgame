@@ -9,7 +9,6 @@ import com.github.fernthedev.server.ClientConnection;
 import com.github.fernthedev.server.Server;
 import com.github.fernthedev.server.event.PlayerDisconnectEvent;
 import com.github.fernthedev.server.event.PlayerJoinEvent;
-import com.github.fernthedev.universal.EntityID;
 import com.github.fernthedev.universal.UniversalHandler;
 import com.github.fernthedev.universal.entity.EntityPlayer;
 import io.netty.channel.ChannelHandler;
@@ -28,7 +27,7 @@ public class GameNetworkProcessingHandler extends ChannelInboundHandlerAdapter i
         Server.getLogger().info(ColorCode.YELLOW + "handling player " + e.getJoinPlayer().getName() + " giving data");
         ClientConnection clientConnection = e.getJoinPlayer();
 
-        EntityPlayer universalPlayer = new EntityPlayer((float) UniversalHandler.WIDTH / 2 - 32, (float) UniversalHandler.HEIGHT / 2 - 32, EntityID.Player);
+        EntityPlayer universalPlayer = new EntityPlayer((float) UniversalHandler.WIDTH / 2 - 32, (float) UniversalHandler.HEIGHT / 2 - 32);
 
         server.getServerGameHandler().getEntityHandler().addClientData(clientConnection, new ClientGameData(clientConnection, universalPlayer));
 

@@ -12,7 +12,7 @@ public class ServerPacketHandler implements IPacketHandler {
     private final GameServer server;
 
     @Override
-    public void handlePacket(Packet p, ClientConnection clientPlayer) {
+    public void handlePacket(Packet p, ClientConnection clientPlayer, int packetId) {
         if (p instanceof SendPlayerInfoPacket) {
             SendPlayerInfoPacket infoPacket = (SendPlayerInfoPacket) p;
 
@@ -24,7 +24,8 @@ public class ServerPacketHandler implements IPacketHandler {
 
 //            serverEntityRegistry.updatePlayerObject(clientPlayer, player);
 
-            server.getServerGameHandler().getEntityHandler().updatePlayerObject(clientPlayer, infoPacket.getPlayerObject());
+            if (clientPlayer.getPacketId(p.getClass()).getLeft() -5 < packetId && System.currentTimeMillis() - clientPlayer.getPacketId(p.getClass()).getRight() > 900)
+                server.getServerGameHandler().getEntityHandler().handleClientRespond(clientPlayer, infoPacket);
 
             //UniversalHandler.getThingHandler().updatePlayerObject(infoPacket.getPlayerObject());
 

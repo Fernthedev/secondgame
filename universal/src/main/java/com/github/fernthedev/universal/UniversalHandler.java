@@ -52,21 +52,4 @@ public class UniversalHandler {
         return thingHandler == null ? thingHandler = new ThingHandler() : thingHandler;
     }
 
-    /**
-     * CREATING A BOX/LIMIT FOR A VARIABLE
-     * @param var Variable being affected
-     * @param min The minimum value
-     * @param max The Max Value
-     * @return Returns the max or min if either var is greater than either, if not returns var
-     */
-
-    public static float clamp(float var, float min, float max) {
-        //System.out.println(min + " is min");
-        //System.out.println(var + " is normal");
-        if(var >= max) {
-          //  System.out.println(max + " is max");
-            return max;
-        }
-        else return Math.max(var, min);
-    }
 }

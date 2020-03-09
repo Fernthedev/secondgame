@@ -1,5 +1,5 @@
 
-G
-java:S1172"+Remove this unused method parameter "game".(ŒÇž[8ºÊ®½Š.
+W
+java:S2209""5Change this instance-reference to a static reference.(žÎ®Šÿÿÿÿÿ8È”ƒ­‹.
 C
-java:S1170"!Make this final field static too.(ÊÁ¬–øÿÿÿÿ8ºÊ®½Š.
+java:S1170"!Make this final field static too.(ÊÁ¬–øÿÿÿÿ8ºÊ®½Š.

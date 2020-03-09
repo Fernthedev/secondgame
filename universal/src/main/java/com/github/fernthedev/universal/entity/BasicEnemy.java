@@ -26,8 +26,8 @@ public class BasicEnemy extends GameObject {
         x += velX;
         y += velY;
 
-        if (x <= 0 || x >= UniversalHandler.WIDTH - width) velX *= -1;
-        if (y <= 0 || y >= UniversalHandler.HEIGHT - height*2) velY *= -1;
+        if (x <= 0 || x >= UniversalHandler.WIDTH - (float) width) velX *= -1;
+        if (y <= 0 || y >= UniversalHandler.HEIGHT - (float) height*2) velY *= -1;
 
 
 

@@ -4,7 +4,6 @@ import com.github.fernthedev.universal.UniversalHandler;
 import io.github.fernthedev.secondgame.main.Game;
 import io.github.fernthedev.secondgame.main.deprecated.netty.client.netty.ClientHandler;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;

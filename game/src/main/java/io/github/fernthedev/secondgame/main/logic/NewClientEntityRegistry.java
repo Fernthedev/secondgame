@@ -53,7 +53,7 @@ public class NewClientEntityRegistry extends INewEntityRegistry {
 
 
     @Override
-    public Map<UUID, Pair<GameObject, Long>> getGameObjects() {
+    public Map<UUID, Pair<GameObject, Integer>> getGameObjects() {
         if (getEntityRegistryInUse() == this) return gameObjects;
         return getEntityRegistryInUse().getGameObjects();
     }
@@ -70,9 +70,14 @@ public class NewClientEntityRegistry extends INewEntityRegistry {
     }
 
     @Override
-    protected void clampAndTP(GameObject gameObject) {
+    protected String clampAndTP(GameObject gameObject) {
         if (Game.getClient() == null && Game.getGameServer() == null)
-            super.clampAndTP(gameObject);
+            return super.clampAndTP(gameObject);
+        else if (gameObject != null && Game.getMainPlayer() != null && gameObject.getUniqueId() == Game.getMainPlayer().getUniqueId())
+            return super.clampAndTP(gameObject);
+
+
+        return null;
     }
 
     @Override
@@ -118,7 +123,7 @@ public class NewClientEntityRegistry extends INewEntityRegistry {
     public void startGame() {
         clearObjects();
 
-        Game.setMainPlayer(new EntityPlayer((float) Game.WIDTH / 2 - 32, (float) Game.HEIGHT /2 - 32, EntityID.Player));
+        Game.setMainPlayer(new EntityPlayer((float) Game.WIDTH / 2 - 32, (float) Game.HEIGHT /2 - 32));
 
         Game.setScreen(null);
         Random r = UniversalHandler.RANDOM;
@@ -164,7 +169,7 @@ public class NewClientEntityRegistry extends INewEntityRegistry {
     }
 
     public void render(Graphics g) {
-        for (Pair<GameObject, Long> gameObject : new ArrayList<>(getGameObjects().values())) {
+        for (Pair<GameObject, Integer> gameObject : new ArrayList<>(getGameObjects().values())) {
             renderEntity(g, gameObject.getKey());
         }
     }

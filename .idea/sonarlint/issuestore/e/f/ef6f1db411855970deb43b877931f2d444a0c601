@@ -1,30 +1,20 @@
 
+o
+java:S1104d"RMake paused a static final constant or non-public and provide accessors if needed.(ãîÏš8€É¬´‹.
 M
-java:S1481¤"1Remove this unused "OPTIMAL_TIME" local variable.(Å»š±ùÿÿÿÿ
-j
-java:S1104N"OMake dif a static final constant or non-public and provide accessors if needed.(ÅôÛÂúÿÿÿÿ
-B
-java:S1444G",Make this "public static paused" field final(ãîÏš
-L
-java:S1948)"*Make "spawnner" transient or serializable.(´çš•üÿÿÿÿ8±ô™¾Š.
-R
-java:S1066Ø"/Merge this if statement with the enclosing one.(¹ƒÆ­ÿÿÿÿÿ8ñÄ¼¼Š.
-L
-java:S1948+"*Make "keyInput" transient or serializable.(ùóã£úÿÿÿÿ8±ô™¾Š.
-f	java:S117w"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¶çïÔ
-l
-java:S1104B"QMake fern$ a static final constant or non-public and provide accessors if needed.(ë°á§ıÿÿÿÿ
-k
-java:S3008B"PRename this field "fern$" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ë°á§ıÿÿÿÿ
-P
-java:S19486".Make "testJoyStick" transient or serializable.(·å½ïùÿÿÿÿ8±ô™¾Š.
-A
-java:S1181ü"%Catch Exception instead of Throwable.(‡˜ÚÚøÿÿÿÿ
+java:S1444_"+Make this "public static fern$" field final(ë°á§ıÿÿÿÿ8€É¬´‹.
+n	java:S117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¶çïÔ8€É¬´‹.
+I
+java:S1444d",Make this "public static paused" field final(ãîÏš8€É¬´‹.
+s
+java:S1104_"QMake fern$ a static final constant or non-public and provide accessors if needed.(ë°á§ıÿÿÿÿ8€É¬´‹.
 G
-java:S1481w"1Remove this unused "sprite_sheet" local variable.(¶çïÔ
-\
-java:S1854¤"@Remove this useless assignment to local variable "OPTIMAL_TIME".(Å»š±ùÿÿÿÿ
-F
-java:S1444B"+Make this "public static fern$" field final(ë°á§ıÿÿÿÿ
-h
-java:S1104G"RMake paused a static final constant or non-public and provide accessors if needed.(ãîÏš
+java:S1068@"*Remove this unused "window" private field.(Í¾Õ¦8€É¬´‹.
+O
+java:S1481"1Remove this unused "sprite_sheet" local variable.(¶çïÔ8€É¬´‹.
+„
+java:S3457"aNo need to call "toString()" method as formatting and string conversion is done by the Formatter.(Ãà§ºúÿÿÿÿ8ë¡è»‹.
+r
+java:S3008_"PRename this field "fern$" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ë°á§ıÿÿÿÿ8€É¬´‹.
+q
+java:S1104k"OMake dif a static final constant or non-public and provide accessors if needed.(ÅôÛÂúÿÿÿÿ8€É¬´‹.
