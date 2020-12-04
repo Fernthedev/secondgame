@@ -11,7 +11,8 @@ allprojects {
     apply plugin: 'maven-publish'
     apply plugin: 'io.freefair.lombok'
 
-    ext.lightchat = "1.5.3"
+    ext.lightchat = "1c6e86ea46"
+    ext.isBetaLight = true
     ext.log4j_ver = "2.12.1"
 
 

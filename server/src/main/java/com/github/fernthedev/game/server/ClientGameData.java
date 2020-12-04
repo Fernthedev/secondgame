@@ -1,10 +1,13 @@
 package com.github.fernthedev.game.server;
 
-import com.github.fernthedev.server.ClientConnection;
+import com.github.fernthedev.lightchat.server.ClientConnection;
 import com.github.fernthedev.universal.entity.EntityPlayer;
 import lombok.*;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Getter

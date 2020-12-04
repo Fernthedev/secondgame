@@ -1,8 +1,0 @@
-
-b	java:S1079"AConstructor has 8 parameters, which is greater than 7 authorized.(Ðç§¯øÿÿÿÿ8„ ¿ÀŠ.
-M
-java:S2160	"+Override the "equals" method in this class.(þ¬ƒÂþÿÿÿÿ8„ ¿ÀŠ.
-[
-java:S1854N"9Remove this useless assignment to local variable "thing".(èç°Âøÿÿÿÿ8„ ¿ÀŠ.
-L
-java:S1481N"*Remove this unused "thing" local variable.(èç°Âøÿÿÿÿ8„ ¿ÀŠ.

@@ -3,7 +3,7 @@ apply plugin: 'application'
 dependencies {
     compile project(':universal')
     compile "com.github.Fernthedev.light-chat:server:$lightchat"
-    compile "com.github.Fernthedev.light-chat:terminal-server:1.0.0-$lightchat"
+    compile "com.github.Fernthedev.light-chat:terminal-server:${isBetaLight ? lightchat : "1.0.0-$lightchat"}"
 }
 
 application {

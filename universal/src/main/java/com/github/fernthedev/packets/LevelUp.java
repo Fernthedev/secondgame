@@ -1,7 +1,7 @@
 package com.github.fernthedev.packets;
 
-import com.github.fernthedev.core.packets.Packet;
-import com.github.fernthedev.core.packets.PacketInfo;
+import com.github.fernthedev.lightchat.core.packets.Packet;
+import com.github.fernthedev.lightchat.core.packets.PacketInfo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

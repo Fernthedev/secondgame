@@ -1,7 +1,8 @@
 package com.github.fernthedev.game.server.game_handler;
 
-import com.github.fernthedev.core.StaticHandler;
+
 import com.github.fernthedev.game.server.GameServer;
+import com.github.fernthedev.lightchat.core.StaticHandler;
 import com.github.fernthedev.packets.LevelUp;
 import com.github.fernthedev.universal.EntityID;
 import com.github.fernthedev.universal.UniversalHandler;

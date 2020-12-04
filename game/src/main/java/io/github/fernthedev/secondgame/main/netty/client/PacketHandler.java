@@ -1,13 +1,13 @@
 package io.github.fernthedev.secondgame.main.netty.client;
 
 import com.github.fernthedev.CommonUtil;
-import com.github.fernthedev.client.api.IPacketHandler;
-import com.github.fernthedev.client.event.ServerConnectFinishEvent;
-import com.github.fernthedev.client.event.ServerDisconnectEvent;
-import com.github.fernthedev.core.StaticHandler;
-import com.github.fernthedev.core.api.event.api.EventHandler;
-import com.github.fernthedev.core.api.event.api.Listener;
-import com.github.fernthedev.core.packets.Packet;
+import com.github.fernthedev.lightchat.client.api.IPacketHandler;
+import com.github.fernthedev.lightchat.client.event.ServerConnectFinishEvent;
+import com.github.fernthedev.lightchat.client.event.ServerDisconnectEvent;
+import com.github.fernthedev.lightchat.core.StaticHandler;
+import com.github.fernthedev.lightchat.core.api.event.api.EventHandler;
+import com.github.fernthedev.lightchat.core.api.event.api.Listener;
+import com.github.fernthedev.lightchat.core.packets.Packet;
 import com.github.fernthedev.packets.GameOverPacket;
 import com.github.fernthedev.packets.LevelUp;
 import com.github.fernthedev.packets.object_updates.*;
@@ -54,7 +54,7 @@ public class PacketHandler implements IPacketHandler, Listener {
         } else if (p instanceof SendObjectsList) {
             SendObjectsList list = (SendObjectsList) p;
 
-            System.out.println("Updating object list " + list.getObjectList() + "\n");
+            StaticHandler.getCore().getLogger().debug("Updating object list " + list.getObjectList() + "\n");
 
 
             //            Type listType = new TypeToken<ArrayList<GsonObject>>(){}.getType();

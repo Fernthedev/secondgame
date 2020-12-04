@@ -1,9 +1,10 @@
 package com.github.fernthedev.game.server;
 
-import com.github.fernthedev.core.packets.Packet;
+
+import com.github.fernthedev.lightchat.core.packets.Packet;
+import com.github.fernthedev.lightchat.server.ClientConnection;
+import com.github.fernthedev.lightchat.server.api.IPacketHandler;
 import com.github.fernthedev.packets.player_updates.SendPlayerInfoPacket;
-import com.github.fernthedev.server.ClientConnection;
-import com.github.fernthedev.server.api.IPacketHandler;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

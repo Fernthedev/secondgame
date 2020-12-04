@@ -1,4 +1,5 @@
 
 dependencies {
     implementation "com.github.Fernthedev.light-chat:core:$lightchat"
+    implementation 'com.github.Fernthedev:fern-configmanager:1.4.0'
 }

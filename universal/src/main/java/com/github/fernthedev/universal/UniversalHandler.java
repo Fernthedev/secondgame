@@ -18,7 +18,7 @@ public class UniversalHandler {
 
     public static final int WIDTH = 640,HEIGHT =  WIDTH / 12*9;
 
-    public static final int TICK_WAIT = 1;
+    public static final int TICK_WAIT = 5;
 
     public static final int MULTIPLAYER_PORT = 3000;
 

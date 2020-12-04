@@ -8,15 +8,15 @@ package io.github.fernthedev.secondgame.main;
 import com.github.fernthedev.CommonUtil;
 import com.github.fernthedev.IGame;
 import com.github.fernthedev.INewEntityRegistry;
-import com.github.fernthedev.client.Client;
 import com.github.fernthedev.config.common.Config;
 import com.github.fernthedev.config.gson.GsonConfig;
-import com.github.fernthedev.core.StaticHandler;
-import com.github.fernthedev.core.api.event.api.EventHandler;
-import com.github.fernthedev.core.api.event.api.Listener;
 import com.github.fernthedev.game.server.GameServer;
 import com.github.fernthedev.game.server.NewServerEntityRegistry;
-import com.github.fernthedev.server.event.ServerStartupEvent;
+import com.github.fernthedev.lightchat.client.Client;
+import com.github.fernthedev.lightchat.core.StaticHandler;
+import com.github.fernthedev.lightchat.core.api.event.api.EventHandler;
+import com.github.fernthedev.lightchat.core.api.event.api.Listener;
+import com.github.fernthedev.lightchat.server.event.ServerStartupEvent;
 import com.github.fernthedev.universal.UniversalHandler;
 import com.github.fernthedev.universal.entity.EntityPlayer;
 import io.github.fernthedev.secondgame.main.inputs.joystick.JoystickHandler;
@@ -31,6 +31,7 @@ import io.github.fernthedev.secondgame.main.ui.screens.MainMenu;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.Version;
 
@@ -139,6 +140,7 @@ public class Game extends Canvas implements Runnable, IGame {
     /**
      * MAIN
      */
+    @SneakyThrows
     private Game() {
         BufferedImageLoader loader = new BufferedImageLoader();
         BufferedImage sprite_sheet = loader.loadImage("/icon.png");
@@ -159,11 +161,6 @@ public class Game extends Canvas implements Runnable, IGame {
         setScreen(new MainMenu());
 //        menu = new io.github.fernthedev.secondgame.main.ui.Menu(this,handler,hud);
         System.out.println("LWJGL Version " + Version.getVersion() + " is working.");
-//        GLFWErrorCallback.createPrint(System.err).set();
-
-        // Initialize GLFW. Most GLFW functions will not work before doing this.
-//        if ( !glfwInit() )
-//            throw new IllegalStateException("Unable to initialize GLFW");
 
         keyInput = new KeyInput(this);
 
@@ -283,6 +280,7 @@ public class Game extends Canvas implements Runnable, IGame {
 
 
                 }
+
             } else {
                 staticEntityRegistry.tick();
             }

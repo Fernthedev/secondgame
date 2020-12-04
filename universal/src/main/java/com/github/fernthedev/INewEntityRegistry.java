@@ -102,20 +102,18 @@ public abstract class INewEntityRegistry extends TickRunnable {
 
         if (newX != gameObject.getX() && gameObject instanceof EntityPlayer) {
             gameObject.setVelX(0);
+            gameObject.setX(newX);
             result += "X was clamped " + newX;
         }
 
         if (newY != gameObject.getY() && gameObject instanceof EntityPlayer) {
             result += " Y was clamped " + newY;
+            gameObject.setY(newY);
             gameObject.setVelY(0);
         }
 
         if (result.isEmpty())
             result = null;
-        else {
-            gameObject.setX(newX);
-            gameObject.setY(newY);
-        }
 
         return result;
     }

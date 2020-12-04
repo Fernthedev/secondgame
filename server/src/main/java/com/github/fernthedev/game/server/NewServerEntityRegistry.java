@@ -3,14 +3,14 @@ package com.github.fernthedev.game.server;
 import com.github.fernthedev.CommonUtil;
 import com.github.fernthedev.GameMathUtil;
 import com.github.fernthedev.INewEntityRegistry;
-import com.github.fernthedev.core.ColorCode;
-import com.github.fernthedev.core.StaticHandler;
+import com.github.fernthedev.lightchat.core.ColorCode;
+import com.github.fernthedev.lightchat.core.StaticHandler;
+import com.github.fernthedev.lightchat.server.ClientConnection;
 import com.github.fernthedev.packets.object_updates.AddObjectPacket;
 import com.github.fernthedev.packets.object_updates.RemoveObjectPacket;
 import com.github.fernthedev.packets.object_updates.SendObjectsList;
 import com.github.fernthedev.packets.object_updates.SetCoin;
 import com.github.fernthedev.packets.player_updates.SendPlayerInfoPacket;
-import com.github.fernthedev.server.ClientConnection;
 import com.github.fernthedev.universal.EntityID;
 import com.github.fernthedev.universal.GameObject;
 import com.github.fernthedev.universal.entity.EntityPlayer;
@@ -31,7 +31,7 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
     @Setter
     private GameServer server;
 
-    private Map<ClientConnection, ClientGameData> clientGameDataMap = Collections.synchronizedMap(new HashMap<>());
+    private final Map<ClientConnection, ClientGameData> clientGameDataMap = Collections.synchronizedMap(new HashMap<>());
 
     private boolean toChange = false;
 

@@ -4,8 +4,8 @@ import com.github.fernthedev.TickRunnable;
 import com.github.fernthedev.fernutils.thread.ThreadUtils;
 import com.github.fernthedev.game.server.GameServer;
 import com.github.fernthedev.game.server.NewServerEntityRegistry;
+import com.github.fernthedev.lightchat.server.Server;
 import com.github.fernthedev.packets.GameOverPacket;
-import com.github.fernthedev.server.Server;
 import com.github.fernthedev.universal.entity.EntityPlayer;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,10 +14,10 @@ import java.util.ArrayList;
 
 public class ServerGameHandler extends TickRunnable {
 
-    private Server server;
+    private final Server server;
 
     @Getter
-    private Spawn spawn;
+    private final Spawn spawn;
 
 //    @Getter
 //    private static GameMechanics gameMechanics;
@@ -27,9 +27,7 @@ public class ServerGameHandler extends TickRunnable {
     private boolean started = false;
 
     @Getter
-    private NewServerEntityRegistry entityHandler;
-
-    private Thread entityThread;
+    private final NewServerEntityRegistry entityHandler;
 
     public ServerGameHandler(GameServer server, NewServerEntityRegistry entityHandler) {
         spawn = new Spawn(server);
@@ -41,7 +39,7 @@ public class ServerGameHandler extends TickRunnable {
     @Override
     public void run() {
 
-        entityThread = new Thread(entityHandler);
+        Thread entityThread = new Thread(entityHandler);
         entityThread.start();
         System.out.println(entityThread + " is from " + entityHandler);
 
@@ -65,6 +63,7 @@ public class ServerGameHandler extends TickRunnable {
                 try {
                     connection.sendObject(new GameOverPacket()).sync();
                 } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                     e.printStackTrace();
                 }
                 connection.close();
