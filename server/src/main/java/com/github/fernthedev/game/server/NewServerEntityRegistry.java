@@ -23,7 +23,6 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class NewServerEntityRegistry extends INewEntityRegistry {
@@ -43,7 +42,6 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
         return clientGameDataMap.getOrDefault(connection, null);
     }
 
-    //    @Synchronized(value = "modifyPlayerListLock")
     public void addClientData(ClientConnection connection, @NonNull ClientGameData clientGameData) {
         clientGameData.setChanged(true);
         clientGameDataMap.put(connection, clientGameData);
@@ -52,13 +50,11 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
         toChange = true;
     }
 
-    //    @Synchronized(value = "modifyPlayerListLock")
     public void removeClientData(ClientConnection connection) {
         clientGameDataMap.remove(connection);
     }
 
 
-    //    @Synchronized(value = "modifyPlayerListLock")
     public void updatePlayerObject(@NonNull ClientConnection clientPlayerE, EntityPlayer universalPlayer) {
         if (universalPlayer == null) throw new NullPointerException();
 
@@ -69,95 +65,42 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
             return;
         }
 
-//        addPlayerEntityObject(clientPlayerE, universalPlayer);
         getClientData(clientPlayerE).setEntityPlayer(universalPlayer);
         addEntityObject(universalPlayer);
-
-
-
-        //clientPlayer.sendObject(new SetCurrentPlayer(universalPlayer));
-
 
         StaticHandler.getCore().getLogger().debug("Attempting to update info {}", universalPlayer);
     }
 
 
-//    @Synchronized(value = "modifyPlayerListLock")
-
-
-    //    @Synchronized(value = "modifyEntityListLock")
     @Override
     public void addEntityObject(GameObject gameObject) {
         super.addEntityObject(gameObject);
 
-//        ThreadUtils.runAsync(() ->
         clientGameDataMap.forEach((connection, clientGameData) -> {
 
             if (!gameObject.getUniqueId().equals(clientGameData.getEntityPlayer().getUniqueId())) {
-//                clientGameData.getObjectsToAdd().add(gameObject.getUniqueId());
                 clientGameData.getObjectCacheList().add(gameObject.getUniqueId());
                 connection.sendObject(new AddObjectPacket(new NewGsonGameObject(gameObject)));
             }
         });
-//        );
 
 
         toChange = true;
     }
 
     @Override
-//    @Synchronized(value = "modifyEntityListLock")
     public void removeEntityObject(GameObject gameObject) {
         super.removeEntityObject(gameObject);
 
         StaticHandler.getCore().getLogger().debug("Removed {}", gameObject.entityId);
 
-//        ThreadUtils.runAsync(new )
-        clientGameDataMap.forEach((connection, clientGameData) -> {
-            clientGameData.getObjectsToAdd().remove(gameObject.getUniqueId());
-            connection.sendObject(new RemoveObjectPacket(gameObject.getUniqueId()));
-
-        });
+        clientGameDataMap.forEach((connection, clientGameData) -> connection.sendObject(new RemoveObjectPacket(gameObject.getUniqueId())));
 
         toChange = true;
     }
 
     @Override
     public void collisionCheck(EntityPlayer universalPlayer) {
-
-//        List<GameObject> objects = new ArrayList<>(EntityHandler.getGameObjects());
-//
-//
-//        PlayerHandler.getChannelMap().values()
-//
-//        for (ClientConnection clientPlayer : PlayerHandler.getChannelMap().values()) {
-//            for (GameObject tempObject : objects) {
-//
-//                if (playerObject.getBounds().intersects(tempObject.getBounds())) {
-//                    if (tempObject.getEntityId() == EntityID.ENEMY) {
-//
-//                        //COLLISION CODE
-//                        playerObject.setHealth(playerObject.getHealth() - 2);
-//
-//                        ServerGameHandler.getEntityHandler().updatePlayerObject(clientPlayer, playerObject);
-//
-//                    }
-//
-//                    if (tempObject.getEntityId() == EntityID.Coin) {
-//
-//                        ServerGameHandler.getEntityHandler().removeEntityObject(tempObject);
-//
-//                        clientPlayer.sendObject(new SetCoin(playerObject.getCoin() + 1));
-//                    }
-//                }
-//            }
-//
-//            if (playerObject.getHealth() <= 0) {
-//                clientPlayer.sendObject(new GameOverPacket());
-//                clientPlayer.close();
-//            }
-//        }
-
         List<GameObject> gameObjectsCheck = copyGameObjectsAsList();
 
         new ArrayList<>(clientGameDataMap.keySet()).parallelStream()
@@ -190,10 +133,7 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
                             });
 
                     if (universalPlayer.getHealth() <= 0) {
-//                        connection.sendObject(new GameOverPacket());
-//                        connection.close();
                         removeEntityObject(clientGameData.getEntityPlayer());
-//                        removeClientData(connection);
                     }
                 });
     }
@@ -213,7 +153,6 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
      * @param connection
      */
     public void forceUpdate(ClientConnection connection) {
-        getClientData(connection).getObjectsToAdd().addAll(gameObjects.keySet());
         updatePlayerInfo(connection);
     }
 
@@ -227,84 +166,12 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
         if (clientGameData == null) throw new NullPointerException("ClientGameData is null ");
 
 
-
         Map<@NonNull UUID, @NonNull Pair<@NonNull GameObject, Integer>> cachedObjectMap = copyGameObjectsAsMap();
-
-
-        /* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Update existing or removed entities
-//        clientGameData.getObjectCacheTime().entrySet().parallelStream()
-        clientGameData.getObjectCacheList().parallelStream()
-                .filter(uuidLongEntry ->
-                        !cachedObjectMap.containsKey(uuidLongEntry) ||
-                                (
-                                        cachedObjectMap.containsKey(uuidLongEntry) &&
-                                                cachedObjectMap.get(uuidLongEntry).getValue() != cachedObjectMap.get(uuidLongEntry).hashCode()
-//                                                (uuidLongEntry.getValue() < getGameObjects().get(uuidLongEntry.getKey()).getValue() ||
-//                                                        uuidLongEntry.hashCode() != getGameObjects().get(uuidLongEntry.getKey()).getKey().hashCode()
-//                                                )
-                                ))
-                .forEach(uuidLongEntry -> {
-
-                    // Update entity if it still exists
-                    if (cachedObjectMap.containsKey(uuidLongEntry) && //(
-                            cachedObjectMap.get(uuidLongEntry).getValue() != cachedObjectMap.get(uuidLongEntry).hashCode()
-//                            uuidLongEntry.getValue() < getGameObjects().get(uuidLongEntry.getKey()).getValue()) ||
-//                            uuidLongEntry.getValue().hashCode() != getGameObjects().get(uuidLongEntry.getKey()).getKey().hashCode()
-                    ) {
-                        newGameObjects.put(uuidLongEntry, new NewGsonGameObject(cachedObjectMap.get(uuidLongEntry).getLeft()));
-//                        clientGameData.getObjectCacheTime().put(uuidLongEntry, System.nanoTime());
-                    }
-
-                    // Remove from list if entity was removed
-                    if (!cachedObjectMap.containsKey(uuidLongEntry)) {
-                        newGameObjects.put(uuidLongEntry, NewGsonGameObject.nullObject());
-                        clientGameData.getObjectCacheList().remove(uuidLongEntry);
-                    }
-                });
-
-
-        //        try {
-
-        cachedObjectMap.keySet().parallelStream().filter(uuid -> !clientGameData.getObjectCacheList().contains(uuid))
-                .forEach(uuid -> newGameObjects.put(uuid, new NewGsonGameObject(cachedObjectMap.get(uuid).getKey())));
-
-        // Add objects that should have been added before
-
-        new ArrayList<>(clientGameData.getObjectsToAdd()).parallelStream()
-                .forEach(uuid -> {
-                    try {
-                        if (cachedObjectMap.containsKey(uuid))
-                            newGameObjects.put(uuid, new NewGsonGameObject(cachedObjectMap.get(uuid).getKey()));
-
-                        clientGameData.getObjectsToAdd().remove(uuid);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                });
-
-
-        */ ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//        } catch (Exception e) {
-//            new RuntimeException("Exception here", e);
-//            System.exit(0);
-//        }
-
-//        Map<UUID, NewGsonGameObject> nonCachedObjects = new HashMap<>();
-//
-//        copyGameObjectsAsList().parallelStream().forEach(gameObject -> {
-//            nonCachedObjects.put(gameObject.getUniqueId(), new NewGsonGameObject(gameObject));
-//        });
 
         cachedObjectMap.forEach((uuid, gameObjectIntegerPair) -> {
 
-            isClientDataEmpty();
-
             boolean changed = clientGameData.getObjectCacheList().add(uuid) ||
                     gameObjectIntegerPair.getRight() != gameObjectIntegerPair.getKey().hashCode();
-
-//            StaticHandler.getCore().getLogger().debug("Updating {} and {}", gameObjectIntegerPair.getRight(), gameObjectIntegerPair.getKey().hashCode());
 
 
             if (changed && uuid == clientGameData.getEntityPlayer().getUniqueId())
@@ -313,34 +180,21 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
 
             if (changed)
             {
-
-
                 newGameObjects.put(uuid, new NewGsonGameObject(gameObjectIntegerPair.getKey()));
-//                StaticHandler.getCore().getLogger().debug("Updating object hash code is different or not existing in list");
-
             }
         });
 
         new HashSet<>(clientGameData.getObjectCacheList()).forEach(uuid -> {
             if (!cachedObjectMap.containsKey(uuid)) {
-//                StaticHandler.getCore().getLogger().debug("Removing objects");
                 newGameObjects.put(uuid, NewGsonGameObject.nullObject());
                 clientGameData.getObjectCacheList().remove(uuid);
             }
         });
 
-//        boolean isChanged = cachedObjectMap.containsKey(clientGameData.getEntityPlayer().getUniqueId()) &&
-//                clientGameData.getEntityPlayer().hashCode() != cachedObjectMap.get(clientGameData.getEntityPlayer().getUniqueId()).getRight();
-//
-//        if (isChanged && !newGameObjects.containsKey(clientGameData.getEntityPlayer().getUniqueId()))
-//            new DebugException().printStackTrace();
-
         SendObjectsList sendObjectsList = new SendObjectsList(
                 newGameObjects, clientGameData.isChanged(), clientGameData.getEntityPlayer());
 
 
-
-//        System.out.println("Sending object list " + UniversalHandler.gson.toJson(sendObjectsList));
 
         if (!newGameObjects.isEmpty())
             clientPlayer.sendObject(sendObjectsList);
@@ -348,31 +202,20 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
         clientGameData.setChanged(false);
     }
 
-
     public void onEntityUpdate() {
-        onEntityUpdate(toChange);
-    }
-
-    public void onEntityUpdate(boolean override) {
-//        if (toChange || override) {
-//            toChange = false;
         boolean oldChange = toChange;
-            StopWatch stopWatch = StopWatch.createStarted();
-            List<ClientConnection> clientConnections = new ArrayList<>(clientGameDataMap.keySet());
+        StopWatch stopWatch = StopWatch.createStarted();
+        List<ClientConnection> clientConnections = new ArrayList<>(clientGameDataMap.keySet());
 
-//            TaskInfoForLoop<ClientConnection> taskInfoList = ThreadUtils.runForLoopAsync(clientConnections, connection -> {
-            clientConnections.parallelStream().forEach(this::updatePlayerInfo);
 
-//                return null;
-//            });
+        clientConnections.parallelStream().forEach(this::updatePlayerInfo);
 
-//            taskInfoList.runThreads();
-//            taskInfoList.awaitFinish(2);
-            stopWatch.stop();
-            if (oldChange)
-                StaticHandler.getCore().getLogger().debug("Updating players took {}", stopWatch.getTime(TimeUnit.MILLISECONDS));
-            toChange = false;
-//        }
+
+        stopWatch.stop();
+        if (oldChange)
+            StaticHandler.getCore().getLogger().debug("Updating players took {}", stopWatch.getTime(TimeUnit.MILLISECONDS));
+        toChange = false;
+
     }
 
     /**
@@ -383,11 +226,6 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
     @Override
     protected void playerUpdate(EntityPlayer entityPlayer) {
 
-    }
-
-
-    public synchronized List<GameObject> noTrailList(List<GameObject> oldgameObjects) {
-        return new ArrayList<>(oldgameObjects).parallelStream().filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     public void removeRespawnAllPlayers() {
@@ -404,17 +242,7 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
 
         toChange = true;
 
-//        List<UUID> uuids = oldMap.keySet().parallelStream().filter(uuid -> !(oldMap.get(uuid).getKey() instanceof EntityPlayer)).collect(Collectors.toList());
-//
-//        Map<@NonNull UUID, @NonNull Pair<@NonNull GameObject, Long>> newMap = new HashMap<>();
-//        uuids.parallelStream().forEach(uuid -> oldMap.put(uuid, oldMap.get(uuid)));
-//        oldMap.clear();
-//
-//        toChange = true;
-//        server.getServerGameHandler().getEntityHandler().getGameObjects().clear();
-//        server.getServerGameHandler().getEntityHandler().getGameObjects().putAll(newMap);
-//
-        server.getServerGameHandler().getEntityHandler().onEntityUpdate(true);
+        server.getServerGameHandler().getEntityHandler().onEntityUpdate();
     }
 
     public void handleClientRespond(ClientConnection clientPlayer, SendPlayerInfoPacket infoPacket) {
@@ -425,7 +253,7 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
         double velXClamp = GameMathUtil.clamp(packetPlayer.getVelX(), -EntityPlayer.MAX_VELOCITY, EntityPlayer.MAX_VELOCITY);
         double velYClamp = GameMathUtil.clamp(packetPlayer.getVelY(), -EntityPlayer.MAX_VELOCITY, EntityPlayer.MAX_VELOCITY);
 
-        EntityPlayer copyVel = new EntityPlayer(
+        EntityPlayer copyNewPlayer = new EntityPlayer(
                 oldPlayer.getX() + (float) velXClamp,
                 oldPlayer.getY() + (float) velYClamp,
                 oldPlayer.getUniqueId(),
@@ -439,14 +267,14 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
 
 
         if (
-                isPlayerDifferent(oldPlayer, copyVel, velXClamp, velYClamp)
+                isPlayerDifferent(oldPlayer, copyNewPlayer, velXClamp, velYClamp)
         ) {
             clientGameDataMap.get(clientPlayer).setChanged(true);
             StaticHandler.getCore().getLogger().debug("Client player is changed");
         }
 
 
-        updatePlayerObject(clientPlayer, copyVel);
+        updatePlayerObject(clientPlayer, copyNewPlayer);
     }
 
     private static boolean isPlayerDifferent(EntityPlayer oldPlayer, EntityPlayer copyVel, double velX, double velY) {

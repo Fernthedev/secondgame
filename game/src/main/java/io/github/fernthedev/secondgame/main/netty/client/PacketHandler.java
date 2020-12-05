@@ -28,11 +28,7 @@ public class PacketHandler implements IPacketHandler, Listener {
 
     @Override
     public void handlePacket(Packet p, int packetId) {
-        if (p instanceof SendGameObject) {
-            SendGameObject gameObject = (SendGameObject) p;
-
-            Game.getStaticEntityRegistry().addEntityObject(gameObject.getGameObject());
-        } else if (p instanceof SendPlayerInfoPacket) {
+        if (p instanceof SendPlayerInfoPacket) {
             SendPlayerInfoPacket info = (SendPlayerInfoPacket) p;
             EntityPlayer universalPlayer = info.getPlayerObject();
 

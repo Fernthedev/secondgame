@@ -6,6 +6,7 @@ import com.github.fernthedev.lightchat.server.ClientConnection;
 import com.github.fernthedev.lightchat.server.api.IPacketHandler;
 import com.github.fernthedev.packets.player_updates.SendPlayerInfoPacket;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.tuple.Pair;
 
 @RequiredArgsConstructor
 public class ServerPacketHandler implements IPacketHandler {
@@ -17,20 +18,12 @@ public class ServerPacketHandler implements IPacketHandler {
         if (p instanceof SendPlayerInfoPacket) {
             SendPlayerInfoPacket infoPacket = (SendPlayerInfoPacket) p;
 
-            // System.out.println("Received player information " + infoPacket.getPlayerObject());
+            Pair<Integer, Long> packetIdAndTime = clientPlayer.getPacketId(p.getClass());
+            Integer id = packetIdAndTime.getLeft();
+            Long time = packetIdAndTime.getRight();
 
-//            NewServerEntityRegistry serverEntityRegistry = server.getServerGameHandler().getEntityHandler();
-//
-//            EntityPlayer player = infoPacket.getPlayerObject();
-
-//            serverEntityRegistry.updatePlayerObject(clientPlayer, player);
-
-            if (clientPlayer.getPacketId(p.getClass()).getLeft() -5 < packetId && System.currentTimeMillis() - clientPlayer.getPacketId(p.getClass()).getRight() > 900)
+//            if (id -5 < packetId && System.currentTimeMillis() - time > 900)
                 server.getServerGameHandler().getEntityHandler().handleClientRespond(clientPlayer, infoPacket);
-
-            //UniversalHandler.getThingHandler().updatePlayerObject(infoPacket.getPlayerObject());
-
-            //Server.sendObjectToAllPlayers(infoPacket);
         }
     }
 }

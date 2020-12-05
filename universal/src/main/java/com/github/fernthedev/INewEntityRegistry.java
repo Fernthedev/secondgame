@@ -17,7 +17,7 @@ public abstract class INewEntityRegistry extends TickRunnable {
     @Getter
     protected Map<@NonNull UUID, @NonNull Pair<@NonNull GameObject, Integer>> gameObjects = Collections.synchronizedMap(new HashMap<>());
 
-    private List<UUID> updatedPlayers = Collections.synchronizedList(new ArrayList<>());
+    private final List<UUID> updatedPlayers = Collections.synchronizedList(new ArrayList<>());
 
 
 

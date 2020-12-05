@@ -37,7 +37,4 @@ public class ClientGameData {
 //    private Map<UUID, Long> objectCacheTime = Collections.synchronizedMap(new HashMap<>());
     private Set<UUID> objectCacheList = Collections.synchronizedSet(new HashSet<>());
 
-    @Deprecated
-    private Set<UUID> objectsToAdd = Collections.synchronizedSet(new HashSet<>());
-
 }

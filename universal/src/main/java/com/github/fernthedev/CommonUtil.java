@@ -4,7 +4,7 @@ package com.github.fernthedev;
 import com.github.fernthedev.lightchat.core.PacketRegistry;
 import com.github.fernthedev.lightchat.core.StaticHandler;
 import com.github.fernthedev.packets.GameOverPacket;
-import com.github.fernthedev.packets.object_updates.SendGameObject;
+import com.github.fernthedev.packets.object_updates.SendObjectsList;
 import com.github.fernthedev.packets.player_updates.GetCurrentPlayer;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -20,7 +20,7 @@ public class CommonUtil {
         StaticHandler.setLineLimit(4 * 1000000);
 
         PacketRegistry.registerPacketPackageFromClass(GameOverPacket.class);
-        PacketRegistry.registerPacketPackageFromClass(SendGameObject.class);
+        PacketRegistry.registerPacketPackageFromClass(SendObjectsList.class);
         PacketRegistry.registerPacketPackageFromClass(GetCurrentPlayer.class);
     }
 
