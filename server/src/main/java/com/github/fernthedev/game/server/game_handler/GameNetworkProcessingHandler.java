@@ -14,6 +14,8 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Objects;
+
 @ChannelHandler.Sharable
 @RequiredArgsConstructor
 public class GameNetworkProcessingHandler extends ChannelInboundHandlerAdapter implements Listener {
@@ -28,7 +30,7 @@ public class GameNetworkProcessingHandler extends ChannelInboundHandlerAdapter i
 
         EntityPlayer universalPlayer = new EntityPlayer((float) UniversalHandler.WIDTH / 2 - 32, (float) UniversalHandler.HEIGHT / 2 - 32);
 
-        server.getServerGameHandler().getEntityHandler().addClientData(clientConnection, new ClientGameData(clientConnection, universalPlayer));
+        server.getServerGameHandler().getEntityHandler().addClientData(clientConnection, new ClientGameData(clientConnection, universalPlayer), Objects.hash(new Object()));
 
 //        server.getServerGameHandler().getEntityHandler().updatePlayerObject(clientConnection, universalPlayer);
 

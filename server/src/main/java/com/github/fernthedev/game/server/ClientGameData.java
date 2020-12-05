@@ -4,10 +4,7 @@ import com.github.fernthedev.lightchat.server.ClientConnection;
 import com.github.fernthedev.universal.entity.EntityPlayer;
 import lombok.*;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Getter
@@ -23,7 +20,7 @@ public class ClientGameData {
 
     @Getter
     @Setter
-    private boolean changed;
+    private int clientSidePlayerHashCode;
 
     public void setEntityPlayer(EntityPlayer entityPlayer) {
         this.entityPlayer = entityPlayer;
@@ -33,8 +30,9 @@ public class ClientGameData {
     /**
      * Used to cache the uuid of the object and last modified.
      * To avoid sending entities that are already on the client.
+     *
+     * UUID:HashCode
      */
-//    private Map<UUID, Long> objectCacheTime = Collections.synchronizedMap(new HashMap<>());
-    private Set<UUID> objectCacheList = Collections.synchronizedSet(new HashSet<>());
+    private Map<UUID, Integer> objectCacheList = Collections.synchronizedMap(new HashMap<>());
 
 }

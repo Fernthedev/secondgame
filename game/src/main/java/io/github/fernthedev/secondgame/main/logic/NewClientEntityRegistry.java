@@ -13,7 +13,6 @@ import io.github.fernthedev.secondgame.main.entities.MenuParticle;
 import io.github.fernthedev.secondgame.main.entities.Trail;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
@@ -53,7 +52,7 @@ public class NewClientEntityRegistry extends INewEntityRegistry {
 
 
     @Override
-    public Map<UUID, Pair<GameObject, Integer>> getGameObjects() {
+    public Map<UUID, GameObject> getGameObjects() {
         if (getEntityRegistryInUse() == this) return gameObjects;
         return getEntityRegistryInUse().getGameObjects();
     }
@@ -90,14 +89,13 @@ public class NewClientEntityRegistry extends INewEntityRegistry {
 
         new ArrayList<>(gameObjects.values())
                 .parallelStream()
-                .filter(gameObject -> !(gameObject.getKey() instanceof Trail))
-                .map(Pair::getKey)
+                .filter(gameObject -> !(gameObject instanceof Trail))
                 .forEach(gameObject -> {
                     try {
 //                        if (gameObject.getVelX() != 0 || gameObject.getVelY() == 0)
                         getEntityRegistryInUse().addEntityObject(new Trail(gameObject.getX(), gameObject.getY(), EntityID.Trail, gameObject.getColor(), gameObject.getWidth(), gameObject.getHeight(), 0.04f));
                     } catch (IllegalArgumentException e) {
-                        new IllegalArgumentException("GameObject: " + gameObject.toString(), e);
+                        throw new IllegalArgumentException("GameObject: " + gameObject.toString(), e);
                     }
                 });
 
@@ -169,8 +167,8 @@ public class NewClientEntityRegistry extends INewEntityRegistry {
     }
 
     public void render(Graphics g) {
-        for (Pair<GameObject, Integer> gameObject : new ArrayList<>(getGameObjects().values())) {
-            renderEntity(g, gameObject.getKey());
+        for (GameObject gameObject : new ArrayList<>(getGameObjects().values())) {
+            renderEntity(g, gameObject);
         }
     }
 }

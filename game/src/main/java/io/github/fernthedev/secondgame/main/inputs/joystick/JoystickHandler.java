@@ -249,7 +249,7 @@ public class JoystickHandler {
 
 
         if(Game.getScreen() == null && Game.getClient() != null) {
-            Game.getClient().sendObject(new SendPlayerInfoPacket(Game.getMainPlayer()));
+            Game.getClient().sendObject(new SendPlayerInfoPacket(Game.getMainPlayer(), Game.getStaticEntityRegistry().getObjectsAndHashCode()));
         }
     }
 }

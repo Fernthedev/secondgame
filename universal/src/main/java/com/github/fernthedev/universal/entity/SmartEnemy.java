@@ -6,7 +6,6 @@ import com.github.fernthedev.universal.UniversalHandler;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.Setter;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.awt.*;
 import java.util.*;
@@ -40,7 +39,7 @@ public class SmartEnemy extends GameObject {
 
 
         GameObject player = null;
-        Map<@NonNull UUID, @NonNull Pair<@NonNull GameObject, Integer>> objects;
+        Map<@NonNull UUID, @NonNull GameObject> objects;
         try {
              objects = new HashMap<>(UniversalHandler.getIGame().getEntityRegistry().getGameObjects());
         } catch (ConcurrentModificationException e) {
@@ -49,14 +48,14 @@ public class SmartEnemy extends GameObject {
         }
 
         if (!objects.containsKey(playerUUID)) {
-            Optional<@NonNull Pair<@NonNull GameObject, Integer>> option = objects
+            Optional<@NonNull GameObject> option = objects
                     .values().parallelStream()
-                    .filter(gameObjectLongPair -> gameObjectLongPair.getKey() instanceof EntityPlayer)
+                    .filter(gameObjectLongPair -> gameObjectLongPair instanceof EntityPlayer)
                     .findAny();
 
-            if (option.isPresent()) player = option.get().getKey();
+            if (option.isPresent()) player = option.get();
         }
-        else player = UniversalHandler.getIGame().getEntityRegistry().getGameObjects().get(playerUUID).getKey();
+        else player = UniversalHandler.getIGame().getEntityRegistry().getGameObjects().get(playerUUID);
 
 
         if (player == null) {

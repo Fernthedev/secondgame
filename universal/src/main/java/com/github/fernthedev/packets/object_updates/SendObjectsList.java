@@ -19,15 +19,15 @@ public class SendObjectsList extends Packet implements Serializable {
 
     @Getter
     @NonNull
-    private Map<UUID, NewGsonGameObject> objectList;
+    private final Map<UUID, NewGsonGameObject> objectList;
 
     @Getter
     @NonNull
-    private boolean changed;
+    private final boolean changed;
 
     @Getter
     @NonNull
-    private EntityPlayer mainPlayer;
+    private final EntityPlayer mainPlayer;
 
 
     /*

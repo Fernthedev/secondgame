@@ -8,10 +8,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.io.Serializable;
+import java.util.Map;
+import java.util.UUID;
 
 @PacketInfo(name = "SEND_PLAYER_INFO_PACKET")
 @AllArgsConstructor
 @Getter
 public class SendPlayerInfoPacket extends Packet implements Serializable {
     private final EntityPlayer playerObject;
+    private final Map<UUID, Integer> entitiesHashCodeMap;
 }

@@ -20,9 +20,9 @@ public class KeyInput extends KeyAdapter {
     private final Map<Integer, KeyButton> keyButtonMap = new HashMap<>();
 
     private boolean toUpdate = false;
-    private Game game;
+    private final Game game;
 
-    private int velMultiplier = 5;
+    private final int velMultiplier = 5;
 
     public KeyInput(Game game) {
         this.game = game;
@@ -37,6 +37,7 @@ public class KeyInput extends KeyAdapter {
         }*/
     }
 
+    @Override
     public void keyPressed(KeyEvent e) {
         InputHandler.inputType = InputType.KEYBOARD;
         //System.out.println("Some key pressed ");
@@ -56,6 +57,7 @@ public class KeyInput extends KeyAdapter {
         //System.out.println(key);
     }
 
+    @Override
     public void keyReleased(KeyEvent e) {
         int key = e.getKeyCode();
         //System.out.println(key);
@@ -171,7 +173,7 @@ public class KeyInput extends KeyAdapter {
 
         if(Game.getScreen() == null && Game.getClient() != null && Game.getClient().isRegistered() && Game.getMainPlayer() != null) {
            // Game.mainPlayer.setHealth(Game.mainPlayer.getHealth());
-            Game.getClient().sendObject(new SendPlayerInfoPacket(Game.getMainPlayer()));
+            Game.getClient().sendObject(new SendPlayerInfoPacket(Game.getMainPlayer(), Game.getStaticEntityRegistry().getObjectsAndHashCode()));
             System.out.println("Updated player");
         }
     }

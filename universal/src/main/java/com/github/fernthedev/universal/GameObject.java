@@ -10,7 +10,6 @@ import java.util.UUID;
 
 @Data
 @ToString
-@EqualsAndHashCode()
 public abstract class GameObject implements Serializable {
 
     @EqualsAndHashCode.Exclude
@@ -151,26 +150,13 @@ public abstract class GameObject implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof GameObject)) return false;
         GameObject that = (GameObject) o;
-        return Float.compare(that.x, x) == 0 &&
-                Float.compare(that.y, y) == 0 &&
-                Double.compare(that.velX, velX) == 0 &&
-                Double.compare(that.velY, velY) == 0 &&
-                width == that.width &&
-                height == that.height &&
-                hasTrail == that.hasTrail &&
-                entityId == that.entityId &&
-                uniqueId.equals(that.uniqueId) &&
-                color.equals(that.color);
+        return Float.compare(that.x, x) == 0 && Float.compare(that.y, y) == 0 && Double.compare(that.velX, velX) == 0 && Double.compare(that.velY, velY) == 0 && width == that.width && height == that.height && hasTrail == that.hasTrail && entityId == that.entityId && uniqueId.equals(that.uniqueId) && color.equals(that.color);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(x, y, entityId, velX, velY, uniqueId, color, width, height, hasTrail);
     }
-//    @Override
-//    public String toString() {
-//          return x + "X " + y + "Y " + velX + "velX " + velY + " velY" + entityId + "EntityID " + objectID + "ObjectID " + entities;
-//    }
 }

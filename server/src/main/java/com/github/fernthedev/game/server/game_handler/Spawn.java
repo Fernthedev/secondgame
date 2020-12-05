@@ -8,7 +8,6 @@ import com.github.fernthedev.universal.EntityID;
 import com.github.fernthedev.universal.UniversalHandler;
 import com.github.fernthedev.universal.entity.*;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -85,9 +84,9 @@ public class Spawn {
                                     r.nextInt(UniversalHandler.HEIGHT - 50),
                                     EntityID.ENEMY,
                                     new ArrayList<>(server.getServerGameHandler().getEntityHandler().getGameObjects().values())
-                                            .parallelStream().filter(gameObject -> gameObject.getKey() instanceof EntityPlayer)
+                                            .parallelStream().filter(gameObject -> gameObject instanceof EntityPlayer)
                                             .findAny()
-                                            .map(gameObject -> (EntityPlayer) gameObject.getKey())
+                                            .map(gameObject -> (EntityPlayer) gameObject)
                                             .get()));
                 }
 
@@ -127,8 +126,7 @@ public class Spawn {
 
             StaticHandler.getCore().getLogger().debug("New objects: {}",
                     server.getEntityRegistry().getGameObjects().values().parallelStream()
-                            .filter(gameObjectLongPair -> !(gameObjectLongPair.getKey() instanceof EntityPlayer))
-                            .map(Pair::getKey)
+                            .filter(gameObjectLongPair -> !(gameObjectLongPair instanceof EntityPlayer))
                             .collect(Collectors.toList()));
 
             System.out.println("Doing levels " + new LevelUp(levels));

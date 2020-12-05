@@ -6,8 +6,6 @@ import com.github.fernthedev.universal.UniversalHandler;
 import com.github.fernthedev.universal.entity.EntityPlayer;
 import lombok.Getter;
 import lombok.NonNull;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -15,7 +13,7 @@ import java.util.stream.Collectors;
 public abstract class INewEntityRegistry extends TickRunnable {
 
     @Getter
-    protected Map<@NonNull UUID, @NonNull Pair<@NonNull GameObject, Integer>> gameObjects = Collections.synchronizedMap(new HashMap<>());
+    protected Map<@NonNull UUID, @NonNull GameObject> gameObjects = Collections.synchronizedMap(new HashMap<>());
 
     private final List<UUID> updatedPlayers = Collections.synchronizedList(new ArrayList<>());
 
@@ -23,12 +21,9 @@ public abstract class INewEntityRegistry extends TickRunnable {
 
     public void addEntityObject(@NonNull GameObject gameObject) {
         if (!gameObjects.containsKey(gameObject.getUniqueId()))
-            gameObjects.put(gameObject.getUniqueId(), new ImmutablePair<>(gameObject, gameObject.hashCode()));
+            gameObjects.put(gameObject.getUniqueId(), gameObject);
         else
-            gameObjects.put(gameObject.getUniqueId(), new ImmutablePair<>(
-                    gameObject,
-                    gameObjects.get(gameObject.getUniqueId()).getRight()
-            ));
+            gameObjects.put(gameObject.getUniqueId(), gameObject);
     }
 
     public void removeEntityObject(GameObject gameObject) {
@@ -75,19 +70,19 @@ public abstract class INewEntityRegistry extends TickRunnable {
 
         if (!updatedPlayers.isEmpty())
             new ArrayList<>(updatedPlayers).parallelStream().forEach(uuid -> {
-                playerUpdate((EntityPlayer) getGameObjects().get(uuid).getKey());
+                playerUpdate((EntityPlayer) getGameObjects().get(uuid));
                 updatedPlayers.remove(uuid);
             });
 
 
-        new HashMap<>(gameObjects).forEach((uuid, gameObjectIntegerPair) -> registerUpdatedObjectTime(gameObjectIntegerPair.getKey()));
+        new HashMap<>(gameObjects).forEach((uuid, gameObjectIntegerPair) -> registerUpdatedObjectTime(gameObjectIntegerPair));
     }
 
     /**
      * Registers the object last modified time
      */
     protected void registerUpdatedObjectTime(GameObject gameObject) {
-        getGameObjects().put(gameObject.getUniqueId(), new ImmutablePair<>(gameObject, gameObject.hashCode()));
+        getGameObjects().put(gameObject.getUniqueId(), gameObject);
     }
 
     protected String clampAndTP(GameObject gameObject) {
@@ -122,15 +117,22 @@ public abstract class INewEntityRegistry extends TickRunnable {
         if (!updatedPlayers.contains(entityPlayer.getUniqueId())) updatedPlayers.add(entityPlayer.getUniqueId());
     }
 
-    public Map<UUID, Pair<GameObject, Integer>> copyGameObjectsAsMap() {
+    public Map<UUID, GameObject> copyGameObjectsAsMap() {
         return new HashMap<>(getGameObjects());
     }
 
     public List<GameObject> copyGameObjectsAsList() {
         return new ArrayList<>(getGameObjects().values())
                 .parallelStream()
-                .map(Pair::getKey)
                 .collect(Collectors.toList());
+    }
+
+    public Map<UUID, Integer> getObjectsAndHashCode() {
+        Map<UUID, Integer> map = new HashMap<>();
+
+        copyGameObjectsAsMap().forEach((uuid, gameObjectIntegerPair) -> map.put(uuid, gameObjectIntegerPair.hashCode()));
+
+        return map;
     }
 
     protected abstract void onEntityUpdate();

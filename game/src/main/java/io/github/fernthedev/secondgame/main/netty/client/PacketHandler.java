@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 public class PacketHandler implements IPacketHandler, Listener {
 
@@ -39,7 +40,7 @@ public class PacketHandler implements IPacketHandler, Listener {
 
             Game.getMainPlayer().setHealth(universalPlayer.getHealth());
 
-            Game.getClient().sendObject(new SendPlayerInfoPacket(Game.getMainPlayer()));
+            Game.getClient().sendObject(new SendPlayerInfoPacket(Game.getMainPlayer(), Game.getStaticEntityRegistry().getObjectsAndHashCode()));
 
         } else if (p instanceof SetCoin) {
             SetCoin coins = (SetCoin) p;
@@ -50,48 +51,12 @@ public class PacketHandler implements IPacketHandler, Listener {
         } else if (p instanceof SendObjectsList) {
             SendObjectsList list = (SendObjectsList) p;
 
-            StaticHandler.getCore().getLogger().debug("Updating object list " + list.getObjectList() + "\n");
+            StaticHandler.getCore().getLogger().debug("Updating object list {}\n", list.getObjectList().values().stream().map(NewGsonGameObject::getClazz).collect(Collectors.toList()));
 
-
-            //            Type listType = new TypeToken<ArrayList<GsonObject>>(){}.getType();
 
             Map<UUID, NewGsonGameObject> gameObjects = list.getObjectList();
 
-            //System.out.println(list.getObjectList());
-
-//            List<GameObject> finalGameObjects;
-
-
-//            List<GameObject> newObjects = new ArrayList<>();
-
             EntityPlayer universalPlayer = list.getMainPlayer();
-
-
-//            for(GameObject gameObject : gameObjects) {
-//                GameObject checkedObject = ClientObject.getObjectType(gameObject);
-//
-//                objectsAsInstanceFromPacket.add(checkedObject);
-//            }
-//
-//            List<UUID> trailList = Game.getStaticEntityRegistry().getGameObjects().values()
-//                    .parallelStream().filter(gameObjectLongPair -> gameObjectLongPair.getKey() instanceof Trail)
-//                    .map(gameObjectLongPair -> gameObjectLongPair.getKey().getUniqueId())
-//                    .collect(Collectors.toList());
-//
-//            Map<UUID, Pair<GameObject, Long>> entityMap = new HashMap<>();
-//
-//            trailList.parallelStream().forEach(uuid -> entityMap.put(uuid, Game.getStaticEntityRegistry().getGameObjects().get(uuid)));
-//
-//            gameObjects.forEach((uuid, newGsonGameObject) -> {
-//                try {
-//                    entityMap.put(uuid, new ImmutablePair<>(newGsonGameObject.toGameObject(), System.nanoTime()));
-//                } catch (ClassNotFoundException e) {
-//                    e.printStackTrace();
-//                }
-//            });
-//
-//            Game.getStaticEntityRegistry().getGameObjects().clear();
-//            Game.getStaticEntityRegistry().getGameObjects().putAll(entityMap);
 
             AtomicBoolean doUpdate = new AtomicBoolean(true);
 
@@ -102,7 +67,8 @@ public class PacketHandler implements IPacketHandler, Listener {
                         Game.getStaticEntityRegistry().getGameObjects().remove(uuid);
                     } else {
                         GameObject object = newGsonGameObject.toGameObject();
-                        if (object == null) Game.getStaticEntityRegistry().getGameObjects().remove(uuid);
+                        if (object == null)
+                            Game.getStaticEntityRegistry().getGameObjects().remove(uuid);
                         else {
                             assert Game.getClient() != null;
 

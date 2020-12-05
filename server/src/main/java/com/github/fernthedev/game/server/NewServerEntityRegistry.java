@@ -19,10 +19,10 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class NewServerEntityRegistry extends INewEntityRegistry {
@@ -42,8 +42,8 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
         return clientGameDataMap.getOrDefault(connection, null);
     }
 
-    public void addClientData(ClientConnection connection, @NonNull ClientGameData clientGameData) {
-        clientGameData.setChanged(true);
+    public void addClientData(ClientConnection connection, @NonNull ClientGameData clientGameData, int entityHashCode) {
+        clientGameData.setClientSidePlayerHashCode(entityHashCode);
         clientGameDataMap.put(connection, clientGameData);
         addEntityObject(clientGameData.getEntityPlayer());
 
@@ -79,7 +79,7 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
         clientGameDataMap.forEach((connection, clientGameData) -> {
 
             if (!gameObject.getUniqueId().equals(clientGameData.getEntityPlayer().getUniqueId())) {
-                clientGameData.getObjectCacheList().add(gameObject.getUniqueId());
+                clientGameData.getObjectCacheList().put(gameObject.getUniqueId(), gameObject.hashCode());
                 connection.sendObject(new AddObjectPacket(new NewGsonGameObject(gameObject)));
             }
         });
@@ -115,7 +115,7 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
                                 if (tempObject.getEntityId() == EntityID.ENEMY) {
                                     //COLLISION CODE
                                     universalPlayer.setHealth(universalPlayer.getHealth() - 2);
-                                    connection.sendObject(new SendPlayerInfoPacket(universalPlayer));
+                                    connection.sendObject(new SendPlayerInfoPacket(universalPlayer, null));
 
 
                                 }
@@ -166,25 +166,30 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
         if (clientGameData == null) throw new NullPointerException("ClientGameData is null ");
 
 
-        Map<@NonNull UUID, @NonNull Pair<@NonNull GameObject, Integer>> cachedObjectMap = copyGameObjectsAsMap();
+        Map<UUID, GameObject> cachedObjectMap = copyGameObjectsAsMap();
 
-        cachedObjectMap.forEach((uuid, gameObjectIntegerPair) -> {
+        cachedObjectMap.forEach((uuid, gameObject) -> {
 
-            boolean changed = clientGameData.getObjectCacheList().add(uuid) ||
-                    gameObjectIntegerPair.getRight() != gameObjectIntegerPair.getKey().hashCode();
+            boolean changed = clientGameData.getObjectCacheList().get(uuid) == null || (
+                        clientGameData.getObjectCacheList().get(uuid) != null &&
+                            clientGameData.getObjectCacheList().get(uuid) == gameObject.hashCode()
+                    ) ||
+                        gameObject.hashCode() != cachedObjectMap.get(uuid).hashCode();
+
+            clientGameData.getObjectCacheList().put(uuid, gameObject.hashCode());
 
 
             if (changed && uuid == clientGameData.getEntityPlayer().getUniqueId())
-                changed = isPlayerDifferent(clientGameData.getEntityPlayer(), (EntityPlayer) gameObjectIntegerPair.getLeft(), 0 ,0)
-                        || clientGameData.isChanged();
+                changed = isPlayerDifferent(clientGameData.getEntityPlayer(), (EntityPlayer) gameObject, 0 ,0)
+                        || clientGameData.getClientSidePlayerHashCode() != clientGameData.getEntityPlayer().hashCode();
 
             if (changed)
             {
-                newGameObjects.put(uuid, new NewGsonGameObject(gameObjectIntegerPair.getKey()));
+                newGameObjects.put(uuid, new NewGsonGameObject(gameObject));
             }
         });
 
-        new HashSet<>(clientGameData.getObjectCacheList()).forEach(uuid -> {
+        new HashMap<>(clientGameData.getObjectCacheList()).forEach((uuid, hashCode) -> {
             if (!cachedObjectMap.containsKey(uuid)) {
                 newGameObjects.put(uuid, NewGsonGameObject.nullObject());
                 clientGameData.getObjectCacheList().remove(uuid);
@@ -192,14 +197,15 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
         });
 
         SendObjectsList sendObjectsList = new SendObjectsList(
-                newGameObjects, clientGameData.isChanged(), clientGameData.getEntityPlayer());
+                newGameObjects, clientGameData.getEntityPlayer().hashCode() == clientGameData.getClientSidePlayerHashCode(), clientGameData.getEntityPlayer());
 
-
+        if (newGameObjects.size() > 0)
+            StaticHandler.getCore().getLogger().info("Changed objects: {}", newGameObjects.values().parallelStream().map(NewGsonGameObject::getClazz ).collect(Collectors.toList()));
 
         if (!newGameObjects.isEmpty())
             clientPlayer.sendObject(sendObjectsList);
 
-        clientGameData.setChanged(false);
+        clientGameData.setClientSidePlayerHashCode(clientGameData.getEntityPlayer().hashCode());
     }
 
     public void onEntityUpdate() {
@@ -229,11 +235,11 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
     }
 
     public void removeRespawnAllPlayers() {
-        Map<@NonNull UUID, @NonNull Pair<@NonNull GameObject, Integer>> oldMap = new HashMap<>(server.getServerGameHandler().getEntityHandler().getGameObjects());
+        Map<@NonNull UUID, @NonNull GameObject> oldMap = new HashMap<>(server.getServerGameHandler().getEntityHandler().getGameObjects());
 
         oldMap.keySet().parallelStream()
-                .filter(uuid -> !(oldMap.get(uuid).getKey() instanceof EntityPlayer))
-                .forEach(uuid -> removeEntityObject(oldMap.get(uuid).getKey()));
+                .filter(uuid -> !(oldMap.get(uuid) instanceof EntityPlayer))
+                .forEach(uuid -> removeEntityObject(oldMap.get(uuid)));
 
         clientGameDataMap.forEach((connection, clientGameData) -> {
             clientGameData.getEntityPlayer().setHealth(100);
@@ -269,7 +275,7 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
         if (
                 isPlayerDifferent(oldPlayer, copyNewPlayer, velXClamp, velYClamp)
         ) {
-            clientGameDataMap.get(clientPlayer).setChanged(true);
+            clientGameDataMap.get(clientPlayer).setClientSidePlayerHashCode(oldPlayer.hashCode());
             StaticHandler.getCore().getLogger().debug("Client player is changed");
         }
 
