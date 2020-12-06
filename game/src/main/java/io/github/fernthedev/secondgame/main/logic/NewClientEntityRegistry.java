@@ -140,17 +140,17 @@ public class NewClientEntityRegistry extends INewEntityRegistry {
     public void startGame() {
         clearObjects();
 
-        Game.setMainPlayer(new EntityPlayer((float) Game.WIDTH / 2 - 32, (float) Game.HEIGHT /2 - 32));
+        Game.setMainPlayer(new EntityPlayer((float) UniversalHandler.WIDTH / 2 - 32, (float) UniversalHandler.HEIGHT /2 - 32));
 
         Game.setScreen(null);
         Random r = UniversalHandler.RANDOM;
-        int HEIGHT = Game.HEIGHT;
-        int WIDTH = Game.WIDTH;
+        int HEIGHT = UniversalHandler.HEIGHT;
+        int WIDTH = UniversalHandler.WIDTH;
 
         addEntityObject(Game.getMainPlayer());
         //handler.addObject(new Player(WIDTH/2-32,HEIGHT/2-32, ID.Player,handler,hud,0));
         addEntityObject(new BasicEnemy(r.nextInt(WIDTH - 50),r.nextInt(HEIGHT - 50), EntityID.ENEMY));
-        addEntityObject(new Coin(r.nextInt(WIDTH - 50), r.nextInt(Game.HEIGHT - 50), EntityID.COIN));
+        addEntityObject(new Coin(r.nextInt(WIDTH - 50), r.nextInt(UniversalHandler.HEIGHT - 50), EntityID.COIN));
 
     }
 

@@ -47,7 +47,7 @@ import java.util.Random;
 import java.util.UUID;
 
 public class Game extends Canvas implements Runnable, IGame {
-    public static final int WIDTH = 640, HEIGHT =   WIDTH / 12 * 9;
+//    public static final int WIDTHHH = 640, HEIGHTTTT =   WIDTHHH / 12 * 9;
     private static final long serialVersionUID = -7376944666695581278L;
 
     @Getter
@@ -168,7 +168,7 @@ public class Game extends Canvas implements Runnable, IGame {
         this.addKeyListener(keyInput);
         this.addMouseListener(new MouseHandler());
 
-        window = new Window(WIDTH, HEIGHT, "A NEW GAME", this);
+        window = new Window(UniversalHandler.WIDTH, UniversalHandler.HEIGHT, "A NEW GAME", this);
 
         fern$ = r.nextInt(100);
 
@@ -307,7 +307,7 @@ public class Game extends Canvas implements Runnable, IGame {
         Graphics g = bs.getDrawGraphics();
 
         g.setColor(Color.black);
-        g.fillRect(0, 0, WIDTH, HEIGHT);
+        g.fillRect(0, 0, UniversalHandler.WIDTH, UniversalHandler.HEIGHT);
 
         staticEntityRegistry.render(g);
 //        handler.render(g);

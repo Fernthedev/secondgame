@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 public class Location {
 
-    private int x, y;
+    private Integer x, y;
 
 }

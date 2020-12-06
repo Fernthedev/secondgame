@@ -18,7 +18,7 @@ public class HelpMenu extends Screen {
     protected void draw(Graphics g) {
         g.setFont(textFont.getFont());
         g.setColor(textFont.getColor());
-        g.drawString("Use WASD or arrow keys please", buttonDefaultX-90, buttonDefaultYLocStart + 130);
+        g.drawString("Use WASD or arrow keys please", buttonX(DEFAULT_BACK_BUTTON) -90, buttonYStart() + 130);
 
 
         addButton(DEFAULT_BACK_BUTTON);

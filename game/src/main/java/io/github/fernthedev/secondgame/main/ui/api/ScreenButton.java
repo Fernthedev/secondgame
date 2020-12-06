@@ -1,5 +1,6 @@
 package io.github.fernthedev.secondgame.main.ui.api;
 
+import com.github.fernthedev.lightchat.core.StaticHandler;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -17,14 +18,13 @@ public class ScreenButton {
     protected Screen parentScreen;
 
     @Getter
-    private Runnable onClick;
+    private final Runnable onClick;
 
     protected int defaultButtonWidth = 200, defaultButtonHeight = 64, defaultButtonWidthSpace = 30;
 
     @NonNull
     protected ScreenFont buttonFont = new ScreenFont(new Font("arial", Font.BOLD, 30), Color.WHITE );
 
-    @Getter
     @Setter
     protected Size buttonSize = null;
 
@@ -76,10 +76,7 @@ public class ScreenButton {
      * @return true if using the location defined in parameter
      */
     public boolean render(Graphics g, Location loc) {
-        if (buttonSize == null) {
-            buttonSize = getSizeDependingLength();
-        }
-
+        getButtonSize();
         boolean returnStatus = false;
 
         Location buttonDrawLocation = this.location;
@@ -89,11 +86,21 @@ public class ScreenButton {
             buttonDrawLocation = loc;
 
             returnStatus = true;
+        } else {
+            if (buttonDrawLocation.getX() == null) {
+                Validate.notNull(loc);
+                buttonDrawLocation.setX(loc.getX());
+            }
+
+            if (buttonDrawLocation.getY() == null) {
+                Validate.notNull(loc);
+                buttonDrawLocation.setX(loc.getY());
+            }
         }
 
         renderedLocation = buttonDrawLocation;
                         // 70
-        int stringX = buttonDrawLocation.getX() + buttonSize.getWidth()/2 - defaultButtonWidthSpace - buttonFont.getSize() ; //((((string.length() / buttonFont.getSize())) + (buttonSize.getWidth())) + buttonSize.getWidth()/2); //- ((buttonSize.getWidth() / 2) ) ; //( (width / 2) - (size + (string.length() * 2) - string.length() / 2));
+        int stringX = (int) (buttonDrawLocation.getX() + (buttonSize.getWidth()/2.0) - (buttonFont.getSize() * string.length() * 0.26)); //((((string.length() / buttonFont.getSize())) + (buttonSize.getWidth())) + buttonSize.getWidth()/2); //- ((buttonSize.getWidth() / 2) ) ; //( (width / 2) - (size + (string.length() * 2) - string.length() / 2));
 
         int stringY = buttonDrawLocation.getY() + ( buttonSize.getHeight() - (buttonFont.getSize() - buttonSize.getHeight()/8));
 
@@ -104,6 +111,9 @@ public class ScreenButton {
 
         g.drawRect(buttonDrawLocation.getX(), buttonDrawLocation.getY(), buttonSize.getWidth(), buttonSize.getHeight());
         g.drawString(string, stringX, stringY);
+
+        if (StaticHandler.isDebug())
+            g.drawRect(stringX, stringY, 15, 15);
 
         return returnStatus;
     }
@@ -118,4 +128,11 @@ public class ScreenButton {
         return new Size(width, defaultButtonHeight);
     }
 
+
+    public Size getButtonSize() {
+        if (buttonSize == null)
+            buttonSize = getSizeDependingLength();
+
+        return buttonSize;
+    }
 }

@@ -1,5 +1,6 @@
 package io.github.fernthedev.secondgame.main.ui.api;
 
+import com.github.fernthedev.lightchat.core.StaticHandler;
 import com.github.fernthedev.universal.EntityID;
 import com.github.fernthedev.universal.UniversalHandler;
 import io.github.fernthedev.secondgame.main.Game;
@@ -26,8 +27,6 @@ public abstract class Screen {
 
     @Getter
     protected int buttonSpacing = 10;
-    protected int buttonDefaultYLocStart = 130;
-    protected int buttonDefaultX = 210;
 
     @Getter
     protected boolean setParentScreenOnSet = true;
@@ -40,7 +39,7 @@ public abstract class Screen {
     }
 
     public int resetY() {
-        return yButtonIncrement = buttonDefaultYLocStart - buttonSpacing;
+        return yButtonIncrement = buttonYStart() - buttonSpacing;
     }
 
     public Screen(String title) {
@@ -60,6 +59,17 @@ public abstract class Screen {
 
     protected abstract void draw(Graphics g);
 
+    private static final int buttonYStart = (int) (UniversalHandler.HEIGHT - (UniversalHandler.HEIGHT * 0.7));
+    private static final int xCenter = UniversalHandler.WIDTH / 2;
+
+    public int buttonX(ScreenButton screenButton) {
+        return xCenter - (screenButton.getButtonSize().getWidth() / 2);
+    }
+
+    public int buttonYStart() {
+        return buttonYStart;
+    }
+
     public void render(Graphics g) {
         buttonList.clear();
         resetY();
@@ -68,12 +78,18 @@ public abstract class Screen {
         g.setFont(textFont.getFont());
         g.setColor(textFont.getColor());
 
-        g.drawString(title, Game.WIDTH - 400, Game.HEIGHT - 410);
+        g.drawString(title, UniversalHandler.WIDTH / 2 - (textFont.getSize() / 2 * title.length()), (int) (UniversalHandler.HEIGHT - (UniversalHandler.HEIGHT * 0.85)));
+
+        if (StaticHandler.isDebug())
+            g.drawRect(UniversalHandler.WIDTH / 2 - (textFont.getSize() / 2 * title.length()), (int) (UniversalHandler.HEIGHT - (UniversalHandler.HEIGHT - (UniversalHandler.HEIGHT * 0.2))), 15, 15);
 
         for (ScreenButton button : buttonList) {
             button.parentScreen = this;
 
-            if (button.render(g, new Location(buttonDefaultX, getYButtonIncrement()))) {
+            int x = buttonX(button);
+            int y = getYButtonIncrement();
+
+            if (button.render(g, new Location(x, y))) {
                 incrementY(button.getButtonSize().getHeight());
 
             }
@@ -90,8 +106,8 @@ public abstract class Screen {
         Game.getStaticEntityRegistry().clearObjects();
 
 
-        int WIDTH = Game.WIDTH;
-        int HEIGHT = Game.HEIGHT;
+        int WIDTH = UniversalHandler.WIDTH;
+        int HEIGHT = UniversalHandler.HEIGHT;
 
         int amount = r.nextInt(15);
         if (amount < 10) amount = 10;

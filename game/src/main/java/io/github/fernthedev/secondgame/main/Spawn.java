@@ -36,7 +36,7 @@ class Spawn {
         int coinspawn = hud.getScore() + r.nextInt(512);
         if (hud.getScore() == coinspawn) {
             Game.getStaticEntityRegistry().addEntityObject(
-                    new Coin(r.nextInt(Game.WIDTH - 50), r.nextInt(Game.HEIGHT - 50), EntityID.COIN));
+                    new Coin(r.nextInt(UniversalHandler.WIDTH - 50), r.nextInt(UniversalHandler.HEIGHT - 50), EntityID.COIN));
             //handler.addObject(new Coin(r.nextInt(GAME.WIDTH - 50), r.nextInt(GAME.HEIGHT - 50), EntityID.Coin, GameObject.entities));
         }
 
@@ -51,15 +51,15 @@ class Spawn {
 
             //System.out.println(mob);
             if (mob == 1) {
-                handler.addEntityObject(new BasicEnemy(r.nextInt(Game.WIDTH - 50), r.nextInt(Game.HEIGHT - 50), EntityID.ENEMY));
+                handler.addEntityObject(new BasicEnemy(r.nextInt(UniversalHandler.WIDTH - 50), r.nextInt(UniversalHandler.HEIGHT - 50), EntityID.ENEMY));
             }
 
             if (mob == 2) {
-                handler.addEntityObject(new FastEnemy(r.nextInt(Game.WIDTH - 50), r.nextInt(Game.HEIGHT - 50), EntityID.ENEMY));
+                handler.addEntityObject(new FastEnemy(r.nextInt(UniversalHandler.WIDTH - 50), r.nextInt(UniversalHandler.HEIGHT - 50), EntityID.ENEMY));
             }
 
             if (mob == 3) {
-                handler.addEntityObject(new SmartEnemy(r.nextInt(Game.WIDTH - 50), r.nextInt(Game.HEIGHT - 50), EntityID.ENEMY, Game.getMainPlayer()));
+                handler.addEntityObject(new SmartEnemy(r.nextInt(UniversalHandler.WIDTH - 50), r.nextInt(UniversalHandler.HEIGHT - 50), EntityID.ENEMY, Game.getMainPlayer()));
             }
         }
 
