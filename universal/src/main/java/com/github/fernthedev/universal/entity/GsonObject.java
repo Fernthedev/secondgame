@@ -4,6 +4,7 @@ import com.github.fernthedev.universal.GameObject;
 
 import java.awt.*;
 
+@Deprecated
 public class GsonObject extends GameObject {
     private float alpha = 1;
 
@@ -46,11 +47,6 @@ public class GsonObject extends GameObject {
 
     @Override
     public void tick() {
-
-    }
-
-    @Override
-    public void render(Graphics g) {
 
     }
 

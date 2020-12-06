@@ -1,0 +1,84 @@
+import com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer
+plugins {
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
+    id "io.freefair.lombok" version "5.0.0-rc4"
+}
+
+allprojects {
+
+    apply plugin: 'com.github.johnrengelman.shadow'
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+    apply plugin: 'io.freefair.lombok'
+
+    ext.lightchat = "abb3b29"
+    ext.isBetaLight = true
+    ext.log4j_ver = "2.12.1"
+
+
+    group = 'com.github.fernthedev'
+    version = '2.0.0'
+
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven { url 'https://jitpack.io' }
+        mavenLocal()
+    }
+
+    dependencies {
+        implementation 'com.google.code.gson:gson:2.8.6'
+        implementation 'io.netty:netty-all:4.1.43.Final'
+        implementation "org.apache.logging.log4j:log4j-api:$log4j_ver"
+        implementation "org.apache.logging.log4j:log4j-core:$log4j_ver"
+        implementation "org.apache.logging.log4j:log4j-slf4j-impl:$log4j_ver"
+        implementation 'org.slf4j:slf4j-api:1.7.29'
+    }
+
+    repositories {
+        mavenLocal()
+        maven {
+            url = 'http://repo.maven.apache.org/maven2'
+        }
+
+        maven {
+            url = 'https://oss.sonatype.org/content/repositories/snapshots'
+        }
+    }
+
+    sourceCompatibility = '1.8'
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                from(components.java)
+            }
+        }
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+
+
+    jar.dependsOn(shadowJar)
+    jar.getArchiveClassifier().set('old')
+//    jar.classifier = 'old'
+    shadowJar {
+        transform(Log4j2PluginsCacheFileTransformer)
+        minimize() {
+            exclude (dependency('io.netty:netty-transport.*:.*') )
+            exclude (dependency('log4j:log4j:.*') )
+            exclude (dependency('org.apache.logging.log4j:.*:.*') )
+            exclude (dependency('org.slf4j:slf4j-api:.*') )
+            exclude (dependency('commons-logging:.*:.*') )
+            exclude (dependency('org.fusesource.jansi:.*:.*') )
+            exclude (dependency('org.jline:.*:.*') )
+            exclude (dependency('commons-logging:.*:.*') )
+            exclude (dependency('net.minecrell:.*:.*') )
+            exclude ('.**/Log4j2Plugins.dat' )
+        }
+        mergeServiceFiles()
+        getArchiveClassifier().set('')
+    }
+}

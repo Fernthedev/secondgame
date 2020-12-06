@@ -1,6 +1,0 @@
-
-Zsquid:S1481v"7Remove this unused "clientPlayerReturn" local variable.(«ë¸Ùûÿÿÿÿ8Øî·çì,
-Rsquid:S1066D"/Merge this if statement with the enclosing one.(ò¬àøÿÿÿÿ8•¬ßìê,
-Ÿsquid:S1186+"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ª†×”8¼ÿĞ‰í,
-msquid:S2886["JSynchronize this method to match the synchronization on "setPlayerObject".(ÇÁÍßüÿÿÿÿ8šáà·ì,
-]squid:S2142V"FEither re-interrupt this method or rethrow the "InterruptedException".(ä ¹€

@@ -5,31 +5,30 @@
 
 package io.github.fernthedev.secondgame.main.inputs.keyboard;
 
-import com.github.fernthedev.packets.PlayerUpdates.SendToGetInfo;
-import com.github.fernthedev.universal.UniversalHandler;
-import com.github.fernthedev.universal.entity.UniversalPlayer;
+import com.github.fernthedev.packets.player_updates.SendToServerPlayerInfoPacket;
 import io.github.fernthedev.secondgame.main.Game;
-import io.github.fernthedev.secondgame.main.Handler;
 import io.github.fernthedev.secondgame.main.inputs.InputHandler;
 import io.github.fernthedev.secondgame.main.inputs.InputType;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.HashMap;
+import java.util.Map;
 
 public class KeyInput extends KeyAdapter {
 
-    private final boolean[] keyDown = new boolean[4];
-
+    private final Map<Integer, KeyButton> keyButtonMap = new HashMap<>();
 
     private boolean toUpdate = false;
-    private Game game;
+    private final Game game;
 
-    public KeyInput(Handler handler, Game game) {
+    private final int velMultiplier = 5;
+
+    public KeyInput(Game game) {
         this.game = game;
-        keyDown[0] = false;
-        keyDown[1] = false;
-        keyDown[2] = false;
-        keyDown[3] = false;
+
+//        glfwPollEvents();
+
         /*GLFW.glfwInit();
         GLFW.glfwPollEvents();
 
@@ -38,49 +37,16 @@ public class KeyInput extends KeyAdapter {
         }*/
     }
 
+    @Override
     public void keyPressed(KeyEvent e) {
         InputHandler.inputType = InputType.KEYBOARD;
         //System.out.println("Some key pressed ");
         int key = e.getKeyCode();
-        if (UniversalHandler.mainPlayer != null) {
 
-            // System.out.println(GamemainPlayer.getObjectID() + " " + GAME.mainPlayer.getObjectID());
-            //KEY EVENTS FOR PLAYER 1
-            if ((key == KeyEvent.VK_W || key == KeyEvent.VK_UP) && UniversalHandler.mainPlayer.getVelY() != -5) {
-                UniversalHandler.mainPlayer.setVelY(-5);
-                toUpdate = true;
-                keyDown[0] = true;
-            }
-            if ((key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN) && UniversalHandler.mainPlayer.getVelY() != 5) {
-                UniversalHandler.mainPlayer.setVelY(5);
-                toUpdate = true;
-                keyDown[1] = true;
-            }
-            if ((key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT) && UniversalHandler.mainPlayer.getVelX() != 5) {
-                UniversalHandler.mainPlayer.setVelX(5);
-                toUpdate = true;
-                keyDown[2] = true;
-            }
-            if ((key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT) && UniversalHandler.mainPlayer.getVelX() != -5) {
-                UniversalHandler.mainPlayer.setVelX(-5);
-                toUpdate = true;
-                keyDown[3] = true;
-            }
+        registerKey(key, true);
 
-            if(toUpdate) update();
-
-            //  System.out.println(KeyEvent.getKeyText(key));
-
-
-            // GAME.mainPlayer = GamemainPlayer;
-            // System.out.println(GAME.mainPlayer);
-            //  if(GAME.gameState == GAME.STATE.HOSTING )
-            //  if(GAME.STATE.GAME == GAME.gameState || GAME.gameState == GAME.STATE.HOSTING) {
-
-            //      }
-        }
         if (key == KeyEvent.VK_P) {
-            if (Game.gameState == Game.STATE.GAME) {
+            if (Game.getScreen() == null) {
                 Game.paused = !Game.paused;
 
             }
@@ -91,16 +57,42 @@ public class KeyInput extends KeyAdapter {
         //System.out.println(key);
     }
 
+    @Override
     public void keyReleased(KeyEvent e) {
         int key = e.getKeyCode();
         //System.out.println(key);
 
-        //KEY EVENTS FOR PLAYER 1
-        if (key == KeyEvent.VK_W || key == KeyEvent.VK_UP) keyDown[0] = false;
-        if (key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN) keyDown[1] = false;
-        if (key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT) keyDown[2] = false;
-        if (key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT) keyDown[3] = false;
 
+        registerKey(key, false);
+
+
+        //KEY EVENTS FOR PLAYER 1
+//        if (key == KeyEvent.VK_W || key == KeyEvent.VK_UP) keyDown[0] = false;
+//        if (key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN) keyDown[1] = false;
+//        if (key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT) keyDown[2] = false;
+//        if (key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT) keyDown[3] = false;
+
+    }
+
+
+    private KeyButton registerKey(int key) {
+        KeyButton button = keyButtonMap.get(key);
+        if (button == null) {
+            button = new KeyButton(key, false);
+            keyButtonMap.put(key, button);
+        };
+
+        return button;
+    }
+
+    private KeyButton registerKey(int key, boolean held) {
+        KeyButton button = keyButtonMap.get(key);
+        if (button == null) {
+            button = new KeyButton(key, held);
+            keyButtonMap.put(key, button);
+        }else button.setHeld(held);
+
+        return button;
     }
 
     public void tick() {
@@ -108,23 +100,44 @@ public class KeyInput extends KeyAdapter {
         // System.out.println("Thing! " + gameObjectList.size());
 
 
-        if (UniversalHandler.mainPlayer != null) {
-            
+        if (Game.getMainPlayer() != null && InputHandler.inputType == InputType.KEYBOARD) {
 
+            int velX = 0, velY = 0;
+
+            if (registerKey(KeyEvent.VK_W).isHeld()) {
+                velY += -velMultiplier;
+            }
+
+            if (registerKey(KeyEvent.VK_S).isHeld()) {
+                velY += velMultiplier;
+            }
+            if (registerKey(KeyEvent.VK_D).isHeld()) {
+                velX += velMultiplier;
+            }
+            if (registerKey(KeyEvent.VK_A).isHeld()) {
+                velX += -velMultiplier;
+            }
+
+            if (Game.getMainPlayer().getVelX() != velX || Game.getMainPlayer().getVelY() != velY) toUpdate = true;
 
             //VERTICAL
-            if (!keyDown[0] && !keyDown[1] && UniversalHandler.mainPlayer.getVelY() != 0 && InputHandler.inputType == InputType.KEYBOARD) {
-                UniversalHandler.mainPlayer.setVelY(0);
-                toUpdate = true;
-            }
+//            if (!keyDown[0] && !keyDown[1] && Game.mainPlayer.getVelY() != 0 && InputHandler.inputType == InputType.KEYBOARD) {
+//                Game.mainPlayer.setVelY(0);
+//                toUpdate = true;
+//            }
+//
+//            //HORIZONTAL
+//            if (!keyDown[2] && !keyDown[3] && Game.mainPlayer.getVelX() != 0 && InputHandler.inputType == InputType.KEYBOARD) {
+//                Game.mainPlayer.setVelX(0);
+//                toUpdate = true;
+//            }
 
-            //HORIZONTAL
-            if (!keyDown[2] && !keyDown[3] && UniversalHandler.mainPlayer.getVelX() != 0 && InputHandler.inputType == InputType.KEYBOARD) {
-                UniversalHandler.mainPlayer.setVelX(0);
-                toUpdate = true;
+            if(toUpdate) {
+                Game.getMainPlayer().setVelX(velX);
+                Game.getMainPlayer().setVelY(velY);
+                Game.getStaticEntityRegistry().setPlayerInfo(Game.getMainPlayer());
+                update();
             }
-            
-            if(toUpdate) update();
 
             // System.out.println(GAME.mainPlayer.getObjectID() + "\n" + tempObject.getObjectID());
 
@@ -133,7 +146,7 @@ public class KeyInput extends KeyAdapter {
 /*
             if (GAME.gameState == GAME.STATE.IN_SERVER || GAME.gameState == GAME.STATE.HOSTING) {
 
-                SendPlayerInfoPacket sendPlayerInfoPacket = new SendPlayerInfoPacket(GAME.mainPlayer);
+                SendToServerPlayerInfoPacket sendPlayerInfoPacket = new SendToServerPlayerInfoPacket(GAME.mainPlayer);
 
                 if (GAME.gameState == GAME.STATE.IN_SERVER)
                     Client.getClientThread().sendObject(sendPlayerInfoPacket);
@@ -153,14 +166,14 @@ public class KeyInput extends KeyAdapter {
 
     private void update() {
         toUpdate = false;
-        if(Game.gameState == Game.STATE.GAME || Game.gameState == Game.STATE.IN_SERVER || Game.gameState == Game.STATE.HOSTING) {
-            UniversalHandler.getThingHandler().updatePlayerObject(null,UniversalHandler.mainPlayer);
+        /*if(Game.gameState == Game.STATE.GAME || Game.gameState == Game.STATE.IN_SERVER || Game.gameState == Game.STATE.HOSTING) {
+            UniversalHandler.getThingHandler().updatePlayerObject(null,Game.mainPlayer);
             //System.out.println("Updated " + GAME.mainPlayer);
-        }
+        }*/
 
-        if(Game.gameState == Game.STATE.IN_SERVER) {
-            UniversalHandler.mainPlayer.setHealth(UniversalHandler.mainPlayer.getHealth());
-            Game.sendPacket(new SendToGetInfo(new UniversalPlayer(UniversalHandler.mainPlayer)));
+        if(Game.getScreen() == null && Game.getClient() != null && Game.getClient().isRegistered() && Game.getMainPlayer() != null) {
+           // Game.mainPlayer.setHealth(Game.mainPlayer.getHealth());
+            Game.getClient().sendObject(new SendToServerPlayerInfoPacket(Game.getMainPlayer(), Game.getStaticEntityRegistry().getObjectsAndHashCode()));
             System.out.println("Updated player");
         }
     }
