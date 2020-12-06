@@ -19,6 +19,9 @@ public class ServerGameHandler extends TickRunnable {
     @Getter
     private final Spawn spawn;
 
+    @Getter
+    private final PlayerPollUpdateThread playerPollUpdateThread;
+
 //    @Getter
 //    private static GameMechanics gameMechanics;
 
@@ -34,10 +37,13 @@ public class ServerGameHandler extends TickRunnable {
         this.server = server.getServer();
 //        gameMechanics = new GameMechanics();
         this.entityHandler = entityHandler;
+        playerPollUpdateThread = new PlayerPollUpdateThread(server);
     }
 
     @Override
     public void run() {
+
+        playerPollUpdateThread.start();
 
         Thread entityThread = new Thread(entityHandler);
         entityThread.start();
@@ -69,6 +75,7 @@ public class ServerGameHandler extends TickRunnable {
                     }
                     connection.close();
                 }).runThreads(server.getExecutorService());
+
                 entityHandler.getGameObjects().clear();
             }
 

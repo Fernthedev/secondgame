@@ -1,5 +1,7 @@
 package com.github.fernthedev.universal.entity;
 
+import com.github.fernthedev.CommonUtil;
+import com.github.fernthedev.GameMathUtil;
 import com.github.fernthedev.universal.EntityID;
 import com.github.fernthedev.universal.GameObject;
 import com.github.fernthedev.universal.UniversalHandler;
@@ -46,6 +48,13 @@ public class EntityPlayer extends GameObject {
         this.color = universalPlayer.getColor();
         this.health = universalPlayer.getHealth();
         this.coin = universalPlayer.getCoin();
+    }
+
+    public static boolean isPlayerDifferent(EntityPlayer oldPlayer, EntityPlayer copyVel, double velX, double velY) {
+        return GameMathUtil.absDif(copyVel.getX(), oldPlayer.getX() + (float) velX) > CommonUtil.PLAYER_COORD_DIF ||
+                GameMathUtil.absDif(copyVel.getY(), oldPlayer.getY() + (float) velY) > CommonUtil.PLAYER_COORD_DIF ||
+                GameMathUtil.absDif(copyVel.getVelX(), oldPlayer.getVelX()) > CommonUtil.PLAYER_VEL_DIF ||
+                GameMathUtil.absDif(copyVel.getVelY(), oldPlayer.getVelY()) > CommonUtil.PLAYER_VEL_DIF;
     }
 
     public void tick() {

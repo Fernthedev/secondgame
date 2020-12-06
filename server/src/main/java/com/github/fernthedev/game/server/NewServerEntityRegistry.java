@@ -1,27 +1,21 @@
 package com.github.fernthedev.game.server;
 
-import com.github.fernthedev.CommonUtil;
 import com.github.fernthedev.GameMathUtil;
 import com.github.fernthedev.INewEntityRegistry;
 import com.github.fernthedev.lightchat.core.ColorCode;
 import com.github.fernthedev.lightchat.core.StaticHandler;
 import com.github.fernthedev.lightchat.server.ClientConnection;
-import com.github.fernthedev.packets.object_updates.SendObjectsList;
 import com.github.fernthedev.packets.object_updates.SetCoin;
 import com.github.fernthedev.packets.player_updates.SendToServerPlayerInfoPacket;
 import com.github.fernthedev.universal.EntityID;
 import com.github.fernthedev.universal.GameObject;
 import com.github.fernthedev.universal.entity.EntityPlayer;
-import com.github.fernthedev.universal.entity.NewGsonGameObject;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.commons.lang3.time.StopWatch;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class NewServerEntityRegistry extends INewEntityRegistry {
@@ -29,6 +23,7 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
     @Setter
     private GameServer server;
 
+    @Getter
     private final Map<ClientConnection, ClientGameData> clientGameDataMap = Collections.synchronizedMap(new HashMap<>());
 
 
@@ -126,87 +121,8 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
         return result;
     }
 
-    /**
-     * Use at init
-     *
-     * @param connection
-     */
-    public void forceUpdate(ClientConnection connection) {
-        updatePlayerInfo(connection);
-    }
-
-    //    @Synchronized("modifyEntityListLock")
-    private void updatePlayerInfo(ClientConnection clientPlayer) {
-        Map<UUID, NewGsonGameObject> newGameObjects = new HashMap<>();
-        ClientGameData clientGameData = getClientData(clientPlayer);
-
-        if (clientGameData == null) throw new NullPointerException("ClientGameData is null ");
-
-
-        Map<UUID, GameObject> cachedObjectMap = copyGameObjectsAsMap();
-
-        cachedObjectMap.forEach((uuid, gameObject) -> {
-
-            boolean changed = !clientGameData.getObjectCacheList().containsKey(uuid) || (
-                        clientGameData.getObjectCacheList().get(uuid) != null &&
-                            clientGameData.getObjectCacheList().get(uuid) != gameObject.hashCode()
-                    );
-
-
-            if (changed && uuid == clientGameData.getEntityPlayer().getUniqueId()) {
-                changed = clientGameData.getClientSidePlayerHashCode() != clientGameData.getEntityPlayer().hashCode() ||
-                        isPlayerDifferent(clientGameData.getEntityPlayer(), (EntityPlayer) gameObject, 0, 0);
-            }
-
-            if (changed)
-            {
-                newGameObjects.put(uuid, new NewGsonGameObject(gameObject));
-            }
-        });
-
-        try {
-            new HashMap<>(clientGameData.getObjectCacheList()).forEach((uuid, hashCode) -> {
-                if (!cachedObjectMap.containsKey(uuid)) {
-                    newGameObjects.put(uuid, NewGsonGameObject.nullObject());
-                }
-            });
-        } catch (ConcurrentModificationException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        SendObjectsList sendObjectsList = new SendObjectsList(
-                newGameObjects, clientGameData.getEntityPlayer());
-
-        if (newGameObjects.size() > 0)
-            StaticHandler.getCore().getLogger().info("Changed objects: {}", newGameObjects.values().parallelStream().map(NewGsonGameObject::getClazz ).collect(Collectors.toList()));
-
-        if (!newGameObjects.isEmpty() || clientGameData.getClientSidePlayerHashCode() != clientGameData.getEntityPlayer().hashCode())
-            clientPlayer.sendObject(sendObjectsList);
-
-        clientGameData.setClientSidePlayerHashCode(clientGameData.getEntityPlayer().hashCode());
-    }
-
     public void onEntityUpdate() {
-        int oldHashCode = gameObjects.hashCode();
-        StopWatch stopWatch = StopWatch.createStarted();
-        List<ClientConnection> clientConnections = new ArrayList<>(clientGameDataMap.keySet());
-
-        List<CompletableFuture<Void>> completableFutures = new ArrayList<>();
-
-        for (ClientConnection clientConnection : clientConnections) {
-            completableFutures.add(CompletableFuture.runAsync(() -> updatePlayerInfo(clientConnection), server.getServer().getExecutorService()));
-        }
-
-        // TODO: Move this method to an async thread
-        CompletableFuture.allOf(completableFutures.toArray(new CompletableFuture[0])).thenRun(() -> {
-            stopWatch.stop();
-            if (oldHashCode != gameObjects.hashCode())
-                StaticHandler.getCore().getLogger().debug("Updating players took {}", stopWatch.getTime(TimeUnit.MILLISECONDS));
-        });
-
-
-
+        server.getServerGameHandler().getPlayerPollUpdateThread().getSendUpdate().set(true);
     }
 
     /**
@@ -263,7 +179,7 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
         clientGameData.getObjectCacheList().putAll(infoPacket.getEntitiesHashCodeMap());
 
         if (
-                isPlayerDifferent(oldPlayer, copyNewPlayer, velXClamp, velYClamp)
+                EntityPlayer.isPlayerDifferent(oldPlayer, copyNewPlayer, velXClamp, velYClamp)
         ) {
 
             StaticHandler.getCore().getLogger().debug("Client player is changed");
@@ -273,10 +189,4 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
         updatePlayerObject(clientPlayer, copyNewPlayer);
     }
 
-    private static boolean isPlayerDifferent(EntityPlayer oldPlayer, EntityPlayer copyVel, double velX, double velY) {
-        return GameMathUtil.absDif(copyVel.getX(), oldPlayer.getX() + (float) velX) > CommonUtil.PLAYER_COORD_DIF ||
-                GameMathUtil.absDif(copyVel.getY(), oldPlayer.getY() + (float) velY) > CommonUtil.PLAYER_COORD_DIF ||
-                GameMathUtil.absDif(copyVel.getVelX(), oldPlayer.getVelX()) > CommonUtil.PLAYER_VEL_DIF ||
-                GameMathUtil.absDif(copyVel.getVelY(), oldPlayer.getVelY()) > CommonUtil.PLAYER_VEL_DIF;
-    }
 }

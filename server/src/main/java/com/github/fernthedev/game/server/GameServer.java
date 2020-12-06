@@ -34,8 +34,6 @@ public class GameServer extends ServerTerminal implements IGame {
     @Getter
     private Thread serverThread;
 
-
-
     public GameServer(String[] args, int defaultPort, NewServerEntityRegistry entityHandler) {
         entityHandler.setServer(this);
         new DebugException().printStackTrace();
