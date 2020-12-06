@@ -108,7 +108,7 @@ public class NewClientEntityRegistry extends INewEntityRegistry {
 
         new ArrayList<>(gameObjects.values())
                 .parallelStream()
-                .filter(gameObject -> !(gameObject instanceof Trail))
+                .filter(gameObject -> !(gameObject instanceof Trail) && gameObject.isHasTrail())
                 .forEach(gameObject -> {
                     try {
 //                        if (gameObject.getVelX() != 0 || gameObject.getVelY() == 0)

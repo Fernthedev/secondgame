@@ -13,6 +13,7 @@ public class Coin extends GameObject {
         super(x, y, 16, 16, entityId, Color.ORANGE);
         this.velX = 0.0F;
         this.velY = 0.0F;
+        hasTrail = false;
     }
 
     protected Coin() {
