@@ -45,7 +45,7 @@ public class Spawn {
         int coinspawn = scoreKeep + r.nextInt(512);
 
         if (scoreKeep == coinspawn && (!server.getServer().getPlayerHandler().getChannelMap().isEmpty())) {
-            server.getServerGameHandler().getEntityHandler().addEntityObject(new Coin(r.nextInt(UniversalHandler.WIDTH - 50) + 1, r.nextInt(UniversalHandler.HEIGHT - 50) + 1, EntityID.Coin));
+            server.getServerGameHandler().getEntityHandler().addEntityObject(new Coin(r.nextInt(UniversalHandler.WIDTH - 50) + 1, r.nextInt(UniversalHandler.HEIGHT - 50) + 1, EntityID.COIN));
         }
 
         if (scoreKeep >= 250) {

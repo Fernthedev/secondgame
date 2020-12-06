@@ -36,7 +36,7 @@ class Spawn {
         int coinspawn = hud.getScore() + r.nextInt(512);
         if (hud.getScore() == coinspawn) {
             Game.getStaticEntityRegistry().addEntityObject(
-                    new Coin(r.nextInt(Game.WIDTH - 50), r.nextInt(Game.HEIGHT - 50), EntityID.Coin));
+                    new Coin(r.nextInt(Game.WIDTH - 50), r.nextInt(Game.HEIGHT - 50), EntityID.COIN));
             //handler.addObject(new Coin(r.nextInt(GAME.WIDTH - 50), r.nextInt(GAME.HEIGHT - 50), EntityID.Coin, GameObject.entities));
         }
 

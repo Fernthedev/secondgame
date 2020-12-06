@@ -43,7 +43,7 @@ public abstract class INewEntityRegistry extends TickRunnable {
                 }
 
 
-                if (tempObject.getEntityId() == EntityID.Coin) {
+                if (tempObject.getEntityId() == EntityID.COIN) {
                     universalPlayer.setCoin(universalPlayer.getCoin() + 1);
                     removeEntityObject(tempObject);
                     addToUpdateList(universalPlayer);
@@ -128,9 +128,16 @@ public abstract class INewEntityRegistry extends TickRunnable {
     }
 
     public Map<UUID, Integer> getObjectsAndHashCode() {
+        return getObjectsAndHashCode(gameObjects.keySet());
+    }
+
+    public Map<UUID, Integer> getObjectsAndHashCode(Set<UUID> uuids) {
         Map<UUID, Integer> map = new HashMap<>();
 
-        copyGameObjectsAsMap().forEach((uuid, gameObjectIntegerPair) -> map.put(uuid, gameObjectIntegerPair.hashCode()));
+        copyGameObjectsAsMap().forEach((uuid, gameObjectIntegerPair) -> {
+            if(uuids.contains(uuid))
+                map.put(uuid, gameObjectIntegerPair.hashCode());
+        });
 
         return map;
     }

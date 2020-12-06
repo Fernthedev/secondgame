@@ -1,6 +1,6 @@
 package io.github.fernthedev.secondgame.main;
 
-import com.github.fernthedev.packets.player_updates.SendPlayerInfoPacket;
+import com.github.fernthedev.packets.player_updates.SendToServerPlayerInfoPacket;
 import org.lwjgl.glfw.GLFW;
 
 import java.nio.ByteBuffer;
@@ -108,7 +108,7 @@ public class JoystickThing {
         }
 
         if(Game.getScreen() == null && Game.getClient() != null) {
-            Game.getClient().sendObject(new SendPlayerInfoPacket(Game.getMainPlayer(), Game.getStaticEntityRegistry().getObjectsAndHashCode()));
+            Game.getClient().sendObject(new SendToServerPlayerInfoPacket(Game.getMainPlayer(), Game.getStaticEntityRegistry().getObjectsAndHashCode()));
         }
     }
 

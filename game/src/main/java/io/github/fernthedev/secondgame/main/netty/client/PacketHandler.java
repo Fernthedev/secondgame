@@ -11,7 +11,8 @@ import com.github.fernthedev.lightchat.core.packets.Packet;
 import com.github.fernthedev.packets.GameOverPacket;
 import com.github.fernthedev.packets.LevelUp;
 import com.github.fernthedev.packets.object_updates.*;
-import com.github.fernthedev.packets.player_updates.SendPlayerInfoPacket;
+import com.github.fernthedev.packets.player_updates.SendToClientPlayerInfoPacket;
+import com.github.fernthedev.packets.player_updates.SendToServerPlayerInfoPacket;
 import com.github.fernthedev.universal.GameObject;
 import com.github.fernthedev.universal.entity.EntityPlayer;
 import com.github.fernthedev.universal.entity.NewGsonGameObject;
@@ -29,8 +30,8 @@ public class PacketHandler implements IPacketHandler, Listener {
 
     @Override
     public void handlePacket(Packet p, int packetId) {
-        if (p instanceof SendPlayerInfoPacket) {
-            SendPlayerInfoPacket info = (SendPlayerInfoPacket) p;
+        if (p instanceof SendToClientPlayerInfoPacket) {
+            SendToClientPlayerInfoPacket info = (SendToClientPlayerInfoPacket) p;
             EntityPlayer universalPlayer = info.getPlayerObject();
 
 
@@ -40,14 +41,14 @@ public class PacketHandler implements IPacketHandler, Listener {
 
             Game.getMainPlayer().setHealth(universalPlayer.getHealth());
 
-            Game.getClient().sendObject(new SendPlayerInfoPacket(Game.getMainPlayer(), Game.getStaticEntityRegistry().getObjectsAndHashCode()));
+            Game.getClient().sendObject(new SendToServerPlayerInfoPacket(Game.getMainPlayer(), Game.getStaticEntityRegistry().getObjectsAndHashCode()));
 
         } else if (p instanceof SetCoin) {
             SetCoin coins = (SetCoin) p;
 
             System.out.println("Coin one up");
 
-            Game.getHud().setCoin(coins.getCoins());
+            Game.getMainPlayer().setCoin(coins.getCoins());
         } else if (p instanceof SendObjectsList) {
             SendObjectsList list = (SendObjectsList) p;
 
@@ -100,7 +101,7 @@ public class PacketHandler implements IPacketHandler, Listener {
                 }
             });
 
-            if (list.isChanged())
+            if (Game.getMainPlayer() == null || Game.getMainPlayer().hashCode() != universalPlayer.hashCode())
                 Game.getStaticEntityRegistry().addEntityObject(universalPlayer);
 
 

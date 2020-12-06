@@ -115,7 +115,7 @@ class ThingHandler extends TickRunnable {
             }
 
 
-            if (tempObject.getEntityId() == EntityID.Coin) {
+            if (tempObject.getEntityId() == EntityID.COIN) {
                 if (universalPlayer.getBounds().intersects(tempObject.getBounds())) {
                     universalPlayer.setCoin(universalPlayer.getCoin() +1);
                     UniversalHandler.getThingHandler().removeEntityObject(tempObject);

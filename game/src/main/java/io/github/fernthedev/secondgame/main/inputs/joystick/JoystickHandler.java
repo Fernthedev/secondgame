@@ -1,6 +1,6 @@
 package io.github.fernthedev.secondgame.main.inputs.joystick;
 
-import com.github.fernthedev.packets.player_updates.SendPlayerInfoPacket;
+import com.github.fernthedev.packets.player_updates.SendToServerPlayerInfoPacket;
 import io.github.fernthedev.secondgame.main.Game;
 import io.github.fernthedev.secondgame.main.inputs.InputHandler;
 import io.github.fernthedev.secondgame.main.inputs.InputType;
@@ -249,7 +249,7 @@ public class JoystickHandler {
 
 
         if(Game.getScreen() == null && Game.getClient() != null) {
-            Game.getClient().sendObject(new SendPlayerInfoPacket(Game.getMainPlayer(), Game.getStaticEntityRegistry().getObjectsAndHashCode()));
+            Game.getClient().sendObject(new SendToServerPlayerInfoPacket(Game.getMainPlayer(), Game.getStaticEntityRegistry().getObjectsAndHashCode()));
         }
     }
 }

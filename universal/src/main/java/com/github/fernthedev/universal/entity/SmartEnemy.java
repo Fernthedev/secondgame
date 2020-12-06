@@ -92,5 +92,17 @@ public class SmartEnemy extends GameObject {
     }
 
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SmartEnemy)) return false;
+        if (!super.equals(o)) return false;
+        SmartEnemy that = (SmartEnemy) o;
+        return playerUUID.equals(that.playerUUID);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), playerUUID);
+    }
 }

@@ -3,10 +3,12 @@ package io.github.fernthedev.secondgame.main.logic;
 import com.github.fernthedev.INewEntityRegistry;
 import com.github.fernthedev.exceptions.DebugException;
 import com.github.fernthedev.game.server.NewServerEntityRegistry;
+import com.github.fernthedev.packets.player_updates.SendToServerPlayerInfoPacket;
 import com.github.fernthedev.universal.EntityID;
 import com.github.fernthedev.universal.GameObject;
 import com.github.fernthedev.universal.UniversalHandler;
 import com.github.fernthedev.universal.entity.*;
+import com.google.common.base.Stopwatch;
 import io.github.fernthedev.secondgame.main.Game;
 import io.github.fernthedev.secondgame.main.entities.CoinRenderer;
 import io.github.fernthedev.secondgame.main.entities.MenuParticle;
@@ -17,9 +19,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class NewClientEntityRegistry extends INewEntityRegistry {
 
+    private Stopwatch stopwatch = Stopwatch.createUnstarted();
 
     public NewClientEntityRegistry() {
         DefaultEntityRenderer defaultEntityRenderer = new DefaultEntityRenderer();
@@ -80,6 +85,20 @@ public class NewClientEntityRegistry extends INewEntityRegistry {
     }
 
     @Override
+    public void tick() {
+        super.tick();
+
+        if (Game.getClient() != null && !stopwatch.isRunning())
+            stopwatch.start();
+
+        if (Game.getScreen() == null && Game.getClient() != null && Game.getClient().isRegistered() && Game.getMainPlayer() != null && stopwatch.elapsed(TimeUnit.MILLISECONDS) >= 500) {
+            Game.getClient().sendObject(new SendToServerPlayerInfoPacket(Game.getMainPlayer(), Game.getStaticEntityRegistry().getObjectsAndHashCode()));
+            stopwatch.reset();
+            System.out.println("Sent update packet " + Game.getMainPlayer().toString());
+        }
+    }
+
+    @Override
     protected void onEntityUpdate() {
 //        for (GameObject gameObject : new ArrayList<>(gameObjects.values()
 //                .parallelStream()
@@ -93,7 +112,7 @@ public class NewClientEntityRegistry extends INewEntityRegistry {
                 .forEach(gameObject -> {
                     try {
 //                        if (gameObject.getVelX() != 0 || gameObject.getVelY() == 0)
-                        getEntityRegistryInUse().addEntityObject(new Trail(gameObject.getX(), gameObject.getY(), EntityID.Trail, gameObject.getColor(), gameObject.getWidth(), gameObject.getHeight(), 0.04f));
+                        getEntityRegistryInUse().addEntityObject(new Trail(gameObject.getX(), gameObject.getY(), EntityID.TRAIL, gameObject.getColor(), gameObject.getWidth(), gameObject.getHeight(), 0.04f));
                     } catch (IllegalArgumentException e) {
                         throw new IllegalArgumentException("GameObject: " + gameObject.toString(), e);
                     }
@@ -131,7 +150,7 @@ public class NewClientEntityRegistry extends INewEntityRegistry {
         addEntityObject(Game.getMainPlayer());
         //handler.addObject(new Player(WIDTH/2-32,HEIGHT/2-32, ID.Player,handler,hud,0));
         addEntityObject(new BasicEnemy(r.nextInt(WIDTH - 50),r.nextInt(HEIGHT - 50), EntityID.ENEMY));
-        addEntityObject(new Coin(r.nextInt(WIDTH - 50), r.nextInt(Game.HEIGHT - 50), EntityID.Coin));
+        addEntityObject(new Coin(r.nextInt(WIDTH - 50), r.nextInt(Game.HEIGHT - 50), EntityID.COIN));
 
     }
 
@@ -170,5 +189,15 @@ public class NewClientEntityRegistry extends INewEntityRegistry {
         for (GameObject gameObject : new ArrayList<>(getGameObjects().values())) {
             renderEntity(g, gameObject);
         }
+    }
+
+    @Override
+    public Map<UUID, Integer> getObjectsAndHashCode() {
+        Map<UUID, GameObject> uuidGameObjectMap = copyGameObjectsAsMap();
+        return super.getObjectsAndHashCode(uuidGameObjectMap.keySet()
+                .stream()
+                .filter(uuid -> uuidGameObjectMap.get(uuid) != null && !(uuidGameObjectMap.get(uuid) instanceof Trail))
+                .collect(Collectors.toSet())
+        );
     }
 }

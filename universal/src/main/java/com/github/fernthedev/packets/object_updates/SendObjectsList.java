@@ -23,10 +23,6 @@ public class SendObjectsList extends Packet implements Serializable {
 
     @Getter
     @NonNull
-    private final boolean changed;
-
-    @Getter
-    @NonNull
     private final EntityPlayer mainPlayer;
 
 

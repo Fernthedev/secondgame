@@ -24,7 +24,7 @@ public class EndScreen extends Screen {
         g.setColor(Color.WHITE);
         g.drawString("Score: " + hud.getScore(), 150, incrementY(-buttonSpacing + 30));
         g.drawString("Level: " + hud.getLevel(), 150, incrementY(-buttonSpacing + 30));
-        g.drawString("Coin: " + Game.getHud().getCoin(), 150, incrementY(-buttonSpacing + 30));
+        g.drawString("Coin: " + Game.getMainPlayer().getCoin(), 150, incrementY(-buttonSpacing + 30));
 
         addButton(new ScreenButton("Try Again", () -> {
             hud.setLevel(1);

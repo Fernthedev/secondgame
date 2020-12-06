@@ -1,11 +1,11 @@
 package io.github.fernthedev.secondgame.main.ui.api;
 
-import jdk.internal.jline.internal.Nullable;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import org.apache.commons.lang3.Validate;
 
+import javax.annotation.Nullable;
 import java.awt.*;
 
 public class ScreenButton {

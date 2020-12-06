@@ -4,7 +4,7 @@ package com.github.fernthedev.game.server;
 import com.github.fernthedev.lightchat.core.packets.Packet;
 import com.github.fernthedev.lightchat.server.ClientConnection;
 import com.github.fernthedev.lightchat.server.api.IPacketHandler;
-import com.github.fernthedev.packets.player_updates.SendPlayerInfoPacket;
+import com.github.fernthedev.packets.player_updates.SendToServerPlayerInfoPacket;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -15,15 +15,15 @@ public class ServerPacketHandler implements IPacketHandler {
 
     @Override
     public void handlePacket(Packet p, ClientConnection clientPlayer, int packetId) {
-        if (p instanceof SendPlayerInfoPacket) {
-            SendPlayerInfoPacket infoPacket = (SendPlayerInfoPacket) p;
+        if (p instanceof SendToServerPlayerInfoPacket) {
+            SendToServerPlayerInfoPacket infoPacket = (SendToServerPlayerInfoPacket) p;
 
             Pair<Integer, Long> packetIdAndTime = clientPlayer.getPacketId(p.getClass());
             Integer id = packetIdAndTime.getLeft();
             Long time = packetIdAndTime.getRight();
 
 //            if (id -5 < packetId && System.currentTimeMillis() - time > 900)
-                server.getServerGameHandler().getEntityHandler().handleClientRespond(clientPlayer, infoPacket);
+            server.getServerGameHandler().getEntityHandler().handleClientRespond(clientPlayer, infoPacket);
         }
     }
 }

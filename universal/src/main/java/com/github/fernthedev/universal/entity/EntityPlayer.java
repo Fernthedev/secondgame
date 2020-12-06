@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.awt.*;
+import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 
@@ -26,11 +27,11 @@ public class EntityPlayer extends GameObject {
     public static final transient int MAX_VELOCITY = 5;
 
     public EntityPlayer(float x, float y) {
-        super(x, y, 32, 32, EntityID.Player, new Color(r.nextInt(255),r.nextInt(255),r.nextInt(255)));
+        super(x, y, 32, 32, EntityID.PLAYER, new Color(r.nextInt(255),r.nextInt(255),r.nextInt(255)));
     }
 
     public EntityPlayer(float x, float y, UUID uniqueId, double velX, double velY, Color color, int health, int coin) {
-        super(x, y, 32, 32, EntityID.Player, uniqueId, velX, velY, color);
+        super(x, y, 32, 32, EntityID.PLAYER, uniqueId, velX, velY, color);
         this.health = health;
         this.coin = coin;
     }
@@ -67,6 +68,20 @@ public class EntityPlayer extends GameObject {
 
         }*/
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof EntityPlayer)) return false;
+        if (!super.equals(o)) return false;
+        EntityPlayer that = (EntityPlayer) o;
+        return health == that.health && coin == that.coin;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), health, coin);
     }
 
 //    @Deprecated

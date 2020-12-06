@@ -96,7 +96,7 @@ public abstract class Screen {
         int amount = r.nextInt(15);
         if (amount < 10) amount = 10;
         for (int i = 0; i < amount; i++) {
-            Game.getStaticEntityRegistry().addEntityObject(new MenuParticle(r.nextInt(WIDTH - 40) + 20, r.nextInt(HEIGHT - 40) + 20, EntityID.MenuParticle));
+            Game.getStaticEntityRegistry().addEntityObject(new MenuParticle(r.nextInt(WIDTH - 40) + 20, r.nextInt(HEIGHT - 40) + 20, EntityID.MENU_PARTICLE));
         }
     }
 

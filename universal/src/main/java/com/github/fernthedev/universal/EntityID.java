@@ -6,10 +6,10 @@
 package com.github.fernthedev.universal;
 
 public enum EntityID {
-    Player,
-    Trail,
+    PLAYER,
+    TRAIL,
     ENEMY,
-    Coin,
-    MenuParticle,
+    COIN,
+    MENU_PARTICLE,
 
 }

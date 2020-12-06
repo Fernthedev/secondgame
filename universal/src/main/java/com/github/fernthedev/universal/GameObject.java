@@ -157,6 +157,6 @@ public abstract class GameObject implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(x, y, entityId, velX, velY, uniqueId, color, width, height, hasTrail);
+        return Objects.hash(x, y, entityId.name(), velX, velY, uniqueId, color, width, height, hasTrail);
     }
 }

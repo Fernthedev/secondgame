@@ -6,6 +6,7 @@
 package io.github.fernthedev.secondgame.main;
 
 import java.awt.*;
+import java.util.concurrent.TimeUnit;
 
 public class HUD {
     private int greenvalue = 255;
@@ -53,18 +54,6 @@ public class HUD {
 //        }
     }
 
-    public void setCoin(int coins) {
-        Game.getMainPlayer().setCoin(coins);
-    }
-
-    public void plusCoin() {
-        Game.getMainPlayer().setCoin(Game.getMainPlayer().getCoin() +1);
-    }
-
-    public int getCoin() {
-        return Game.getMainPlayer().getCoin();
-    }
-
     public void render(Graphics g) {
         if (Game.getMainPlayer() != null) {
             g.setColor(Color.GRAY);
@@ -82,7 +71,10 @@ public class HUD {
             g.setColor(Color.WHITE);
             g.drawString("Score: " + this.score, 15, 64);
             g.drawString("Level: " + this.level, 15, 80);
-            g.drawString("Coins: " + getCoin(), 15, 96);
+            g.drawString("Coins: " + Game.getMainPlayer().getCoin(), 15, 96);
+            if (Game.getClient() != null) {
+                g.drawString("Ping: " + Game.getClient().getPingTime(TimeUnit.MILLISECONDS) + "ms",15, 112);
+            }
         }
     }
 
