@@ -101,9 +101,11 @@ public class PacketHandler implements IPacketHandler, Listener {
                 }
             });
 
-            if (Game.getMainPlayer() == null || Game.getMainPlayer().hashCode() != universalPlayer.hashCode())
-                Game.getStaticEntityRegistry().addEntityObject(universalPlayer);
+            if (gameObjects.containsKey(universalPlayer.getUniqueId())) {
+                if (Game.getMainPlayer() == null || Game.getMainPlayer().hashCode() != universalPlayer.hashCode())
+                    Game.getStaticEntityRegistry().addEntityObject(universalPlayer);
 
+            }
 
             if (doUpdate.get())
                 Game.setMainPlayer(universalPlayer);

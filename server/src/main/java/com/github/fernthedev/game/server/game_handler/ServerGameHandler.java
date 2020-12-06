@@ -56,20 +56,21 @@ public class ServerGameHandler extends TickRunnable {
 //        long before = System.nanoTime();
         spawn.tick();
 
-        if (entityHandler.copyGameObjectsAsList().parallelStream().noneMatch(gameObject -> gameObject instanceof EntityPlayer)) {
+        if (started && entityHandler.copyGameObjectsAsList().parallelStream().noneMatch(gameObject -> gameObject instanceof EntityPlayer)) {
 
             started = false;
-            ThreadUtils.runForLoopAsync(new ArrayList<>(server.getPlayerHandler().getChannelMap().values()), connection -> {
-                try {
-                    connection.sendObject(new GameOverPacket()).sync();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    e.printStackTrace();
-                }
-                connection.close();
-                return null;
-            });
-
+            if (!server.getPlayerHandler().getChannelMap().isEmpty()) {
+                ThreadUtils.runForLoopAsync(new ArrayList<>(server.getPlayerHandler().getChannelMap().values()), connection -> {
+                    try {
+                        connection.sendObject(new GameOverPacket()).sync();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        e.printStackTrace();
+                    }
+                    connection.close();
+                }).runThreads(server.getExecutorService());
+                entityHandler.getGameObjects().clear();
+            }
 
         }
         //  System.out.println( (System.nanoTime() - before) / 1000000 + "Thing1");

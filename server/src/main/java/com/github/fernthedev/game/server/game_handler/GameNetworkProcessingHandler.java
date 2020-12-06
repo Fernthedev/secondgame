@@ -3,6 +3,7 @@ package com.github.fernthedev.game.server.game_handler;
 import com.github.fernthedev.game.server.ClientGameData;
 import com.github.fernthedev.game.server.GameServer;
 import com.github.fernthedev.lightchat.core.ColorCode;
+import com.github.fernthedev.lightchat.core.StaticHandler;
 import com.github.fernthedev.lightchat.core.api.event.api.EventHandler;
 import com.github.fernthedev.lightchat.core.api.event.api.Listener;
 import com.github.fernthedev.lightchat.server.ClientConnection;
@@ -43,6 +44,7 @@ public class GameNetworkProcessingHandler extends ChannelInboundHandlerAdapter i
     public void onLeave(PlayerDisconnectEvent e) {
         server.getServerGameHandler().getEntityHandler().removeEntityObject(server.getServerGameHandler().getEntityHandler().getClientData(e.getDisconnectedPlayer()).getEntityPlayer());
         server.getServerGameHandler().getEntityHandler().removeClientData(e.getDisconnectedPlayer());
+        StaticHandler.getCore().getLogger().debug("Removed player {}", e.getDisconnectedPlayer().getName());
     }
 
 }

@@ -163,11 +163,16 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
             }
         });
 
-        new HashMap<>(clientGameData.getObjectCacheList()).forEach((uuid, hashCode) -> {
-            if (!cachedObjectMap.containsKey(uuid)) {
-                newGameObjects.put(uuid, NewGsonGameObject.nullObject());
-            }
-        });
+        try {
+            new HashMap<>(clientGameData.getObjectCacheList()).forEach((uuid, hashCode) -> {
+                if (!cachedObjectMap.containsKey(uuid)) {
+                    newGameObjects.put(uuid, NewGsonGameObject.nullObject());
+                }
+            });
+        } catch (ConcurrentModificationException e) {
+            e.printStackTrace();
+            return;
+        }
 
         SendObjectsList sendObjectsList = new SendObjectsList(
                 newGameObjects, clientGameData.getEntityPlayer());
