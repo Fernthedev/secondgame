@@ -163,6 +163,12 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
             }
         });
 
+        new HashMap<>(clientGameData.getObjectCacheList()).forEach((uuid, hashCode) -> {
+            if (!cachedObjectMap.containsKey(uuid)) {
+                newGameObjects.put(uuid, NewGsonGameObject.nullObject());
+            }
+        });
+
         SendObjectsList sendObjectsList = new SendObjectsList(
                 newGameObjects, clientGameData.getEntityPlayer());
 
