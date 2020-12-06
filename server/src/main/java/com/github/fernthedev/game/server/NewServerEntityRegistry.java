@@ -19,6 +19,7 @@ import lombok.Setter;
 import org.apache.commons.lang3.time.StopWatch;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -191,13 +192,21 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
         StopWatch stopWatch = StopWatch.createStarted();
         List<ClientConnection> clientConnections = new ArrayList<>(clientGameDataMap.keySet());
 
+        List<CompletableFuture<Void>> completableFutures = new ArrayList<>();
 
-        clientConnections.parallelStream().forEach(this::updatePlayerInfo);
+        for (ClientConnection clientConnection : clientConnections) {
+            completableFutures.add(CompletableFuture.runAsync(() -> updatePlayerInfo(clientConnection), server.getServer().getExecutorService()));
+        }
+
+        // TODO: Move this method to an async thread
+        CompletableFuture.allOf(completableFutures.toArray(new CompletableFuture[0])).thenRun(() -> {
+            stopWatch.stop();
+            if (oldHashCode != gameObjects.hashCode())
+                StaticHandler.getCore().getLogger().debug("Updating players took {}", stopWatch.getTime(TimeUnit.MILLISECONDS));
+        });
 
 
-        stopWatch.stop();
-        if (oldHashCode != gameObjects.hashCode())
-            StaticHandler.getCore().getLogger().debug("Updating players took {}", stopWatch.getTime(TimeUnit.MILLISECONDS));
+
     }
 
     /**
@@ -226,7 +235,11 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
     }
 
     public void handleClientRespond(ClientConnection clientPlayer, SendToServerPlayerInfoPacket infoPacket) {
-        EntityPlayer oldPlayer = server.getServerGameHandler().getEntityHandler().getClientData(clientPlayer).getEntityPlayer();
+        ClientGameData clientData = server.getServerGameHandler().getEntityHandler().getClientData(clientPlayer);
+
+        if (clientData == null) return;
+
+        EntityPlayer oldPlayer = clientData.getEntityPlayer();
 
         EntityPlayer packetPlayer = infoPacket.getPlayerObject();
 
