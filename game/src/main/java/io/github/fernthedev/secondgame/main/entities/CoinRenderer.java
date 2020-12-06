@@ -11,10 +11,15 @@ import io.github.fernthedev.secondgame.main.Game;
 import io.github.fernthedev.secondgame.main.logic.IEntityRenderer;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 
 public class CoinRenderer implements IEntityRenderer<Coin>  {
 
+    private Image coin_image;
+
+    public CoinRenderer() {
+        BufferedImageLoader loader = new BufferedImageLoader();
+        coin_image = loader.loadImage("/icon.png");
+    }
 
     /*
     @Deprecated
@@ -26,11 +31,10 @@ public class CoinRenderer implements IEntityRenderer<Coin>  {
     @Override
     public void render(Graphics g, Coin gameObject) {
         if (Game.fern$ <= 10) {
-            BufferedImageLoader loader = new BufferedImageLoader();
-            BufferedImage coin_image = loader.loadImage("/icon.png");
+
 //            g.setColor(color);
 //            g.fillRect((int)gameObject.getX(), (int)gameObject.getY(), 0, 0);
-            g.drawImage(coin_image, (int)gameObject.getX(), (int)gameObject.getY(), null);
+            g.drawImage(coin_image, (int)gameObject.getX(), (int)gameObject.getY(), gameObject.getWidth(), gameObject.getHeight(), null);
         } else {
             g.setColor(gameObject.getColor());
             g.fillRect((int)gameObject.getX(), (int)gameObject.getY(), gameObject.getWidth(), gameObject.getHeight());
