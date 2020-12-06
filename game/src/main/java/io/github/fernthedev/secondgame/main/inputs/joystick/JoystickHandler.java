@@ -78,7 +78,7 @@ public class JoystickHandler {
 //                }
 //
 //
-//                System.out.println(buffer.toString());
+//                Game.getLogger().info(buffer.toString());
 //            }
 //        }
     }
@@ -106,12 +106,12 @@ public class JoystickHandler {
 //
 //                if (!connectedController[0] && joystick1.isControllerConnected()) {
 //                    connectedController[0] = true;
-//                    System.out.println("Connected player one to " + joystick1.getControllerName());
+//                    Game.getLogger().info("Connected player one to " + joystick1.getControllerName());
 //                }
 //
 //                if (connectedController[0] && !joystick1.isControllerConnected()) {
 //                    connectedController[0] = false;
-//                    System.out.println("Disconnected player one to " + joystick1.getControllerName());
+//                    Game.getLogger().info("Disconnected player one to " + joystick1.getControllerName());
 //                }
 //
 //                // Left controller joystick
@@ -151,23 +151,23 @@ public class JoystickHandler {
 //
 //
 //                        if (xValuePercentageLeftJoystick >= 50 && xValuePercentageLeftJoystick <= 100) {
-//                            System.out.println(1 + " assuming right");
+//                            Game.getLogger().info(1 + " assuming right");
 //                            horizontal = (((double) xValuePercentageLeftJoystick / 100.0) * 5.0);
 //
 //
 //                            if(oldHorizontal != horizontal) {
-//                                System.out.println("Updating 5 horizontal");
+//                                Game.getLogger().info("Updating 5 horizontal");
 //                                oldHorizontal = (int) horizontal;
 //                                toUpdate = true;
 //                            }
 //                        }
 //
 //                        if (xValuePercentageLeftJoystick <= 50) {
-//                            System.out.println(2 + " assuming left");
+//                            Game.getLogger().info(2 + " assuming left");
 //                            horizontal = (((double) xValuePercentageLeftJoystick / 100.0) * 5.0) * -1;
 //
 //                            if(oldHorizontal != horizontal) {
-//                                System.out.println("Updating -5 horizontal");
+//                                Game.getLogger().info("Updating -5 horizontal");
 //                                oldHorizontal = (int) horizontal;
 //                                toUpdate = true;
 //                            }
@@ -177,22 +177,22 @@ public class JoystickHandler {
 //                    if (!(yValuePercentageLeftJoystick >= 40 && yValuePercentageLeftJoystick <= 60)) {
 //
 //                        if (yValuePercentageLeftJoystick >= 50 && yValuePercentageLeftJoystick <= 100) {
-//                            System.out.println(3 + " assuming down " + yValuePercentageLeftJoystick);
+//                            Game.getLogger().info(3 + " assuming down " + yValuePercentageLeftJoystick);
 //                            vertical = (((double) yValuePercentageLeftJoystick / 100.0) * 5.0);
 //
 //                            if(oldVertical != vertical) {
-//                                System.out.println("Updating 5 vertical");
+//                                Game.getLogger().info("Updating 5 vertical");
 //                                oldVertical = (int) vertical;
 //                                toUpdate = true;
 //                            }
 //                        }
 //                        if (yValuePercentageLeftJoystick <= 50) {
-//                            //System.out.println(4 + " assuming up" + yValuePercentageLeftJoystick);
+//                            //Game.getLogger().info(4 + " assuming up" + yValuePercentageLeftJoystick);
 //
 //                             vertical = (((double) yValuePercentageLeftJoystick / 100.0) * 5.0) * -1;
 //
 //                            if(oldVertical != vertical) {
-//                                System.out.println("Updating -5 vertical");
+//                                Game.getLogger().info("Updating -5 vertical");
 //                                oldVertical = (int) vertical;
 //                                toUpdate = true;
 //                            }
@@ -232,7 +232,7 @@ public class JoystickHandler {
     public void updatePlayer(double vertical,double horizontal) {
         InputHandler.inputType = InputType.JOYSTICK;
 
-        System.out.println("Updating player");
+        Game.getLogger().info("Updating player");
 
         Game.getMainPlayer().setVelY(vertical);
         Game.getMainPlayer().setVelX(horizontal);
@@ -243,7 +243,7 @@ public class JoystickHandler {
 
         if(Game.getScreen() == null) {
             Game.getStaticEntityRegistry().addEntityObject(Game.getMainPlayer());
-            System.out.println("Updated " + Game.getMainPlayer());
+            Game.getLogger().info("Updated " + Game.getMainPlayer());
         }
 
 

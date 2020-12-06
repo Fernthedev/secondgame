@@ -1,5 +1,6 @@
 package com.github.fernthedev;
 
+import com.github.fernthedev.lightchat.core.StaticHandler;
 import com.github.fernthedev.universal.EntityID;
 import com.github.fernthedev.universal.GameObject;
 import com.github.fernthedev.universal.UniversalHandler;
@@ -47,7 +48,7 @@ public abstract class INewEntityRegistry extends TickRunnable {
                     universalPlayer.setCoin(universalPlayer.getCoin() + 1);
                     removeEntityObject(tempObject);
                     addToUpdateList(universalPlayer);
-                    System.out.println("COllision checking! COIN");
+                    StaticHandler.getCore().getLogger().info("COllision checking! COIN");
                     // this.handler.removeObject(tempObject);
                 }
             }

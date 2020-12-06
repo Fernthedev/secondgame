@@ -99,7 +99,7 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
                                     universalPlayer.setCoin(universalPlayer.getCoin() + 1);
                                     connection.sendObject(new SetCoin(universalPlayer.getCoin()));
                                     removeEntityObject(tempObject);
-                                    System.out.println("Collision checking! COIN");
+                                    StaticHandler.getCore().getLogger().debug("Collision checking! COIN");
                                     // this.handler.removeObject(tempObject);
                                 }
 

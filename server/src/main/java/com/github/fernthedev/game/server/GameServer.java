@@ -91,7 +91,6 @@ public class GameServer extends ServerTerminal implements IGame {
                 serverGameHandler = new ServerGameHandler(GameServer.this, entityHandler);
                 Thread thread = new Thread(serverGameHandler);
                 thread.start();
-                System.out.println(thread + " is from " + serverGameHandler);
 
                 registerCommand(new Command("start") {
                     @Override

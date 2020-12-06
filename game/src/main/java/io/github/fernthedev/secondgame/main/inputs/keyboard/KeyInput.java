@@ -33,14 +33,14 @@ public class KeyInput extends KeyAdapter {
         GLFW.glfwPollEvents();
 
         if (glfwJoystickPresent(GLFW_JOYSTICK_1)) {
-            System.out.println("connected controller " + glfwGetJoystickName(GLFW_JOYSTICK_1));
+            Game.getLogger().info("connected controller " + glfwGetJoystickName(GLFW_JOYSTICK_1));
         }*/
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
         InputHandler.inputType = InputType.KEYBOARD;
-        //System.out.println("Some key pressed ");
+        //Game.getLogger().info("Some key pressed ");
         int key = e.getKeyCode();
 
         registerKey(key, true);
@@ -54,13 +54,13 @@ public class KeyInput extends KeyAdapter {
 
 
         if (key == KeyEvent.VK_ESCAPE) game.stop();
-        //System.out.println(key);
+        //Game.getLogger().info(key);
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
         int key = e.getKeyCode();
-        //System.out.println(key);
+        //Game.getLogger().info(key);
 
 
         registerKey(key, false);
@@ -97,7 +97,7 @@ public class KeyInput extends KeyAdapter {
 
     public void tick() {
 
-        // System.out.println("Thing! " + gameObjectList.size());
+        // Game.getLogger().info("Thing! " + gameObjectList.size());
 
 
         if (Game.getMainPlayer() != null && InputHandler.inputType == InputType.KEYBOARD) {
@@ -139,10 +139,10 @@ public class KeyInput extends KeyAdapter {
                 update();
             }
 
-            // System.out.println(GAME.mainPlayer.getObjectID() + "\n" + tempObject.getObjectID());
+            // Game.getLogger().info(GAME.mainPlayer.getObjectID() + "\n" + tempObject.getObjectID());
 
 
-            //  System.out.println(GAME.mainPlayer.getVelX() + "\n" + GAME.mainPlayer.getVelY() + "\n");
+            //  Game.getLogger().info(GAME.mainPlayer.getVelX() + "\n" + GAME.mainPlayer.getVelY() + "\n");
 /*
             if (GAME.gameState == GAME.STATE.IN_SERVER || GAME.gameState == GAME.STATE.HOSTING) {
 
@@ -151,11 +151,11 @@ public class KeyInput extends KeyAdapter {
                 if (GAME.gameState == GAME.STATE.IN_SERVER)
                     Client.getClientThread().sendObject(sendPlayerInfoPacket);
                 else if (GAME.gameState == GAME.STATE.HOSTING) {
-                    //     System.out.println("Thing! 2");
+                    //     Game.getLogger().info("Thing! 2");
                     //UniversalHandler.getThingHandler().updatePlayerObject(GAME.mainPlayer);
-                    //   System.out.println("Thing! 3");
+                    //   Game.getLogger().info("Thing! 3");
                     Server.sendObjectToAllPlayers(sendPlayerInfoPacket);
-                    //    System.out.println("Thing! 4");
+                    //    Game.getLogger().info("Thing! 4");
                 }
             }*/
 
@@ -168,13 +168,13 @@ public class KeyInput extends KeyAdapter {
         toUpdate = false;
         /*if(Game.gameState == Game.STATE.GAME || Game.gameState == Game.STATE.IN_SERVER || Game.gameState == Game.STATE.HOSTING) {
             UniversalHandler.getThingHandler().updatePlayerObject(null,Game.mainPlayer);
-            //System.out.println("Updated " + GAME.mainPlayer);
+            //Game.getLogger().info("Updated " + GAME.mainPlayer);
         }*/
 
         if(Game.getScreen() == null && Game.getClient() != null && Game.getClient().isRegistered() && Game.getMainPlayer() != null) {
            // Game.mainPlayer.setHealth(Game.mainPlayer.getHealth());
             Game.getClient().sendObject(new SendToServerPlayerInfoPacket(Game.getMainPlayer(), Game.getStaticEntityRegistry().getObjectsAndHashCode()));
-            System.out.println("Updated player");
+            Game.getLogger().debug("Updated player");
         }
     }
 }

@@ -45,7 +45,7 @@ class Window extends Canvas {
     }
 
     private void close() {
-        System.out.println("Closing");
+        Game.getLogger().info("Closing");
         game.stop();
         System.exit(0);
     }

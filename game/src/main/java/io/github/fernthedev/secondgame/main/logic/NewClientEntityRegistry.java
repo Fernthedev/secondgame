@@ -94,7 +94,7 @@ public class NewClientEntityRegistry extends INewEntityRegistry {
         if (Game.getScreen() == null && Game.getClient() != null && Game.getClient().isRegistered() && Game.getMainPlayer() != null && stopwatch.elapsed(TimeUnit.MILLISECONDS) >= 500) {
             Game.getClient().sendObject(new SendToServerPlayerInfoPacket(Game.getMainPlayer(), Game.getStaticEntityRegistry().getObjectsAndHashCode()));
             stopwatch.reset();
-            System.out.println("Sent update packet " + Game.getMainPlayer().toString());
+            Game.getLogger().info("Sent update packet " + Game.getMainPlayer().toString());
         }
     }
 
@@ -127,7 +127,7 @@ public class NewClientEntityRegistry extends INewEntityRegistry {
         // List<GameObject> gameObjects = new ArrayList<>(ClientEntityHandler.gameObjects);
 
         new DebugException("Cleared objects").printStackTrace();
-        System.out.println("Clearing ");
+        Game.getLogger().info("Clearing ");
         getGameObjects().clear();
 
 //

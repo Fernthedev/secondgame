@@ -4,6 +4,7 @@ import com.github.fernthedev.TickRunnable;
 import com.github.fernthedev.fernutils.thread.ThreadUtils;
 import com.github.fernthedev.game.server.GameServer;
 import com.github.fernthedev.game.server.NewServerEntityRegistry;
+import com.github.fernthedev.lightchat.core.StaticHandler;
 import com.github.fernthedev.lightchat.server.Server;
 import com.github.fernthedev.packets.GameOverPacket;
 import com.github.fernthedev.universal.entity.EntityPlayer;
@@ -47,7 +48,7 @@ public class ServerGameHandler extends TickRunnable {
 
         Thread entityThread = new Thread(entityHandler);
         entityThread.start();
-        System.out.println(entityThread + " is from " + entityHandler);
+        StaticHandler.getCore().getLogger().debug(entityThread + " is from " + entityHandler);
 
 //        mechanicThread = new Thread(gameMechanics);
 //        mechanicThread.start();

@@ -53,7 +53,7 @@ public class Spawn {
             //hud.setLevel(hud.getLevel() + 1);
             timer++;
             scoreKeep = 0;
-            System.out.println("RESETTING SCOREKEEP");
+            StaticHandler.getCore().getLogger().info("RESETTING SCOREKEEP");
 
             if (!server.getServer().getPlayerHandler().getChannelMap().isEmpty()) {
                 int mob = r.nextInt(4);
@@ -129,7 +129,7 @@ public class Spawn {
                             .filter(gameObjectLongPair -> !(gameObjectLongPair instanceof EntityPlayer))
                             .collect(Collectors.toList()));
 
-            System.out.println("Doing levels " + new LevelUp(levels));
+            StaticHandler.getCore().getLogger().info("Doing levels " + new LevelUp(levels));
             server.getServer().sendObjectToAllPlayers(new LevelUp(levels));
             scoreKeep = 200;
 

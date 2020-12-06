@@ -34,10 +34,11 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.text.NumberFormat;
 import java.util.Arrays;
@@ -49,6 +50,8 @@ public class Game extends Canvas implements Runnable, IGame {
     public static final int WIDTH = 640, HEIGHT =   WIDTH / 12 * 9;
     private static final long serialVersionUID = -7376944666695581278L;
 
+    @Getter
+    private static final Logger logger = LoggerFactory.getLogger(Game.class.getName());
 
     private transient Thread thread;
     private boolean running = true;
@@ -142,9 +145,7 @@ public class Game extends Canvas implements Runnable, IGame {
      */
     @SneakyThrows
     private Game() {
-        BufferedImageLoader loader = new BufferedImageLoader();
-        BufferedImage sprite_sheet = loader.loadImage("/icon.png");
-        System.out.println("Loaded icon");
+        logger.info("Loaded icon");
 
         UniversalHandler.setIGame(this);
 
@@ -160,7 +161,7 @@ public class Game extends Canvas implements Runnable, IGame {
 
         setScreen(new MainMenu());
 //        menu = new io.github.fernthedev.secondgame.main.ui.Menu(this,handler,hud);
-        System.out.println("LWJGL Version " + Version.getVersion() + " is working.");
+        logger.info("LWJGL Version " + Version.getVersion() + " is working.");
 
         keyInput = new KeyInput(this);
 
@@ -172,7 +173,7 @@ public class Game extends Canvas implements Runnable, IGame {
         fern$ = r.nextInt(100);
 
 
-        System.out.println(fern$);
+        logger.info("{}", fern$);
 
 
         spawnner = new Spawn(hud, this);
@@ -217,7 +218,7 @@ public class Game extends Canvas implements Runnable, IGame {
 
             if(System.currentTimeMillis() - timer > 1000) {
                 timer += 1000;
-                System.out.println("FPS: " + NumberFormat.getNumberInstance(Locale.US).format(frames));
+                logger.info("FPS: " + NumberFormat.getNumberInstance(Locale.US).format(frames));
                 frames = 0;
                 //updates = 0;
             }
@@ -242,11 +243,11 @@ public class Game extends Canvas implements Runnable, IGame {
         try {
 
             if (getScreen() == null) {
-                //System.out.println("Running thing");
+                //logger.info("Running thing");
 
                 if (!paused) {
 
-                    //  System.out.println(UniversalHandler.running);
+                    //  logger.info(UniversalHandler.running);
                     hud.tick();
 
                     staticEntityRegistry.tick();

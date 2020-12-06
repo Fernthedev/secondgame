@@ -46,7 +46,7 @@ public class PacketHandler implements IPacketHandler, Listener {
         } else if (p instanceof SetCoin) {
             SetCoin coins = (SetCoin) p;
 
-            System.out.println("Coin one up");
+            Game.getLogger().info("Coin one up");
 
             Game.getMainPlayer().setCoin(coins.getCoins());
         } else if (p instanceof SendObjectsList) {

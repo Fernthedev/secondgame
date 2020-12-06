@@ -75,9 +75,9 @@ public class Trail extends GameObject {
     }
 
     public void tick() {
-        //System.out.println("I am now being trailed for.");
+        //Game.getLogger().info("I am now being trailed for.");
 //        float thing = (life - 0.0001f);
-        //System.out.println(thing + " is the new alpha " + life);
+        //Game.getLogger().info(thing + " is the new alpha " + life);
 
 
         checkTrail(this);
@@ -104,7 +104,7 @@ public class Trail extends GameObject {
         try {
             return (AlphaComposite.getInstance(type, alpha));
         } catch (IllegalArgumentException e) {
-            System.out.println((alpha >= 0.0F) + " " + (alpha <= 1.0F) + " " + alpha);
+            Game.getLogger().info((alpha >= 0.0F) + " " + (alpha <= 1.0F) + " " + alpha);
             e.printStackTrace();
         }
         return null;

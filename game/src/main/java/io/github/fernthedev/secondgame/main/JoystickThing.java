@@ -24,7 +24,7 @@ public class JoystickThing {
         GLFW.glfwPollEvents();
 
         if (glfwJoystickPresent(GLFW_JOYSTICK_1)) {
-            System.out.println("1 player connected controller " + glfwGetJoystickName(GLFW_JOYSTICK_1));
+            Game.getLogger().info("1 player connected controller " + glfwGetJoystickName(GLFW_JOYSTICK_1));
         }
     }
 
@@ -44,7 +44,7 @@ public class JoystickThing {
                     buttonsList.add(byteE);
                 }
 
-                System.out.println(buttonsList);
+                Game.getLogger().info(buttonsList.toString());
 
                 //UP
                 if (buttons.get(10) != (byte) 0 && !joystick[0]) {
@@ -104,7 +104,7 @@ public class JoystickThing {
     private void update() {
         if(Game.getScreen() == null) {
             Game.getStaticEntityRegistry().addEntityObject(Game.getMainPlayer());
-            System.out.println("Updated " + Game.getMainPlayer());
+            Game.getLogger().info("Updated " + Game.getMainPlayer());
         }
 
         if(Game.getScreen() == null && Game.getClient() != null) {
