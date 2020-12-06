@@ -196,7 +196,7 @@ public class NewClientEntityRegistry extends INewEntityRegistry {
         Map<UUID, GameObject> uuidGameObjectMap = copyGameObjectsAsMap();
         return super.getObjectsAndHashCode(uuidGameObjectMap.keySet()
                 .stream()
-                .filter(uuid -> uuidGameObjectMap.get(uuid) != null && !(uuidGameObjectMap.get(uuid) instanceof Trail))
+                .filter(uuid -> uuidGameObjectMap.get(uuid) != null && !(uuidGameObjectMap.get(uuid) instanceof Trail) && !(uuidGameObjectMap.get(uuid) instanceof MenuParticle))
                 .collect(Collectors.toSet())
         );
     }
