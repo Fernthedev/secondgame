@@ -27,9 +27,6 @@ dependencies {
     api project(':universal')
     implementation project(':server')
     implementation "com.github.Fernthedev.light-chat:client:$lightchat"
-    implementation 'net.java.jinput:coreapi:2.0.9'
-    implementation 'net.java.jinput:jinput:2.0.9'
-    implementation 'net.java.jinput:jinput:2.0.9:natives-all'
 
     implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 

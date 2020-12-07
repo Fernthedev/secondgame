@@ -8,9 +8,10 @@ import io.github.fernthedev.secondgame.main.inputs.InputType;
 
 public class JoystickHandler {
 
-    private Game game;
     private JInputJoystick joystick1;
 
+    private final int xDeadzone = 20;
+    private final int yDeadzone = 20;
 
 
     int oldHorizontal = 0,oldVertical = 0;
@@ -21,7 +22,7 @@ public class JoystickHandler {
 
     private static boolean connectedController[] = new boolean[4];
 
-    public JoystickHandler(Game game) {
+    public JoystickHandler() {
 
 //        return;
 //        /* Create an event object for the underlying plugin to populate */
@@ -33,8 +34,10 @@ public class JoystickHandler {
 //        joystick1 = new JInputJoystick(Controller.Type.STICK, Controller.Type.GAMEPAD, 0);
 //
 //        for (Controller controller : controllers) {
+//            System.out.println("H");
 //            /* Remember to poll each one */
 //            controller.poll();
+//            System.out.println("T");
 //
 //            /* Get the controllers event queue */
 //            EventQueue queue = controllers[0].getEventQueue();
@@ -56,7 +59,7 @@ public class JoystickHandler {
 //                 * across controllers this way. We can not use it to tell
 //                 * exactly *when* an event happened just the order.
 //                 */
-//                StringBuffer buffer = new StringBuffer(controller
+//                StringBuilder buffer = new StringBuilder(controller
 //                        .getName());
 //                buffer.append(" at ");
 //                buffer.append(event.getNanos()).append(", ");
@@ -78,13 +81,12 @@ public class JoystickHandler {
 //                }
 //
 //
-//                Game.getLogger().info(buffer.toString());
+//                Game.getStaticLogger().info(buffer.toString());
 //            }
 //        }
     }
 
     public void tick() {
-        return;
 //
 //        Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
 //
@@ -106,124 +108,90 @@ public class JoystickHandler {
 //
 //                if (!connectedController[0] && joystick1.isControllerConnected()) {
 //                    connectedController[0] = true;
-//                    Game.getLogger().info("Connected player one to " + joystick1.getControllerName());
+//                    Game.getStaticLogger().info("Connected player one to " + joystick1.getControllerName());
 //                }
 //
 //                if (connectedController[0] && !joystick1.isControllerConnected()) {
 //                    connectedController[0] = false;
-//                    Game.getLogger().info("Disconnected player one to " + joystick1.getControllerName());
+//                    Game.getStaticLogger().info("Disconnected player one to " + joystick1.getControllerName());
 //                }
 //
 //                // Left controller joystick
-//                int xValuePercentageLeftJoystick = joystick1.getXAxisPercentage();
-//                int yValuePercentageLeftJoystick = joystick1.getYAxisPercentage();
+//                float xValueLeftJoystick = joystick1.getXAxisValue();
+//                float yValueLeftJoystick = joystick1.getYAxisValue();
 //
 //// Right controller joystick
-//                int xValuePercentageRightJoystick, yValuePercentageRightJoystick;
 //
 //// stick type controller
-//                if (joystick1.getControllerType() == Controller.Type.STICK) {
+//                if (joystick1.getControllerType() == Controller.Type.GAMEPAD) {
 //                    // Right controller joystick
-//                    xValuePercentageRightJoystick = joystick1.getZAxisPercentage();
-//                    yValuePercentageRightJoystick = joystick1.getZRotationPercentage();
-//                }
-//// gamepad type controller
-//                else {
-//                    boolean toUpdate = false;
-//                    // Right controller joystick
-//                    xValuePercentageRightJoystick = joystick1.getXRotationPercentage();
-//                    yValuePercentageRightJoystick = joystick1.getYRotationPercentage();
-//
 //
 //
 //                    double horizontal = 0;
 //                    double vertical = 0;
 //
+//                    int playerVelMultiplier = UniversalHandler.PLAYER_VEL_MULTIPLIER;
 //
-//                    if (!(xValuePercentageLeftJoystick >= 40 && xValuePercentageLeftJoystick <= 60)) {
-//
-//
-//
-//                        // If Z Axis exists.
-//                        if (joystick1.componentExists(Component.Identifier.Axis.Z)) {
-//                            int zAxisValuePercentage = joystick1.getZAxisPercentage();
-//                        }
+//                    if (xValueLeftJoystick <= -xDeadzone || xValueLeftJoystick >= xDeadzone) {
 //
 //
-//                        if (xValuePercentageLeftJoystick >= 50 && xValuePercentageLeftJoystick <= 100) {
-//                            Game.getLogger().info(1 + " assuming right");
-//                            horizontal = (((double) xValuePercentageLeftJoystick / 100.0) * 5.0);
+//                        if (xValueLeftJoystick <= -xDeadzone) {
+//                            Game.getStaticLogger().info(1 + " assuming right");
+//                            horizontal += xDeadzone * playerVelMultiplier;
 //
 //
-//                            if(oldHorizontal != horizontal) {
-//                                Game.getLogger().info("Updating 5 horizontal");
+//                            if (oldHorizontal != horizontal) {
+//                                Game.getStaticLogger().info("Updating 5 horizontal");
 //                                oldHorizontal = (int) horizontal;
-//                                toUpdate = true;
 //                            }
 //                        }
 //
-//                        if (xValuePercentageLeftJoystick <= 50) {
-//                            Game.getLogger().info(2 + " assuming left");
-//                            horizontal = (((double) xValuePercentageLeftJoystick / 100.0) * 5.0) * -1;
+//                        if (xValueLeftJoystick >= xDeadzone) {
+//                            Game.getStaticLogger().info(2 + " assuming left");
+//                            horizontal += (xValueLeftJoystick * playerVelMultiplier);
 //
-//                            if(oldHorizontal != horizontal) {
-//                                Game.getLogger().info("Updating -5 horizontal");
+//                            if (oldHorizontal != horizontal) {
+//                                Game.getStaticLogger().info("Updating -5 horizontal");
 //                                oldHorizontal = (int) horizontal;
-//                                toUpdate = true;
 //                            }
 //                        }
 //                    }
 //
-//                    if (!(yValuePercentageLeftJoystick >= 40 && yValuePercentageLeftJoystick <= 60)) {
+//                    if (yValueLeftJoystick <= -yDeadzone || yValueLeftJoystick >= yDeadzone) {
 //
-//                        if (yValuePercentageLeftJoystick >= 50 && yValuePercentageLeftJoystick <= 100) {
-//                            Game.getLogger().info(3 + " assuming down " + yValuePercentageLeftJoystick);
-//                            vertical = (((double) yValuePercentageLeftJoystick / 100.0) * 5.0);
+//                        if (yValueLeftJoystick <= -yDeadzone) {
+//                            Game.getStaticLogger().info(3 + " assuming down " + yValueLeftJoystick);
+//                            vertical += yValueLeftJoystick * playerVelMultiplier;
 //
-//                            if(oldVertical != vertical) {
-//                                Game.getLogger().info("Updating 5 vertical");
+//                            if (oldVertical != vertical) {
+//                                Game.getStaticLogger().info("Updating 5 vertical");
 //                                oldVertical = (int) vertical;
-//                                toUpdate = true;
 //                            }
 //                        }
-//                        if (yValuePercentageLeftJoystick <= 50) {
+//                        if (yValueLeftJoystick >= yDeadzone) {
 //                            //Game.getLogger().info(4 + " assuming up" + yValuePercentageLeftJoystick);
 //
-//                             vertical = (((double) yValuePercentageLeftJoystick / 100.0) * 5.0) * -1;
+//                            vertical += (yValueLeftJoystick * playerVelMultiplier);
 //
-//                            if(oldVertical != vertical) {
-//                                Game.getLogger().info("Updating -5 vertical");
+//                            if (oldVertical != vertical) {
+//                                Game.getStaticLogger().info("Updating -5 vertical");
 //                                oldVertical = (int) vertical;
-//                                toUpdate = true;
 //                            }
 //                        }
 //                    }
 //
-//                    if(yValuePercentageLeftJoystick >= 40 && yValuePercentageLeftJoystick <= 60) {
-//                        if(oldVertical != vertical) {
-//                            oldHorizontal = (int) horizontal;
-//                            toUpdate = true;
-//                        }
+//
+//                    if (Game.getScreen() == null && (Game.getMainPlayer().getVelX() != horizontal || Game.getMainPlayer().getVelY() != vertical)) {
+//                        updatePlayer(vertical, horizontal);
 //                    }
 //
-//                    if(xValuePercentageLeftJoystick >= 40 && xValuePercentageLeftJoystick <= 60) {
-//                        if(oldHorizontal != horizontal) {
-//                            oldHorizontal = (int) horizontal;
-//                            toUpdate = true;
-//                        }
-//                    }
 //
-//                    if(Game.getScreen() == null) {
-//
-//
-//
-//                        if(toUpdate) {
-//                            updatePlayer(vertical,horizontal);
-//                            update();
-//                        }
-//                    }
 //                }
-//            }else{
+//// gamepad type controller
+//                // Right controller joystick
+//
+//
+//            } else {
 //                InputHandler.inputType = InputType.KEYBOARD;
 //            }
 //        }
@@ -236,22 +204,13 @@ public class JoystickHandler {
 
         Game.getMainPlayer().setVelY(vertical);
         Game.getMainPlayer().setVelX(horizontal);
-    }
-
-    public void update() {
-
-
-        if(Game.getScreen() == null) {
-            Game.getStaticEntityRegistry().addEntityObject(Game.getMainPlayer());
-            Game.getLogger().info("Updated " + Game.getMainPlayer());
-        }
-
-
 
         if(Game.getScreen() == null && Game.getClient() != null) {
             Game.getClient().sendObject(new SendToServerPlayerInfoPacket(Game.getMainPlayer(), Game.getStaticEntityRegistry().getObjectsAndHashCode()));
         }
     }
+
+
 }
 
 

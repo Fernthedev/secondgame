@@ -18,6 +18,8 @@ public class UniversalHandler {
 
     public static final int MULTIPLAYER_PORT = 3000;
 
+    public static final int PLAYER_VEL_MULTIPLIER = 5;
+
     @Getter
     @Setter
     private static IGame iGame;

@@ -6,6 +6,7 @@
 package io.github.fernthedev.secondgame.main.inputs.keyboard;
 
 import com.github.fernthedev.packets.player_updates.SendToServerPlayerInfoPacket;
+import com.github.fernthedev.universal.UniversalHandler;
 import io.github.fernthedev.secondgame.main.Game;
 import io.github.fernthedev.secondgame.main.inputs.InputHandler;
 import io.github.fernthedev.secondgame.main.inputs.InputType;
@@ -22,7 +23,7 @@ public class KeyInput extends KeyAdapter {
     private boolean toUpdate = false;
     private final Game game;
 
-    private final int velMultiplier = 5;
+
 
     public KeyInput(Game game) {
         this.game = game;
@@ -104,6 +105,7 @@ public class KeyInput extends KeyAdapter {
 
             int velX = 0, velY = 0;
 
+            int velMultiplier = UniversalHandler.PLAYER_VEL_MULTIPLIER;
             if (registerKey(KeyEvent.VK_W).isHeld()) {
                 velY += -velMultiplier;
             }
