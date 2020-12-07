@@ -24,7 +24,7 @@ switch (OperatingSystem.current()) {
 
 
 dependencies {
-    implementation project(':universal')
+    api project(':universal')
     implementation project(':server')
     implementation "com.github.Fernthedev.light-chat:client:$lightchat"
     implementation 'net.java.jinput:coreapi:2.0.9'

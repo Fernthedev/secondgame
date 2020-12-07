@@ -1,9 +1,11 @@
+apply plugin: 'kotlin'
 apply plugin: 'application'
+apply plugin: 'org.jetbrains.kotlin.jvm'
 
 dependencies {
-    compile project(':universal')
-    compile "com.github.Fernthedev.light-chat:server:$lightchat"
-    compile "com.github.Fernthedev.light-chat:terminal-server:${isBetaLight ? lightchat : "1.0.0-$lightchat"}"
+    api project(':universal')
+    implementation "com.github.Fernthedev.light-chat:server:$lightchat"
+    implementation "com.github.Fernthedev.light-chat:terminal-server:${isBetaLight ? lightchat : "1.0.0-$lightchat"}"
 }
 
 application {
