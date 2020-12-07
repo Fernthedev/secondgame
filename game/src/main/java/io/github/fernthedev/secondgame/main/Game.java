@@ -156,7 +156,7 @@ public class Game extends Canvas implements Runnable, IGame {
 //        handler = new Handler(hud);
         staticEntityRegistry = new NewClientEntityRegistry();
 
-        testJoyStick = new JoystickHandler(this);
+        testJoyStick = new JoystickHandler();
 
 
         setScreen(new MainMenu());
@@ -287,7 +287,7 @@ public class Game extends Canvas implements Runnable, IGame {
             }
 
 //            handler.tick();
-            testJoyStick.tick();
+//            testJoyStick.tick();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -459,5 +459,9 @@ public class Game extends Canvas implements Runnable, IGame {
     @Override
     public INewEntityRegistry getEntityRegistry() {
         return staticEntityRegistry;
+    }
+
+    public Logger getLoggerImpl() {
+        return logger;
     }
 }

@@ -2,7 +2,6 @@ package com.github.fernthedev;
 
 import com.github.fernthedev.fernutils.thread.ThreadUtils;
 import com.github.fernthedev.fernutils.thread.multiple.TaskInfoList;
-import com.github.fernthedev.lightchat.core.StaticHandler;
 import com.github.fernthedev.universal.EntityID;
 import com.github.fernthedev.universal.GameObject;
 import com.github.fernthedev.universal.UniversalHandler;
@@ -19,8 +18,6 @@ public abstract class INewEntityRegistry extends TickRunnable {
 
     @Getter
     protected Map<@NonNull UUID, @NonNull GameObject> gameObjects = Collections.synchronizedMap(new HashMap<>());
-
-    private int time = 10;
 
     public void addEntityObject(@NonNull GameObject gameObject) {
         gameObjects.put(gameObject.getUniqueId(), gameObject);
@@ -44,7 +41,7 @@ public abstract class INewEntityRegistry extends TickRunnable {
                 if (tempObject.getEntityId() == EntityID.COIN) {
                     universalPlayer.setCoin(universalPlayer.getCoin() + 1);
                     removeEntityObject(tempObject);
-                    StaticHandler.getCore().getLogger().info("COllision checking! COIN");
+                    UniversalHandler.getIGame().getLoggerImpl().info("COllision checking! COIN");
                     // this.handler.removeObject(tempObject);
                 }
             }
@@ -70,8 +67,6 @@ public abstract class INewEntityRegistry extends TickRunnable {
         // Wait for all objects to finish ticking
         taskInfoList.awaitFinish(1);
         stopwatch.stop();
-
-        StaticHandler.setDebug(false);
     }
 
 

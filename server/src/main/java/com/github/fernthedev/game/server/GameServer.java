@@ -20,6 +20,7 @@ import com.github.fernthedev.lightchat.server.terminal.ServerTerminalSettings;
 import com.github.fernthedev.lightchat.server.terminal.command.Command;
 import com.github.fernthedev.universal.UniversalHandler;
 import lombok.Getter;
+import org.slf4j.Logger;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -146,5 +147,10 @@ public class GameServer extends ServerTerminal implements IGame {
     @Override
     public NewServerEntityRegistry getEntityRegistry() {
         return serverGameHandler.getEntityHandler();
+    }
+
+    @Override
+    public Logger getLoggerImpl() {
+        return server.getLogger();
     }
 }
