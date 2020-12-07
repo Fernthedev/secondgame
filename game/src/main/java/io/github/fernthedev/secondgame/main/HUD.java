@@ -73,7 +73,11 @@ public class HUD {
             g.drawString("Level: " + this.level, 15, 80);
             g.drawString("Coins: " + Game.getMainPlayer().getCoin(), 15, 96);
             if (Game.getClient() != null) {
-                g.drawString("Ping: " + Game.getClient().getPingTime(TimeUnit.MILLISECONDS) + "ms",15, 112);
+                try {
+                    g.drawString("Ping: " + Game.getClient().getPingTime(TimeUnit.MILLISECONDS) + "ms", 15, 112);
+                } catch (RuntimeException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
