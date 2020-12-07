@@ -37,7 +37,7 @@ public class GameNetworkProcessingHandler extends ChannelInboundHandlerAdapter i
 
 
 //        clientConnection.sendObject(new SendToServerPlayerInfoPacket(universalPlayer));
-        server.getServerGameHandler().getEntityHandler().onEntityUpdate();
+        server.getServerGameHandler().getEntityHandler().finishEntityUpdate();
     }
 
     @EventHandler

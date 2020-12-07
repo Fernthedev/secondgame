@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 
 @RequiredArgsConstructor
 public class NewServerEntityRegistry extends INewEntityRegistry {
@@ -60,17 +61,11 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
         StaticHandler.getCore().getLogger().debug("Attempting to update info {}", universalPlayer);
     }
 
-
     @Override
-    public void addEntityObject(GameObject gameObject) {
-        super.addEntityObject(gameObject);
-    }
+    public void tick() {
+        super.tick();
 
-    @Override
-    public void removeEntityObject(GameObject gameObject) {
-        super.removeEntityObject(gameObject);
-
-        StaticHandler.getCore().getLogger().debug("Removed {}", gameObject.entityId);
+        finishEntityUpdate();
     }
 
     @Override
@@ -121,18 +116,13 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
         return result;
     }
 
-    public void onEntityUpdate() {
-        server.getServerGameHandler().getPlayerPollUpdateThread().getSendUpdate().set(true);
+    @Override
+    protected ExecutorService getExecutorService() {
+        return server.getServer().getExecutorService();
     }
 
-    /**
-     * Individually handle every updated player
-     *
-     * @param entityPlayer
-     */
-    @Override
-    protected void playerUpdate(EntityPlayer entityPlayer) {
-
+    public void finishEntityUpdate() {
+        server.getServerGameHandler().getPlayerPollUpdateThread().getSendUpdate().set(true);
     }
 
     public void removeRespawnAllPlayers() {
@@ -147,7 +137,7 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
             addEntityObject(clientGameData.getEntityPlayer());
         });
 
-        server.getServerGameHandler().getEntityHandler().onEntityUpdate();
+        server.getServerGameHandler().getEntityHandler().finishEntityUpdate();
     }
 
     public void handleClientRespond(ClientConnection clientPlayer, SendToServerPlayerInfoPacket infoPacket) {

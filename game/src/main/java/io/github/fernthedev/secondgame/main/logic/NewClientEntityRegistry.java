@@ -19,11 +19,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class NewClientEntityRegistry extends INewEntityRegistry {
 
+    private final ExecutorService executorService = Executors.newCachedThreadPool();
     private Stopwatch stopwatch = Stopwatch.createUnstarted();
 
     public NewClientEntityRegistry() {
@@ -75,11 +78,8 @@ public class NewClientEntityRegistry extends INewEntityRegistry {
 
     @Override
     protected String clampAndTP(GameObject gameObject) {
-        if (Game.getClient() == null && Game.getGameServer() == null)
+        if ((Game.getClient() == null && Game.getGameServer() == null) || (gameObject != null && Game.getMainPlayer() != null && gameObject.getUniqueId() == Game.getMainPlayer().getUniqueId()))
             return super.clampAndTP(gameObject);
-        else if (gameObject != null && Game.getMainPlayer() != null && gameObject.getUniqueId() == Game.getMainPlayer().getUniqueId())
-            return super.clampAndTP(gameObject);
-
 
         return null;
     }
@@ -87,6 +87,8 @@ public class NewClientEntityRegistry extends INewEntityRegistry {
     @Override
     public void tick() {
         super.tick();
+
+        finishEntityUpdate();
 
         if (Game.getClient() != null && !stopwatch.isRunning())
             stopwatch.start();
@@ -98,14 +100,8 @@ public class NewClientEntityRegistry extends INewEntityRegistry {
         }
     }
 
-    @Override
-    protected void onEntityUpdate() {
-//        for (GameObject gameObject : new ArrayList<>(gameObjects.values()
-//                .parallelStream()
-//                .filter(gameObject -> !(gameObject instanceof Trail))
-//                .collect(Collectors.toList()))
-//        ) {
 
+    protected void finishEntityUpdate() {
         new ArrayList<>(gameObjects.values())
                 .parallelStream()
                 .filter(gameObject -> !(gameObject instanceof Trail) && gameObject.isHasTrail())
@@ -118,21 +114,14 @@ public class NewClientEntityRegistry extends INewEntityRegistry {
                     }
                 });
 
-//        }
     }
 
 
 
     public void clearObjects() {
-        // List<GameObject> gameObjects = new ArrayList<>(ClientEntityHandler.gameObjects);
-
         new DebugException("Cleared objects").printStackTrace();
         Game.getLogger().info("Clearing ");
         getGameObjects().clear();
-
-//
-//        ThingHandler.getGameObjects().clear();
-//        ThingHandler.getGameObjectMap().clear();
 
     }
 
@@ -169,15 +158,7 @@ public class NewClientEntityRegistry extends INewEntityRegistry {
         // addObject(player);
     }
 
-    /**
-     * Individually handle every updated player
-     *
-     * @param entityPlayer
-     */
-    @Override
-    protected void playerUpdate(EntityPlayer entityPlayer) {
 
-    }
 
     protected <T extends GameObject> void renderEntity(Graphics g, T object) {
         IEntityRenderer<T> entityRenderer = (IEntityRenderer<T>) getRenderer(object.getClass());
@@ -199,5 +180,10 @@ public class NewClientEntityRegistry extends INewEntityRegistry {
                 .filter(uuid -> uuidGameObjectMap.get(uuid) != null && !(uuidGameObjectMap.get(uuid) instanceof Trail) && !(uuidGameObjectMap.get(uuid) instanceof MenuParticle))
                 .collect(Collectors.toSet())
         );
+    }
+
+    @Override
+    protected ExecutorService getExecutorService() {
+        return executorService;
     }
 }

@@ -1,14 +1,18 @@
 package com.github.fernthedev;
 
+import com.github.fernthedev.fernutils.thread.ThreadUtils;
+import com.github.fernthedev.fernutils.thread.multiple.TaskInfoList;
 import com.github.fernthedev.lightchat.core.StaticHandler;
 import com.github.fernthedev.universal.EntityID;
 import com.github.fernthedev.universal.GameObject;
 import com.github.fernthedev.universal.UniversalHandler;
 import com.github.fernthedev.universal.entity.EntityPlayer;
+import com.google.common.base.Stopwatch;
 import lombok.Getter;
 import lombok.NonNull;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 public abstract class INewEntityRegistry extends TickRunnable {
@@ -16,15 +20,10 @@ public abstract class INewEntityRegistry extends TickRunnable {
     @Getter
     protected Map<@NonNull UUID, @NonNull GameObject> gameObjects = Collections.synchronizedMap(new HashMap<>());
 
-    private final List<UUID> updatedPlayers = Collections.synchronizedList(new ArrayList<>());
-
-
+    private int time = 10;
 
     public void addEntityObject(@NonNull GameObject gameObject) {
-        if (!gameObjects.containsKey(gameObject.getUniqueId()))
-            gameObjects.put(gameObject.getUniqueId(), gameObject);
-        else
-            gameObjects.put(gameObject.getUniqueId(), gameObject);
+        gameObjects.put(gameObject.getUniqueId(), gameObject);
     }
 
     public void removeEntityObject(GameObject gameObject) {
@@ -32,7 +31,6 @@ public abstract class INewEntityRegistry extends TickRunnable {
     }
 
     public void collisionCheck(EntityPlayer universalPlayer) {
-
         List<GameObject> gameObjectsCheck = copyGameObjectsAsList();
 
         for (GameObject tempObject : gameObjectsCheck) {
@@ -40,14 +38,12 @@ public abstract class INewEntityRegistry extends TickRunnable {
                 if (tempObject.getEntityId() == EntityID.ENEMY) {
                     //COLLISION CODE
                     universalPlayer.setHealth(universalPlayer.getHealth() - 2);
-                    addToUpdateList(universalPlayer);
                 }
 
 
                 if (tempObject.getEntityId() == EntityID.COIN) {
                     universalPlayer.setCoin(universalPlayer.getCoin() + 1);
                     removeEntityObject(tempObject);
-                    addToUpdateList(universalPlayer);
                     StaticHandler.getCore().getLogger().info("COllision checking! COIN");
                     // this.handler.removeObject(tempObject);
                 }
@@ -58,33 +54,27 @@ public abstract class INewEntityRegistry extends TickRunnable {
     public void tick() {
         List<GameObject> objects = copyGameObjectsAsList();
 
-        for (GameObject tempObject : objects) {
+
+        TaskInfoList taskInfoList = ThreadUtils.runForLoopAsync(objects, tempObject -> {
             tempObject.tick();
 
             clampAndTP(tempObject);
 
             if (tempObject instanceof EntityPlayer)
                 collisionCheck((EntityPlayer) tempObject);
-        }
+        });
 
-        onEntityUpdate();
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        taskInfoList.runThreads(getExecutorService());
 
-        if (!updatedPlayers.isEmpty())
-            new ArrayList<>(updatedPlayers).parallelStream().forEach(uuid -> {
-                playerUpdate((EntityPlayer) getGameObjects().get(uuid));
-                updatedPlayers.remove(uuid);
-            });
+        // Wait for all objects to finish ticking
+        taskInfoList.awaitFinish(1);
+        stopwatch.stop();
 
-
-        new HashMap<>(gameObjects).forEach((uuid, gameObjectIntegerPair) -> registerUpdatedObjectTime(gameObjectIntegerPair));
+        StaticHandler.setDebug(false);
     }
 
-    /**
-     * Registers the object last modified time
-     */
-    protected void registerUpdatedObjectTime(GameObject gameObject) {
-        getGameObjects().put(gameObject.getUniqueId(), gameObject);
-    }
+
 
     protected String clampAndTP(GameObject gameObject) {
 
@@ -114,9 +104,6 @@ public abstract class INewEntityRegistry extends TickRunnable {
         return result;
     }
 
-    protected void addToUpdateList(EntityPlayer entityPlayer) {
-        if (!updatedPlayers.contains(entityPlayer.getUniqueId())) updatedPlayers.add(entityPlayer.getUniqueId());
-    }
 
     public Map<UUID, GameObject> copyGameObjectsAsMap() {
         return new HashMap<>(getGameObjects());
@@ -143,12 +130,8 @@ public abstract class INewEntityRegistry extends TickRunnable {
         return map;
     }
 
-    protected abstract void onEntityUpdate();
 
 
-    /**
-     * Individually handle every updated player
-     * @param entityPlayer
-     */
-    protected abstract void playerUpdate(EntityPlayer entityPlayer);
+
+    protected abstract ExecutorService getExecutorService();
 }
