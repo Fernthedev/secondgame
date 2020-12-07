@@ -39,13 +39,7 @@ public class SmartEnemy extends GameObject {
 
 
         GameObject player = null;
-        Map<@NonNull UUID, @NonNull GameObject> objects;
-        try {
-             objects = new HashMap<>(UniversalHandler.getIGame().getEntityRegistry().getGameObjects());
-        } catch (ConcurrentModificationException e) {
-            e.printStackTrace();
-            return;
-        }
+        Map<@NonNull UUID, @NonNull GameObject> objects = UniversalHandler.getIGame().getEntityRegistry().getGameObjects();
 
         if (!objects.containsKey(playerUUID)) {
             Optional<@NonNull GameObject> option = objects
