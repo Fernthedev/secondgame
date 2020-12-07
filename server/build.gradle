@@ -4,8 +4,8 @@ apply plugin: 'org.jetbrains.kotlin.jvm'
 
 dependencies {
     api project(':universal')
-    implementation "com.github.Fernthedev.light-chat:server:$lightchat"
-    implementation "com.github.Fernthedev.light-chat:terminal-server:${isBetaLight ? lightchat : "1.0.0-$lightchat"}"
+    api "com.github.Fernthedev.light-chat:server:$lightchat"
+    api "com.github.Fernthedev.light-chat:terminal-server:${isBetaLight ? lightchat : "1.0.0-$lightchat"}"
 }
 
 application {
