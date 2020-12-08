@@ -16,6 +16,7 @@ import com.github.fernthedev.lightchat.client.Client;
 import com.github.fernthedev.lightchat.core.StaticHandler;
 import com.github.fernthedev.lightchat.core.api.event.api.EventHandler;
 import com.github.fernthedev.lightchat.core.api.event.api.Listener;
+import com.github.fernthedev.lightchat.core.codecs.general.compression.CompressionAlgorithm;
 import com.github.fernthedev.lightchat.server.event.ServerStartupEvent;
 import com.github.fernthedev.universal.UniversalHandler;
 import com.github.fernthedev.universal.entity.EntityPlayer;
@@ -148,9 +149,14 @@ public class Game extends Canvas implements Runnable, IGame {
         logger.info("Loaded icon");
 
         UniversalHandler.setIGame(this);
+        Settings settings = new Settings();
 
-        gameSettings = new GsonConfig<>(new Settings(), new File("./config_settings.json"));
+        settings.setCompressionAlgorithm(CompressionAlgorithm.ZLIB);
+        settings.setCompressionLevel(6);
+
+        gameSettings = new GsonConfig<>(settings, new File("./config_settings.json"));
         gameSettings.load();
+        gameSettings.save();
         hud = new HUD();
 
 //        handler = new Handler(hud);
@@ -403,6 +409,7 @@ public class Game extends Canvas implements Runnable, IGame {
 
 
         Client client = new Client(getGameSettings().getConfigData().getHost(), getGameSettings().getConfigData().getPort());
+        client.setClientSettingsManager(getGameSettings());
         client.setMaxPacketId(CommonUtil.MAX_PACKET_IDS);
         Game.setClient(client);
         Game.setScreen(null);

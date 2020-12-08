@@ -3,6 +3,7 @@ package com.github.fernthedev.game.server;
 
 import com.github.fernthedev.CommonUtil;
 import com.github.fernthedev.IGame;
+import com.github.fernthedev.config.gson.GsonConfig;
 import com.github.fernthedev.exceptions.DebugException;
 import com.github.fernthedev.fernutils.console.ArgumentArrayUtils;
 import com.github.fernthedev.game.server.game_handler.GameNetworkProcessingHandler;
@@ -11,17 +12,21 @@ import com.github.fernthedev.lightchat.core.ColorCode;
 import com.github.fernthedev.lightchat.core.StaticHandler;
 import com.github.fernthedev.lightchat.core.api.event.api.EventHandler;
 import com.github.fernthedev.lightchat.core.api.event.api.Listener;
+import com.github.fernthedev.lightchat.core.codecs.general.compression.CompressionAlgorithm;
 import com.github.fernthedev.lightchat.server.SenderInterface;
 import com.github.fernthedev.lightchat.server.Server;
 import com.github.fernthedev.lightchat.server.event.ServerShutdownEvent;
 import com.github.fernthedev.lightchat.server.event.ServerStartupEvent;
+import com.github.fernthedev.lightchat.server.settings.ServerSettings;
 import com.github.fernthedev.lightchat.server.terminal.ServerTerminal;
 import com.github.fernthedev.lightchat.server.terminal.ServerTerminalSettings;
 import com.github.fernthedev.lightchat.server.terminal.command.Command;
 import com.github.fernthedev.universal.UniversalHandler;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 
+import java.io.File;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class GameServer extends ServerTerminal implements IGame {
@@ -35,6 +40,7 @@ public class GameServer extends ServerTerminal implements IGame {
     @Getter
     private Thread serverThread;
 
+    @SneakyThrows
     public GameServer(String[] args, int defaultPort, NewServerEntityRegistry entityHandler) {
         entityHandler.setServer(this);
         new DebugException().printStackTrace();
@@ -63,13 +69,18 @@ public class GameServer extends ServerTerminal implements IGame {
                 .handle("-debug", queue -> StaticHandler.setDebug(true))
                 .apply();
 
+        ServerSettings serverSettings = new ServerSettings();
+
+        serverSettings.setCompressionLevel(8);
+        serverSettings.setCompressionAlgorithm(CompressionAlgorithm.ZLIB);
+
         init(args,
                 ServerTerminalSettings.builder()
                         .port(port.get())
                         .allowChangePassword(false)
                         .allowTermPackets(false)
+                        .serverSettings(new GsonConfig<>(serverSettings, new File("settings.json")))
                         .build());
-
 
 
         server.setMaxPacketId(CommonUtil.MAX_PACKET_IDS);
