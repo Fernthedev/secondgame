@@ -103,6 +103,8 @@ allprojects {
             exclude (dependency('org.jline:.*:.*') )
             exclude (dependency('commons-logging:.*:.*') )
             exclude (dependency('net.minecrell:.*:.*') )
+            exclude (dependency('com.jcraft:jzlib'))
+            exclude (dependency('org.lz4:lz4-java'))
             exclude ('.**/Log4j2Plugins.dat' )
         }
         mergeServiceFiles()
