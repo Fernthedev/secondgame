@@ -41,7 +41,7 @@ public class GameServer extends ServerTerminal implements IGame {
     private Thread serverThread;
 
     @SneakyThrows
-    public GameServer(String[] args, int defaultPort, NewServerEntityRegistry entityHandler) {
+    public GameServer(String[] args, int defaultPort, NewServerEntityRegistry entityHandler, boolean terminal) {
         entityHandler.setServer(this);
         new DebugException().printStackTrace();
 
@@ -79,6 +79,7 @@ public class GameServer extends ServerTerminal implements IGame {
                         .port(port.get())
                         .allowChangePassword(false)
                         .allowTermPackets(false)
+                        .launchConsoleInCMDWhenNone(terminal)
                         .serverSettings(new GsonConfig<>(serverSettings, new File("settings.json")))
                         .build());
 
@@ -147,7 +148,7 @@ public class GameServer extends ServerTerminal implements IGame {
     }
 
     public static void main(String[] args) {
-        new GameServer(args, UniversalHandler.MULTIPLAYER_PORT, new NewServerEntityRegistry());
+        new GameServer(args, UniversalHandler.MULTIPLAYER_PORT, new NewServerEntityRegistry(), true);
 
         server.addShutdownListener(() -> {
             server.getLogger().info(ColorCode.RED + "Goodbye!");

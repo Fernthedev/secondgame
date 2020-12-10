@@ -445,7 +445,7 @@ public class Game extends Canvas implements Runnable, IGame {
 
         staticEntityRegistry.setServerEntityRegistry(new NewServerEntityRegistry());
 
-        GameServer server = new GameServer(new String[0], UniversalHandler.MULTIPLAYER_PORT, staticEntityRegistry.getServerEntityRegistry());
+        GameServer server = new GameServer(new String[0], UniversalHandler.MULTIPLAYER_PORT, staticEntityRegistry.getServerEntityRegistry(), true /* TODO: Remove */);
 
         Game.setGameServer(server);
 
