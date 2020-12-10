@@ -23,8 +23,13 @@ public abstract class INewEntityRegistry extends TickRunnable {
         gameObjects.put(gameObject.getUniqueId(), gameObject);
     }
 
+
+    public void removeEntityObject(UUID gameObject) {
+        gameObjects.remove(gameObject);
+    }
+
     public void removeEntityObject(GameObject gameObject) {
-        gameObjects.remove(gameObject.getUniqueId());
+        removeEntityObject(gameObject.getUniqueId());
     }
 
     public void collisionCheck(EntityPlayer universalPlayer) {

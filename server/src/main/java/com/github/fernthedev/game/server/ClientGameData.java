@@ -14,6 +14,8 @@ public class ClientGameData {
     @NonNull
     private final ClientConnection clientConnection;
 
+    @NonNull
+    private UUID uuid;
 
     @NonNull
     private EntityPlayer entityPlayer;

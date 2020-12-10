@@ -44,6 +44,8 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
 
     public void removeClientData(ClientConnection connection) {
         clientGameDataMap.remove(connection);
+
+        removeEntityObject(connection.getUuid());
     }
 
 

@@ -78,6 +78,7 @@ public class ServerGameHandler extends TickRunnable {
                 }).runThreads(server.getExecutorService());
 
                 entityHandler.getGameObjects().clear();
+                entityHandler.getClientGameDataMap().clear();
             }
 
         }

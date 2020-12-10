@@ -31,7 +31,7 @@ public class GameNetworkProcessingHandler extends ChannelInboundHandlerAdapter i
 
         EntityPlayer universalPlayer = new EntityPlayer((float) UniversalHandler.WIDTH / 2 - 32, (float) UniversalHandler.HEIGHT / 2 - 32, clientConnection.getName());
 
-        server.getServerGameHandler().getEntityHandler().addClientData(clientConnection, new ClientGameData(clientConnection, universalPlayer), Objects.hash(new Object()));
+        server.getServerGameHandler().getEntityHandler().addClientData(clientConnection, new ClientGameData(clientConnection, universalPlayer.getUniqueId(), universalPlayer), Objects.hash(new Object()));
 
 //        server.getServerGameHandler().getEntityHandler().updatePlayerObject(clientConnection, universalPlayer);
 
@@ -42,8 +42,8 @@ public class GameNetworkProcessingHandler extends ChannelInboundHandlerAdapter i
 
     @EventHandler
     public void onLeave(PlayerDisconnectEvent e) {
-        server.getServerGameHandler().getEntityHandler().removeEntityObject(server.getServerGameHandler().getEntityHandler().getClientData(e.getDisconnectedPlayer()).getEntityPlayer());
         server.getServerGameHandler().getEntityHandler().removeClientData(e.getDisconnectedPlayer());
+
         StaticHandler.getCore().getLogger().debug("Removed player {}", e.getDisconnectedPlayer().getName());
     }
 
