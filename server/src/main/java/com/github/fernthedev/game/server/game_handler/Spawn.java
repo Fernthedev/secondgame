@@ -36,6 +36,7 @@ public class Spawn {
                 server.getServerGameHandler().getEntityHandler().getGameObjects().clear();
             return;
         }
+
         scoreKeep++;
         //coinspawn = hud.getScore() + r.nextInt(512);
         //if (hud.getScore() == coinspawn) {
@@ -100,7 +101,9 @@ public class Spawn {
 
 
         if (timer >= nexttimer) {
-            nexttimer = r.nextInt(15) + 7;
+            int min = 7;
+            int max = 15;
+            nexttimer = r.nextInt(max - min) + min;
             timer = 0;
 
 
