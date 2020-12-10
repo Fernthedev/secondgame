@@ -9,8 +9,8 @@ import com.github.fernthedev.packets.object_updates.SendObjectsList;
 import com.github.fernthedev.universal.GameObject;
 import com.github.fernthedev.universal.entity.EntityPlayer;
 import com.github.fernthedev.universal.entity.NewGsonGameObject;
+import com.google.common.base.Stopwatch;
 import lombok.Getter;
-import org.apache.commons.lang3.time.StopWatch;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -29,6 +29,8 @@ public class PlayerPollUpdateThread extends Thread {
 
     @Getter
     private final AtomicBoolean sendUpdate = new AtomicBoolean(false);
+
+    private final Stopwatch updateStopwatch = Stopwatch.createStarted();
 
     public PlayerPollUpdateThread(GameServer gameServer) {
         this.gameServer = gameServer;
@@ -53,12 +55,19 @@ public class PlayerPollUpdateThread extends Thread {
                 sendUpdate.set(false);
 
                 update();
+                try {
+                    // TODO: Play around with value
+                    sleep(100);
+                } catch (InterruptedException e) {
+                    interrupt();
+                    e.printStackTrace();
+                }
             }
 
             try {
-                Thread.sleep(10);
+                sleep(10);
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+                interrupt();
                 e.printStackTrace();
             }
         }
@@ -69,22 +78,31 @@ public class PlayerPollUpdateThread extends Thread {
 
         int oldHashCode = entityHandler.getGameObjects().hashCode();
 
-        StopWatch stopWatch = StopWatch.createStarted();
+        Stopwatch stopWatch = Stopwatch.createStarted();
         List<ClientConnection> clientConnections = new ArrayList<>(entityHandler.getClientGameDataMap().keySet());
 
         List<CompletableFuture<Void>> completableFutures = new ArrayList<>();
 
+        AtomicBoolean changed = new AtomicBoolean(false);
+
         for (ClientConnection clientConnection : clientConnections) {
-            completableFutures.add(CompletableFuture.runAsync(() -> updatePlayerInfo(clientConnection), gameServer.getServer().getExecutorService()));
+            completableFutures.add(CompletableFuture.runAsync(() -> changed.set(updatePlayerInfo(clientConnection) || changed.get()), gameServer.getServer().getExecutorService()));
         }
+
+
 
         try {
             CompletableFuture.allOf(completableFutures.toArray(new CompletableFuture[0])).thenRun(() -> {
 
                 stopWatch.stop();
                 if (oldHashCode != entityHandler.getGameObjects().hashCode())
-                    StaticHandler.getCore().getLogger().debug("Updating players took {}", stopWatch.getTime(TimeUnit.MILLISECONDS));
+                    StaticHandler.getCore().getLogger().debug("Updating players took {}", stopWatch.elapsed(TimeUnit.MILLISECONDS));
 
+                if (changed.get()) {
+                    StaticHandler.getCore().getLogger().debug("{}ms since last update", updateStopwatch.elapsed(TimeUnit.MILLISECONDS));
+                    updateStopwatch.reset();
+                    updateStopwatch.start();
+                }
 
             }).get(30, TimeUnit.SECONDS);
 
@@ -100,7 +118,12 @@ public class PlayerPollUpdateThread extends Thread {
     }
 
 
-    private void updatePlayerInfo(ClientConnection clientPlayer) {
+    /**
+     *
+     * @param clientPlayer
+     * @return true if sent an update
+     */
+    private boolean updatePlayerInfo(ClientConnection clientPlayer) {
         Map<UUID, NewGsonGameObject> newGameObjects = new HashMap<>();
         ClientGameData clientGameData = gameServer.getEntityRegistry().getClientData(clientPlayer);
 
@@ -136,7 +159,7 @@ public class PlayerPollUpdateThread extends Thread {
             });
         } catch (ConcurrentModificationException e) {
             e.printStackTrace();
-            return;
+            return false;
         }
 
         SendObjectsList sendObjectsList = new SendObjectsList(
@@ -145,9 +168,15 @@ public class PlayerPollUpdateThread extends Thread {
 //      TODO:  if (newGameObjects.size() > 0)
 //            StaticHandler.getCore().getLogger().info("Changed objects: {}", newGameObjects.values().parallelStream().map(NewGsonGameObject::getClazz ).collect(Collectors.toList()));
 
-        if (!newGameObjects.isEmpty() || clientGameData.getClientSidePlayerHashCode() != clientGameData.getEntityPlayer().hashCode())
+        boolean result = false;
+
+        if (!newGameObjects.isEmpty() || clientGameData.getClientSidePlayerHashCode() != clientGameData.getEntityPlayer().hashCode()) {
             clientPlayer.sendObject(sendObjectsList);
+            result = true;
+        }
 
         clientGameData.setClientSidePlayerHashCode(clientGameData.getEntityPlayer().hashCode());
+
+        return result;
     }
 }

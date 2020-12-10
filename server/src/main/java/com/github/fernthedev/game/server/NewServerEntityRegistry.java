@@ -65,7 +65,8 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
     public void tick() {
         super.tick();
 
-        finishEntityUpdate();
+        if (!clientGameDataMap.isEmpty())
+            finishEntityUpdate();
     }
 
     @Override
