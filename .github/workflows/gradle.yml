@@ -34,10 +34,10 @@ jobs:
         name: Game files
         path: |
           game/build/libs
-          !*-old.jar
+          !/**-old.jar
     - uses: actions/upload-artifact@v2
       with:
         name: Server files
         path: |
           server/build/libs
-          !*-old.jar
+          !/**-old.jar
