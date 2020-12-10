@@ -156,7 +156,8 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
                 velYClamp,
                 oldPlayer.getColor(),
                 oldPlayer.getHealth(),
-                oldPlayer.getCoin()
+                oldPlayer.getCoin(),
+                oldPlayer.getName()
         );
 
         ClientGameData clientGameData = clientGameDataMap.get(clientPlayer);

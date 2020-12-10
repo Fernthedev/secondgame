@@ -29,7 +29,7 @@ public class GameNetworkProcessingHandler extends ChannelInboundHandlerAdapter i
         server.getServer().getLogger().info(ColorCode.YELLOW + "handling player " + e.getJoinPlayer().getName() + " giving data");
         ClientConnection clientConnection = e.getJoinPlayer();
 
-        EntityPlayer universalPlayer = new EntityPlayer((float) UniversalHandler.WIDTH / 2 - 32, (float) UniversalHandler.HEIGHT / 2 - 32);
+        EntityPlayer universalPlayer = new EntityPlayer((float) UniversalHandler.WIDTH / 2 - 32, (float) UniversalHandler.HEIGHT / 2 - 32, clientConnection.getName());
 
         server.getServerGameHandler().getEntityHandler().addClientData(clientConnection, new ClientGameData(clientConnection, universalPlayer), Objects.hash(new Object()));
 

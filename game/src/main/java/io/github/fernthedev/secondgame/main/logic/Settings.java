@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Settings extends ClientSettings {
 
+    private String name = "";
     private String host = "127.0.0.1";
     private int port = UniversalHandler.MULTIPLAYER_PORT;
 

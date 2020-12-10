@@ -5,6 +5,9 @@
 
 package io.github.fernthedev.secondgame.main;
 
+import io.github.fernthedev.secondgame.main.ui.api.ScreenFont;
+import lombok.Getter;
+
 import java.awt.*;
 import java.util.concurrent.TimeUnit;
 
@@ -15,6 +18,10 @@ public class HUD {
 
     public HUD() {
     }
+
+
+    @Getter
+    protected ScreenFont textFont = new ScreenFont(new Font("arial", Font.PLAIN, 12), Color.WHITE);
 
     public void tick() {
 
@@ -56,6 +63,7 @@ public class HUD {
 
     public void render(Graphics g) {
         if (Game.getMainPlayer() != null) {
+            g.setFont(textFont.getFont());
             g.setColor(Color.GRAY);
             g.fillRect(15, 15, 200, 32);
             g.setColor(new Color(75, this.greenvalue, 0));

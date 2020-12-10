@@ -12,6 +12,7 @@ import com.google.common.base.Stopwatch;
 import io.github.fernthedev.secondgame.main.Game;
 import io.github.fernthedev.secondgame.main.entities.CoinRenderer;
 import io.github.fernthedev.secondgame.main.entities.MenuParticle;
+import io.github.fernthedev.secondgame.main.entities.PlayerRender;
 import io.github.fernthedev.secondgame.main.entities.Trail;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,7 +35,7 @@ public class NewClientEntityRegistry extends INewEntityRegistry {
         registerEntity(BasicEnemy.class, defaultEntityRenderer);
         registerEntity(FastEnemy.class, defaultEntityRenderer);
         registerEntity(SmartEnemy.class, defaultEntityRenderer);
-        registerEntity(EntityPlayer.class,  defaultEntityRenderer);
+        registerEntity(EntityPlayer.class,  new PlayerRender());
         registerEntity(MenuParticle.class, defaultEntityRenderer);
         registerEntity(Trail.class, new Trail.Renderer());
 
@@ -129,7 +130,7 @@ public class NewClientEntityRegistry extends INewEntityRegistry {
     public void startGame() {
         clearObjects();
 
-        Game.setMainPlayer(new EntityPlayer((float) UniversalHandler.WIDTH / 2 - 32, (float) UniversalHandler.HEIGHT /2 - 32));
+        Game.setMainPlayer(new EntityPlayer((float) UniversalHandler.WIDTH / 2 - 32, (float) UniversalHandler.HEIGHT /2 - 32, ""));
 
         Game.setScreen(null);
         Random r = UniversalHandler.RANDOM;

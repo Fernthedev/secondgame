@@ -45,7 +45,6 @@ import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Random;
-import java.util.UUID;
 
 public class Game extends Canvas implements Runnable, IGame {
 //    public static final int WIDTHHH = 640, HEIGHTTTT =   WIDTHHH / 12 * 9;
@@ -419,9 +418,16 @@ public class Game extends Canvas implements Runnable, IGame {
         PacketHandler packetHandler = new PacketHandler();
         client.getPluginManager().registerEvents(packetHandler);
         client.addPacketHandler(packetHandler);
-        UUID uuid = UUID.randomUUID();
-        StaticHandler.getCore().getLogger().debug("Using uuid name: {}", uuid);
-        client.setName(uuid.toString());
+
+        String name = client.getName();
+
+        if (getGameSettings().getConfigData().getName() != null)
+            name = getGameSettings().getConfigData().getName();
+
+
+        StaticHandler.getCore().getLogger().debug("Using uuid name: {}", name);
+
+        client.setName(name);
 
         mainPlayer = null;
 

@@ -7,8 +7,4 @@ import java.awt.*;
 public interface IEntityRenderer<T extends GameObject> {
 
     void render(Graphics g, T gameObject);
-
-    default T getCastedObject(GameObject gameObject) {
-        return (T) gameObject;
-    }
 }
