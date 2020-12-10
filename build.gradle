@@ -20,12 +20,12 @@ allprojects {
     apply plugin: 'kotlin'
     apply plugin: 'org.jetbrains.kotlin.jvm'
 
-    ext.lightchat = "986de65"
+    ext.lightchat = "30626da"
     ext.isBetaLight = true
     ext.log4j_ver = "2.14.0"
 
 
-    group = 'com.github.fernthedev'
+    group = 'com.github.Fernthedev'
     version = '2.0.0'
 
     repositories {
@@ -36,10 +36,6 @@ allprojects {
     }
 
     dependencies {
-        implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4j_ver
-        implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: log4j_ver
-        implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: log4j_ver
-        implementation group: 'org.apache.logging.log4j', name: 'log4j-jul', version: log4j_ver
         implementation 'org.slf4j:slf4j-api:1.7.30'
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
         implementation 'com.github.Fernthedev:FernUtils:1.4.0'
@@ -85,16 +81,16 @@ allprojects {
         minimize() {
 
             // TODO: Figure out how to be specific with dependencies here
-            exclude (dependency('com.github.Fernthedev.light-chat:terminal-server') )
-            exclude (dependency('com.github.Fernthedev.light-chat:terminal-client') )
-            exclude (dependency('com.github.Fernthedev.light-chat:client') )
-            exclude (dependency('com.github.Fernthedev.light-chat:terminal-core') )
+
+//            exclude (dependency("${group}:server") )
+//            exclude (project(":server") )
 
             exclude (dependency('io.netty:netty-transport.*:.*') )
 //            exclude (dependency('log4j:log4j:.*') )
             exclude (dependency('org.apache.logging.log4j:log4j-core'))
-            exclude (dependency('org.apache.logging.log4j:.*:.*') )
-            exclude (dependency('org.apache.logging.log4j:'))
+            exclude (dependency('org.apache.logging.log4j:log4j-slf4j-impl'))
+
+            exclude (dependency('org.apache.logging.log4j:') )
             exclude (dependency('org.apache.commons:'))
 
             exclude (dependency('org.slf4j:.*:.*') )
