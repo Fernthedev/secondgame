@@ -127,12 +127,7 @@ public class NewServerEntityRegistry extends INewEntityRegistry {
     }
 
     public void removeRespawnAllPlayers() {
-        Map<@NonNull UUID, @NonNull GameObject> oldMap = new HashMap<>(server.getServerGameHandler().getEntityHandler().getGameObjects());
-
-        oldMap.keySet().parallelStream()
-                .filter(uuid -> !(oldMap.get(uuid) instanceof EntityPlayer))
-                .forEach(uuid -> removeEntityObject(oldMap.get(uuid)));
-
+        gameObjects.clear();
         clientGameDataMap.forEach((connection, clientGameData) -> {
             clientGameData.getEntityPlayer().setHealth(100);
             addEntityObject(clientGameData.getEntityPlayer());

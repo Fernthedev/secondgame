@@ -31,9 +31,8 @@ public class Spawn {
         if (!server.getServerGameHandler().isStarted()) return;
 
 //        System.out.println(server.getServerGameHandler().getEntityHandler().isClientDataEmpty() + " is empty");
-        if ((server.getServerGameHandler().getEntityHandler().isClientDataEmpty())) {
-            if (!server.getServerGameHandler().getEntityHandler().getGameObjects().isEmpty())
-                server.getServerGameHandler().getEntityHandler().getGameObjects().clear();
+        if (server.getServerGameHandler().getEntityHandler().isClientDataEmpty()) {
+            server.getServerGameHandler().getEntityHandler().getGameObjects().clear();
             return;
         }
 
