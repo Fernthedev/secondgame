@@ -421,8 +421,10 @@ public class Game extends Canvas implements Runnable, IGame {
 
         String name = client.getName();
 
-        if (getGameSettings().getConfigData().getName() != null)
-            name = getGameSettings().getConfigData().getName();
+        String configName = getGameSettings().getConfigData().getName();
+
+        if (configName != null && !configName.trim().isEmpty())
+            name = configName;
 
 
         StaticHandler.getCore().getLogger().debug("Using uuid name: {}", name);
