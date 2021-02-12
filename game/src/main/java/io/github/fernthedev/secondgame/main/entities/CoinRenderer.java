@@ -29,15 +29,15 @@ public class CoinRenderer implements IEntityRenderer<Coin>  {
     }*/
 
     @Override
-    public void render(Graphics g, Coin gameObject) {
+    public void render(Graphics g, Coin gameObject, float drawX, float drawY) {
         if (Game.fern$ <= 10) {
 
 //            g.setColor(color);
 //            g.fillRect((int)gameObject.getX(), (int)gameObject.getY(), 0, 0);
-            g.drawImage(coin_image, (int)gameObject.getX(), (int)gameObject.getY(), gameObject.getWidth(), gameObject.getHeight(), null);
+            g.drawImage(coin_image, (int)drawX, (int)drawY, gameObject.getWidth(), gameObject.getHeight(), null);
         } else {
             g.setColor(gameObject.getColor());
-            g.fillRect((int)gameObject.getX(), (int)gameObject.getY(), gameObject.getWidth(), gameObject.getHeight());
+            g.fillRect((int)drawX, (int)drawY, gameObject.getWidth(), gameObject.getHeight());
         }
     }
 

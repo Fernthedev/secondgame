@@ -20,6 +20,18 @@ public abstract class INewEntityRegistry extends TickRunnable {
     protected Map<@NonNull UUID, @NonNull GameObject> gameObjects = Collections.synchronizedMap(new HashMap<>());
 
     public void addEntityObject(@NonNull GameObject gameObject) {
+        // For interpolation
+        float prevX = gameObject.getPrevX();
+        float prevY = gameObject.getPrevY();
+
+        if (gameObjects.containsKey(gameObject.getUniqueId()) && gameObjects.get(gameObject.getUniqueId()).hashCode() != gameObject.hashCode()) {
+            prevX = gameObject.getX();
+            prevY = gameObject.getY();
+        }
+
+        gameObject.setPrevX(prevX);
+        gameObject.setPrevY(prevY);
+
         gameObjects.put(gameObject.getUniqueId(), gameObject);
     }
 

@@ -63,8 +63,8 @@ public class EntityPlayer extends GameObject {
     }
 
     public void tick() {
-        this.x = (float) (x + velX);
-        this.y = (float) (y + velY);
+        setX((float) (x + velX));
+        setY((float) (y + velY));
 
         // System.out.println(x + " " + y + " " + velX + " " + velY + " oooooooooooooooooooooooooooold " + (x + velX) + " " + (y + velY));
 //        x = UniversalHandler.clamp(x, 0, UniversalHandler.WIDTH - 37f);

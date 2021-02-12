@@ -12,7 +12,7 @@ import com.github.fernthedev.lightchat.core.ColorCode;
 import com.github.fernthedev.lightchat.core.StaticHandler;
 import com.github.fernthedev.lightchat.core.api.event.api.EventHandler;
 import com.github.fernthedev.lightchat.core.api.event.api.Listener;
-import com.github.fernthedev.lightchat.core.codecs.general.compression.CompressionAlgorithm;
+import com.github.fernthedev.lightchat.core.codecs.general.compression.CompressionAlgorithms;
 import com.github.fernthedev.lightchat.server.SenderInterface;
 import com.github.fernthedev.lightchat.server.Server;
 import com.github.fernthedev.lightchat.server.event.ServerShutdownEvent;
@@ -72,7 +72,7 @@ public class GameServer extends ServerTerminal implements IGame {
         ServerSettings serverSettings = new ServerSettings();
 
         serverSettings.setCompressionLevel(8);
-        serverSettings.setCompressionAlgorithm(CompressionAlgorithm.ZLIB);
+        serverSettings.setCompressionAlgorithm(CompressionAlgorithms.ZLIB_STR);
 
         init(args,
                 ServerTerminalSettings.builder()

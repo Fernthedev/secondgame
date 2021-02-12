@@ -16,7 +16,7 @@ import com.github.fernthedev.lightchat.client.Client;
 import com.github.fernthedev.lightchat.core.StaticHandler;
 import com.github.fernthedev.lightchat.core.api.event.api.EventHandler;
 import com.github.fernthedev.lightchat.core.api.event.api.Listener;
-import com.github.fernthedev.lightchat.core.codecs.general.compression.CompressionAlgorithm;
+import com.github.fernthedev.lightchat.core.codecs.general.compression.CompressionAlgorithms;
 import com.github.fernthedev.lightchat.server.event.ServerStartupEvent;
 import com.github.fernthedev.universal.UniversalHandler;
 import com.github.fernthedev.universal.entity.EntityPlayer;
@@ -74,7 +74,6 @@ public class Game extends Canvas implements Runnable, IGame {
     @Getter
     private static Config<Settings> gameSettings;
 
-    @Setter
     @Getter
     private static EntityPlayer mainPlayer;
 
@@ -110,34 +109,7 @@ public class Game extends Canvas implements Runnable, IGame {
      */
     public int dif = 0;
 
-    //public static int frames = 0;
-
-
-//    /**
-//     * GAME STATES
-//     */
-//    @Deprecated
-//    public enum STATE {
-//        MENU,
-//        HELP,
-//        END,
-//        GAME,
-//        MULTIPLAYER,
-//        HOSTING,
-//        GETTING_CONNECT,
-//        IN_SERVER,
-//        JOINING;
-//
-//        boolean isGame() {
-//            return this == GAME || this == HOSTING || this == IN_SERVER;
-//        }
-//    }
-
-
-//    /**
-//     * VARIABLE FOR ACCESSING STATES
-//     */
-//    public static STATE gameState = STATE.MENU;
+    private static double delta;
 
 
     /**
@@ -150,7 +122,7 @@ public class Game extends Canvas implements Runnable, IGame {
         UniversalHandler.setIGame(this);
         Settings settings = new Settings();
 
-        settings.setCompressionAlgorithm(CompressionAlgorithm.ZLIB);
+        settings.setCompressionAlgorithm(CompressionAlgorithms.ZLIB_STR);
         settings.setCompressionLevel(6);
 
         gameSettings = new GsonConfig<>(settings, new File("./config_settings.json"));
@@ -195,25 +167,19 @@ public class Game extends Canvas implements Runnable, IGame {
         long lastTime = System.nanoTime();
         double amountOfTicks = 60.0;
         double ns = 1000000000 / amountOfTicks;
-        double delta = 0;
+        delta = 0;
         long timer = System.currentTimeMillis();
         int frames = 0;
-
-//        final int TARGET_FPS = 60;
-//        final long OPTIMAL_TIME = 1000000000 / TARGET_FPS;
-      //  long lastLoopTime = System.nanoTime();
 
         while(running) {
             long now = System.nanoTime();
             delta += (now - lastTime) / ns;
             lastTime = now;
 
-           // long updateLength = now - lastLoopTime;
-           // lastLoopTime = now;
 
             while(delta >= 1) {
-                    tick();
-                    delta--;
+                tick();
+                delta--;
             }
 
             if (running)
@@ -469,6 +435,22 @@ public class Game extends Canvas implements Runnable, IGame {
     public static void setScreen(@Nullable Screen screen) {
         if (screen != null && screen.isSetParentScreenOnSet()) screen.setParentScreen(Game.screen);
         Game.screen = screen;
+    }
+
+    public static void setMainPlayer(EntityPlayer mainPlayer) {
+        if (Game.getMainPlayer() != null) {
+            float oldX = Game.getMainPlayer().getX();
+            float oldY = Game.getMainPlayer().getY();
+
+            mainPlayer.setPrevX(oldX);
+            mainPlayer.setPrevY(oldY);
+        }
+
+        Game.mainPlayer = mainPlayer;
+    }
+
+    public static double getElapsedTime() {
+        return delta;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package io.github.fernthedev.secondgame.main.ui;
 
+import com.github.fernthedev.lightchat.core.StaticHandler;
+import com.github.fernthedev.universal.entity.EntityPlayer;
 import io.github.fernthedev.secondgame.main.Game;
 import io.github.fernthedev.secondgame.main.ui.api.Screen;
 import io.github.fernthedev.secondgame.main.ui.api.ScreenButton;
@@ -17,9 +19,9 @@ public class MouseHandler extends MouseAdapter {
      */
     @Override
     public void mousePressed(MouseEvent e) {
+        int mx = e.getX();
+        int my = e.getY();
         if (Game.getScreen() != null) {
-            int mx = e.getX();
-            int my = e.getY();
             Screen screen = Game.getScreen();
 
             new ArrayList<>(screen.getButtonList()).parallelStream().forEach(screenButton -> {
@@ -27,6 +29,14 @@ public class MouseHandler extends MouseAdapter {
                     screenButton.getOnClick().run();
                 }
             });
+        } else {
+            // Debug tool
+            if (Game.getMainPlayer() != null && StaticHandler.isDebug()) {
+                EntityPlayer entityPlayer = Game.getMainPlayer();
+
+                entityPlayer.setX(mx);
+                entityPlayer.setY(my);
+            }
         }
     }
 

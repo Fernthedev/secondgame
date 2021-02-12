@@ -33,8 +33,8 @@ public class SmartEnemy extends GameObject {
     }
 
     public void tick() {
-        x += velX;
-        y += velY;
+        setX((float) (x + velX));
+        setY((float) (y + velY));
 
 
 

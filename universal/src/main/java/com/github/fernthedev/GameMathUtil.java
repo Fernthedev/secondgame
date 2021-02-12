@@ -90,4 +90,12 @@ public class GameMathUtil {
         }
         else return Math.max(var, min);
     }
+
+    public static float lerp(float start, float end, float time) {
+        return start + ((end - start) * time);
+    }
+
+    public static double lerp(double start, double end, double time) {
+        return start + ((end - start) * time);
+    }
 }

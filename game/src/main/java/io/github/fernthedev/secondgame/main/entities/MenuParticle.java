@@ -46,8 +46,8 @@ public class MenuParticle extends GameObject {
         if (velX == 0) velX = (r.nextInt(7 - -7) + -7);
         if (velY == 0) velY = (r.nextInt(7 - -7) + -7);
 
-        x += velX;
-        y += velY;
+        setX(x += velX);
+        setY(y += velY);
 
         if(x <= 0 || x >= UniversalHandler.WIDTH - 32)  velX *= -1;
         if(y <= 0 || y >= UniversalHandler.HEIGHT - 32)  velY *= -1;

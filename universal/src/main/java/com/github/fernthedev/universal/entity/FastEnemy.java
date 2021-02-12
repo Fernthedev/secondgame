@@ -24,8 +24,8 @@ public class FastEnemy extends GameObject {
     }
 
     public void tick() {
-        x += velX;
-        y += velY;
+        setX((float) (x + velX));
+        setY((float) (y + velY));
 
         if(x <= 0 || x >= UniversalHandler.WIDTH - width)  velX *= -1;
         if(y <= 0 || y >= UniversalHandler.HEIGHT - height*2)  velY *= -1;

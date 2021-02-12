@@ -21,7 +21,7 @@ public class Coin extends GameObject {
     }
 
     public void tick() {
-        this.x += this.velX;
-        this.y += this.velY;
+        setX((float) (x + velX));
+        setY((float) (y + velY));
     }
 }

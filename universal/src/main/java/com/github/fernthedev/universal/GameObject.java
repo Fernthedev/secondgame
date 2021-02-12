@@ -16,8 +16,11 @@ public abstract class GameObject implements Serializable {
     private static final long serialVersionUID = 9102545992378004553L;
 
     @Getter
-    @Setter
     protected float x, y;
+
+    @Getter
+    @Setter
+    protected float prevX, prevY;
 
     @Getter
     @Setter
@@ -46,6 +49,9 @@ public abstract class GameObject implements Serializable {
     protected GameObject(float x, float y, int width, int height, EntityID entityId, UUID uniqueId, double velX, double velY, Color color) {
         this.x = x;
         this.y = y;
+        this.prevX = x;
+        this.prevY = y;
+
         this.entityId = entityId;
         this.velY = velY;
         this.velX = velX;
@@ -80,41 +86,11 @@ public abstract class GameObject implements Serializable {
     @Deprecated
     protected GameObject() { }
 
-//    private static int getNextAvailableID() {
-//        int nextAvailableID = 0;
-//        while (UniversalHandler.getThingHandler().getGameObjectMap().containsKey(nextAvailableID)) {
-//            nextAvailableID++;
-//        }
-//        return nextAvailableID;
-//    }
-
-//    /**
-//     * @deprecated Replaced with {@link #getNextAvailableID()} since it grabs the next available ID
-//     * @return entity size + 1
-//     */
-//    @Deprecated
-//    private static int entityUp() {
-//        return entities = UniversalHandler.getThingHandler().getGameObjects().size();
-////        List<GameObject> gameObjectList = new ArrayList<>(UniversalHandler.getThingHandler().getGameObjects());
-////
-////
-////        for(int i = 0;i < gameObjectList.size();i++) {
-////
-////            if(gameObjectList.get(i) == null) {
-////                entities = i;
-////
-////                break;
-////            }
-////        }
-////
-////        if(entities < gameObjectList.size()) entities = gameObjectList.size() + 1;
-////
-////        return entities;
-//    }
-
     protected GameObject(GameObject gameObject) {
         this.x = gameObject.x;
         this.y = gameObject.y;
+        this.prevX = gameObject.prevX;
+        this.prevY = gameObject.prevY;
         this.entityId = gameObject.entityId;
         this.uniqueId = gameObject.getUniqueId();
         this.velX = gameObject.velX;
@@ -129,6 +105,9 @@ public abstract class GameObject implements Serializable {
     public GameObject(float x,float y, int width, int height, EntityID entityId, Color color) {
         this.x =x;
         this.y = y;
+        this.prevX = x;
+        this.prevY = y;
+
         this.entityId = entityId;
 
         this.width = width;
@@ -158,5 +137,15 @@ public abstract class GameObject implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(x, y, entityId.name(), velX, velY, uniqueId, color, width, height, hasTrail);
+    }
+
+    public void setX(float x) {
+        this.prevX = this.x;
+        this.x = x;
+    }
+
+    public void setY(float y) {
+        this.prevY = this.y;
+        this.y = y;
     }
 }

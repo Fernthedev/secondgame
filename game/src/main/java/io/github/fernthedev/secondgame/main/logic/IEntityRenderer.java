@@ -6,5 +6,5 @@ import java.awt.*;
 
 public interface IEntityRenderer<T extends GameObject> {
 
-    void render(Graphics g, T gameObject);
+    void render(Graphics g, T gameObject, float drawX, float drawY);
 }

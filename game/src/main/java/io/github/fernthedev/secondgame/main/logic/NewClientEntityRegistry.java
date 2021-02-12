@@ -1,5 +1,6 @@
 package io.github.fernthedev.secondgame.main.logic;
 
+import com.github.fernthedev.GameMathUtil;
 import com.github.fernthedev.INewEntityRegistry;
 import com.github.fernthedev.exceptions.DebugException;
 import com.github.fernthedev.game.server.NewServerEntityRegistry;
@@ -103,17 +104,6 @@ public class NewClientEntityRegistry extends INewEntityRegistry {
 
 
     protected void finishEntityUpdate() {
-        new ArrayList<>(gameObjects.values())
-                .parallelStream()
-                .filter(gameObject -> !(gameObject instanceof Trail) && gameObject.isHasTrail())
-                .forEach(gameObject -> {
-                    try {
-//                        if (gameObject.getVelX() != 0 || gameObject.getVelY() == 0)
-                        getEntityRegistryInUse().addEntityObject(new Trail(gameObject.getX(), gameObject.getY(), EntityID.TRAIL, gameObject.getColor(), gameObject.getWidth(), gameObject.getHeight(), 0.04f));
-                    } catch (IllegalArgumentException e) {
-                        throw new IllegalArgumentException("GameObject: " + gameObject.toString(), e);
-                    }
-                });
 
     }
 
@@ -164,7 +154,18 @@ public class NewClientEntityRegistry extends INewEntityRegistry {
     protected <T extends GameObject> void renderEntity(Graphics g, T object) {
         IEntityRenderer<T> entityRenderer = (IEntityRenderer<T>) getRenderer(object.getClass());
 
-        entityRenderer.render(g, object);
+        float drawX = (float) GameMathUtil.lerp(object.getPrevX(), object.getX(), Game.getElapsedTime());
+        float drawY = (float) GameMathUtil.lerp(object.getPrevY(), object.getY(), Game.getElapsedTime());
+
+        entityRenderer.render(g, object, drawX, drawY);
+
+        if (object.isHasTrail() && !(object instanceof Trail)) {
+            try {
+                getEntityRegistryInUse().addEntityObject(new Trail(drawX, drawY, EntityID.TRAIL, object.getColor(), object.getWidth(), object.getHeight(), 0.04f));
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("GameObject: " + object.toString(), e);
+            }
+        }
     }
 
     public void render(Graphics g) {

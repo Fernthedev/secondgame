@@ -45,14 +45,6 @@ public class Trail extends GameObject {
             this.color = trail.color;
 
             checkTrail(this);
-//            if(height == 0 || width == 0 || color == null || life <= 0.0 || alpha >= 1.0001) {
-//                try {
-//                    throw new IllegalArgumentException(height + " " + width + " " + color + " " + life + " " + alpha);
-//                } catch (IllegalArgumentException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-
         }
     }
 
@@ -63,32 +55,12 @@ public class Trail extends GameObject {
 
 
         checkTrail(this);
-//        if(height == 0 || width == 0 || color == null || life <= 0.0 || alpha >= 1.0001) {
-//            try {
-//                throw new IllegalArgumentException(height + " " + width + " " + color + " " + life + " " + alpha);
-//            } catch (IllegalArgumentException e) {
-//                e.printStackTrace();
-//            }
-//        }
 
         if(life <= 0) new IllegalArgumentException().printStackTrace();
     }
 
     public void tick() {
-        //Game.getLogger().info("I am now being trailed for.");
-//        float thing = (life - 0.0001f);
-        //Game.getLogger().info(thing + " is the new alpha " + life);
-
-
         checkTrail(this);
-//        if(height == 0 || width == 0 || color == null || life <= 0.0 || alpha >= 1.0001) {
-//            try {
-//                throw new IllegalArgumentException(height + " " + width + " " + color + " " + life + " " + alpha);
-//            } catch (IllegalArgumentException e) {
-//                e.printStackTrace();
-//            }
-//        }
-
         if(alpha > life) {
             alpha-= (life - 0.0001f);
         } else {
@@ -124,7 +96,7 @@ public class Trail extends GameObject {
 
     public static class Renderer implements IEntityRenderer<Trail> {
         @Override
-        public void render(Graphics g, Trail gameObject) {
+        public void render(Graphics g, Trail gameObject, float drawX, float drawY) {
             Graphics2D g2d = (Graphics2D) g;
 
 //            checkTrail(gameObject);
@@ -132,7 +104,7 @@ public class Trail extends GameObject {
             g2d.setComposite(makeTransparent(gameObject.getAlpha()));
 
             g.setColor(gameObject.getColor());
-            g.fillRect((int)gameObject.getX(),(int)gameObject.getY(), gameObject.getWidth(),gameObject.getHeight());
+            g.fillRect((int)drawX,(int)drawY, gameObject.getWidth(),gameObject.getHeight());
 
             g2d.setComposite(makeTransparent(1));
         }
