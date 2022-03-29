@@ -4,6 +4,7 @@ buildscript {
         mavenCentral()
     }
 }
+
 plugins {
     id 'com.github.johnrengelman.shadow' version '6.1.0'
     id "io.freefair.lombok" version "5.0.0-rc4"
