@@ -1,102 +1,61 @@
-package com.github.fernthedev.universal.entity;
+package com.github.fernthedev.universal.entity
 
-import com.github.fernthedev.universal.EntityID;
-import com.github.fernthedev.universal.GameObject;
-import com.github.fernthedev.universal.UniversalHandler;
-import lombok.EqualsAndHashCode;
-import lombok.NonNull;
-import lombok.Setter;
-
-import java.awt.*;
-import java.util.*;
-
-@EqualsAndHashCode(callSuper = true)
-public class SmartEnemy extends GameObject {
+import com.github.fernthedev.universal.EntityID
+import com.github.fernthedev.universal.GameObject
+import com.github.fernthedev.universal.Location
+import com.github.fernthedev.universal.UniversalHandler
+import java.awt.Color
+import java.util.*
+import kotlin.math.sqrt
 
 
-    @Setter
-    private UUID playerUUID;
-
-    public SmartEnemy(float x, float y, EntityID entityId, EntityPlayer player) {
-        super(x, y, 16, 16, entityId, Color.GREEN);
-        this.playerUUID = player.getUniqueId();
-
-//        for(int i = 0; i < UniversalHandler.getThingHandler().getGameObjects().size(); i++) {
-//            GameObject tempObject = UniversalHandler.getThingHandler().getGameObjects().get(i);
-//            if(tempObject.entityId == EntityID.Player) player = tempObject;
-//        }
-
-    }
-
-    protected SmartEnemy() {
-        super();
-    }
-
-    public void tick() {
-        setX((float) (x + velX));
-        setY((float) (y + velY));
+class SmartEnemy(location: Location, var playerUUID: UUID? = null) : GameObject(location, width = 16F, height = 16F, entityId = EntityID.ENEMY, color = Color.GREEN) {
 
 
-
-        GameObject player = null;
-        Map<@NonNull UUID, @NonNull GameObject> objects = UniversalHandler.getIGame().getEntityRegistry().getGameObjects();
-
+    override fun tick() {
+        var player: GameObject? = null
+        val objects: Map<UUID, GameObject> = UniversalHandler.iGame.entityRegistry.gameObjects
         if (!objects.containsKey(playerUUID)) {
-            Optional<@NonNull GameObject> option = objects
-                    .values().parallelStream()
-                    .filter(gameObjectLongPair -> gameObjectLongPair instanceof EntityPlayer)
-                    .findAny();
-
-            if (option.isPresent()) player = option.get();
+            val option: Optional<GameObject> = objects
+                .values.parallelStream()
+                .filter { gameObjectLongPair -> gameObjectLongPair is EntityPlayer }
+                .findAny()
+            if (option.isPresent) player = option.get()
+        } else {
+            player = UniversalHandler.iGame.entityRegistry.gameObjects[playerUUID]
         }
-        else player = UniversalHandler.getIGame().getEntityRegistry().getGameObjects().get(playerUUID);
-
 
         if (player == null) {
-            velX = 0;
-            velY = 0;
-            return;
+            velX = 0f
+            velY = 0f
+            return
         }
-
-        playerUUID = player.getUniqueId();
+        playerUUID = player.uniqueId
 
 //        @NonNull GameObject player = playerPair.getKey();
+        val diffX: Float = location.x - player.location.x - player.width
+        val diffY: Float = location.y - player.location.y - player.height
+        val distance =
+            sqrt((location.x - player.location.x) * (location.x - player.location.x) + (location.y - player.location.y) * (location.y - player.location.y))
+        velX = -1 / distance * diffX
+        velY = -1 / distance * diffY
+    }
 
-        float diffX = x - player.getX() - (float) player.getWidth();
-        float diffY = y - player.getY() - (float) player.getHeight();
-        float distance = (float) Math.sqrt((x - player.getX()) * (x - player.getX()) + (y - player.getY()) * (y - player.getY()));
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is SmartEnemy) return false
+        if (!super.equals(other)) return false
 
-        velX = ((-1 / distance) * diffX);
-        velY = ((-1 / distance) * diffY);
+        if (playerUUID != other.playerUUID) return false
 
-//        if (velX != 0) velX += 0.2 * multiplyOpposite(velX);
-//        if (velY != 0) velY += 0.2 * multiplyOpposite(velY);
+        return true
+    }
 
-        //if(x <= 0 || x >= GAME.WIDTH - 16)  velX *= -1;
-        //if(y <= 0 || y >= GAME.HEIGHT - 32)  velY *= -1;
-
-//        UniversalHandler.getThingHandler().addEntityObject(new Trail(x,y, EntityID.Trail,Color.green,16,16,0.02f, GameObject.entities));
-
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + (playerUUID?.hashCode() ?: 0)
+        return result
     }
 
 
-    public int multiplyOpposite(double val) {
-        if (val > 0) return -1;
-        return 1;
-    }
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof SmartEnemy)) return false;
-        if (!super.equals(o)) return false;
-        SmartEnemy that = (SmartEnemy) o;
-        return playerUUID.equals(that.playerUUID);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), playerUUID);
-    }
 }

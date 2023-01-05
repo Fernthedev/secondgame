@@ -1,47 +1,46 @@
-package com.github.fernthedev.universal.entity;
+package com.github.fernthedev.universal.entity
 
-import com.github.fernthedev.universal.GameObject;
-import com.github.fernthedev.universal.UniversalHandler;
-import lombok.Data;
 
-import java.io.Serializable;
+import com.github.fernthedev.universal.GameObject
+import com.github.fernthedev.universal.UniversalHandler
+import java.io.Serializable
 
-@Data
-public class NewGsonGameObject implements Serializable {
 
-    public NewGsonGameObject(GameObject gameObject) {
-        this.clazz = gameObject.getClass().getName();
-        this.gameObject = UniversalHandler.gson.toJson(gameObject);
+class NewGsonGameObject : Serializable {
+    constructor(gameObject: GameObject) {
+        clazz = gameObject.javaClass.name
+        this.gameObject = UniversalHandler.gson.toJson(gameObject)
     }
 
     /**
      * Defines that this is an object to remove
      */
-    protected NewGsonGameObject() {
-        clazz = null;
-        gameObject = null;
+    protected constructor() {
+        clazz = null
+        gameObject = null
     }
 
-    protected String clazz;
-    protected String gameObject;
-
-    public GameObject toGameObject() throws ClassNotFoundException {
-        if (this.clazz == null || gameObject == null) {
-            return null;
+    protected var clazz: String?
+    protected var gameObject: String?
+    @Throws(ClassNotFoundException::class)
+    fun toGameObject(): GameObject? {
+        if (clazz == null || gameObject == null) {
+            return null
         }
-        Class<?> aClass = Class.forName(this.clazz);
-
-        try {
-            if (GameObject.class.isAssignableFrom(aClass)) {
-                return (GameObject) UniversalHandler.gson.fromJson(gameObject, aClass);
-            } else throw new ClassNotFoundException("Class " + aClass + " is not assignable to " + GameObject.class);
-        } catch (Exception e) {
-            throw new IllegalStateException("The object being decoded is " + aClass.getName(), e);
+        val aClass = Class.forName(clazz)
+        return try {
+            if (GameObject::class.java.isAssignableFrom(aClass)) {
+                UniversalHandler.gson.fromJson(gameObject, aClass) as GameObject
+            } else throw ClassNotFoundException("Class " + aClass + " is not assignable to " + GameObject::class.java)
+        } catch (e: Exception) {
+            throw IllegalStateException("The object being decoded is " + aClass.name, e)
         }
     }
 
-    public static NewGsonGameObject nullObject() {
-        return new NewGsonGameObject();
+    companion object {
+        @JvmStatic
+        fun nullObject(): NewGsonGameObject {
+            return NewGsonGameObject()
+        }
     }
-
 }

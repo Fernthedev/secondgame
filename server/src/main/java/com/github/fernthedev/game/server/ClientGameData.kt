@@ -1,32 +1,17 @@
-package com.github.fernthedev.game.server;
+package com.github.fernthedev.game.server
 
-import com.github.fernthedev.lightchat.server.ClientConnection;
-import com.github.fernthedev.universal.entity.EntityPlayer;
-import lombok.*;
+import com.github.fernthedev.lightchat.server.ClientConnection
+import com.github.fernthedev.universal.entity.EntityPlayer
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
-import java.util.*;
 
-@RequiredArgsConstructor
-@Getter
-@Data
-public class ClientGameData {
-
-    @NonNull
-    private final ClientConnection clientConnection;
-
-    @NonNull
-    private UUID uuid;
-
-    @NonNull
-    private EntityPlayer entityPlayer;
-
-    @Getter
-    @Setter
-    private int clientSidePlayerHashCode;
-
-    public void setEntityPlayer(EntityPlayer entityPlayer) {
-        this.entityPlayer = entityPlayer;
-    }
+class ClientGameData(
+    val clientConnection: ClientConnection,
+    val uuid: UUID,
+    var entityPlayer: EntityPlayer,
+    var clientSidePlayerHashCode: Int = 0
+){
 
 
     /**
@@ -35,6 +20,5 @@ public class ClientGameData {
      *
      * UUID:HashCode
      */
-    private Map<UUID, Integer> objectCacheList = Collections.synchronizedMap(new HashMap<>());
-
+    val objectCacheList: MutableMap<UUID, Int> = ConcurrentHashMap()
 }

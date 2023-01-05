@@ -1,27 +1,17 @@
-package com.github.fernthedev.universal.entity;
+package com.github.fernthedev.universal.entity
 
-import com.github.fernthedev.universal.GameObject;
-import com.github.fernthedev.universal.EntityID;
-import lombok.EqualsAndHashCode;
+import com.github.fernthedev.universal.EntityID
+import com.github.fernthedev.universal.GameObject
+import com.github.fernthedev.universal.Location
+import java.awt.Color
 
-import java.awt.*;
 
-@EqualsAndHashCode(callSuper = true)
-public class Coin extends GameObject {
-
-    public Coin(int x, int y, EntityID entityId) {
-        super(x, y, 16, 16, entityId, Color.ORANGE);
-        this.velX = 0.0F;
-        this.velY = 0.0F;
-        hasTrail = false;
+class Coin(location: Location, entityId: EntityID?) :
+    GameObject(location, width = 16f, height = 16f, entityId = entityId, color = Color.ORANGE, velX = 0F, velY = 0F) {
+    init {
+        hasTrail = false
     }
 
-    protected Coin() {
-        super();
-    }
-
-    public void tick() {
-        setX((float) (x + velX));
-        setY((float) (y + velY));
+    override fun tick() {
     }
 }

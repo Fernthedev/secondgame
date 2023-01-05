@@ -1,35 +1,23 @@
-package com.github.fernthedev.universal;
+package com.github.fernthedev.universal
 
-import com.github.fernthedev.IGame;
-import com.google.gson.Gson;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.github.fernthedev.IGame
+import com.google.gson.Gson
+import java.util.*
 
-import java.util.Random;
+object UniversalHandler {
+    const val WIDTH = 640
+    const val HEIGHT = WIDTH / 12 * 9
+    const val TICK_WAIT = 5
+    const val MULTIPLAYER_PORT = 3000
+    const val PLAYER_VEL_MULTIPLIER = 5
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class UniversalHandler {
-
-    public static final int WIDTH = 640,HEIGHT =  WIDTH / 12*9;
-
-    public static final int TICK_WAIT = 5;
-
-    public static final int MULTIPLAYER_PORT = 3000;
-
-    public static final int PLAYER_VEL_MULTIPLIER = 5;
-
-    @Getter
-    @Setter
-    private static IGame iGame;
-
-    @Getter
-    @Setter
-    private static boolean running = true;
-
-    public static final Gson gson = new Gson();
-    public static final Random RANDOM = new Random();
+    lateinit var iGame: IGame
 
 
+    @JvmStatic
+    var running = true
+    val gson: Gson = Gson()
+
+
+    val RANDOM = Random()
 }

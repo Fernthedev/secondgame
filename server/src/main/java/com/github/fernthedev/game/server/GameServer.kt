@@ -1,168 +1,151 @@
-package com.github.fernthedev.game.server;
+package com.github.fernthedev.game.server
+
+import com.github.fernthedev.CommonUtil
+import com.github.fernthedev.IGame
+import com.github.fernthedev.Ticker
+import com.github.fernthedev.config.gson.GsonConfig
+import com.github.fernthedev.exceptions.DebugException
+import com.github.fernthedev.fernutils.console.ArgumentArrayUtils.parseArguments
+import com.github.fernthedev.game.server.game_handler.GameNetworkProcessingHandler
+import com.github.fernthedev.game.server.game_handler.PlayerPollUpdateThread
+import com.github.fernthedev.game.server.game_handler.ServerGameHandler
+import com.github.fernthedev.game.server.game_handler.Spawn
+import com.github.fernthedev.lightchat.core.ColorCode
+import com.github.fernthedev.lightchat.core.StaticHandler
+import com.github.fernthedev.lightchat.core.api.event.api.EventHandler
+import com.github.fernthedev.lightchat.core.api.event.api.Listener
+import com.github.fernthedev.lightchat.core.codecs.general.compression.CompressionAlgorithms.ZLIB_STR
+import com.github.fernthedev.lightchat.server.SenderInterface
+import com.github.fernthedev.lightchat.server.Server
+import com.github.fernthedev.lightchat.server.event.ServerShutdownEvent
+import com.github.fernthedev.lightchat.server.event.ServerStartupEvent
+import com.github.fernthedev.lightchat.server.settings.ServerSettings
+import com.github.fernthedev.lightchat.server.terminal.ServerTerminal
+import com.github.fernthedev.lightchat.server.terminal.ServerTerminalSettings
+import com.github.fernthedev.lightchat.server.terminal.command.Command
+import com.github.fernthedev.universal.UniversalHandler
+import org.slf4j.Logger
+import java.io.File
+import java.util.*
+import java.util.concurrent.atomic.AtomicInteger
+import kotlin.system.exitProcess
+
+class GameServer constructor(
+    args: Array<String>,
+    defaultPort: Int,
+    terminal: Boolean
+) : ServerTerminal(), IGame {
+
+    val entityHandler: NewServerEntityRegistry = NewServerEntityRegistry(this)
+    val processHandler: GameNetworkProcessingHandler = GameNetworkProcessingHandler(this)
+    val playerPollUpdateThread: PlayerPollUpdateThread = PlayerPollUpdateThread(this)
+    val spawn: Spawn = Spawn(this)
+    val serverGameHandler: ServerGameHandler = ServerGameHandler(entityHandler, spawn, this)
+
+    lateinit var serverThread: Thread
+
+    init {
+        ServerTerminal.server.addShutdownListener {
+            ServerTerminal.server.logger.info(ColorCode.RED.toString() + "Goodbye!")
+            exitProcess(0)
+        }
+
+        DebugException().printStackTrace()
+        UniversalHandler.iGame = this
+
+        val port = AtomicInteger(defaultPort)
+
+        parseArguments(args)
+            .handle("-port") { queue: Queue<String> ->
+                try {
+                    port.set(queue.remove().toInt())
+                    if (port.get() <= 0) {
+                        logger.error("-port cannot be less than 0")
+                        port.set(-1)
+                    } else logger.info("Using port {}", port)
+                } catch (e: NumberFormatException) {
+                    logger.error("-port is not a number")
+                    port.set(-1)
+                }
+            }
+            .handle("-debug") { StaticHandler.setDebug(true) }
+            .apply()
+
+        val serverSettings = ServerSettings()
+        serverSettings.compressionLevel = 8
+        serverSettings.compressionAlgorithm = ZLIB_STR
+        init(
+            args,
+            ServerTerminalSettings.builder()
+                .port(port.get())
+                .allowChangePassword(false)
+                .allowTermPackets(false)
+                .launchConsoleInCMDWhenNone(terminal)
+                .serverSettings(GsonConfig<ServerSettings>(serverSettings, File("settings.json")))
+                .build()
+        )
+        ServerTerminal.server.maxPacketId = CommonUtil.MAX_PACKET_IDS
+        ServerTerminal.server.addPacketHandler(ServerPacketHandler(this))
+        ServerTerminal.server.pluginManager.registerEvents(object : Listener {
+            @EventHandler
+            fun onEvent(event: ServerStartupEvent) {
+                UniversalHandler.running = true
+                ServerTerminal.server.logger.info("Running game startup code")
+
+                CommonUtil.registerNetworking()
+
+                serverThread = ServerTerminal.server.serverThread
+
+                ServerTerminal.server.addChannelHandler(processHandler)
+                ServerTerminal.server.pluginManager.registerEvents(processHandler)
+
+                val thread = Thread(Ticker(serverGameHandler))
+                thread.start()
+                playerPollUpdateThread.start()
 
 
-import com.github.fernthedev.CommonUtil;
-import com.github.fernthedev.IGame;
-import com.github.fernthedev.config.gson.GsonConfig;
-import com.github.fernthedev.exceptions.DebugException;
-import com.github.fernthedev.fernutils.console.ArgumentArrayUtils;
-import com.github.fernthedev.game.server.game_handler.GameNetworkProcessingHandler;
-import com.github.fernthedev.game.server.game_handler.ServerGameHandler;
-import com.github.fernthedev.lightchat.core.ColorCode;
-import com.github.fernthedev.lightchat.core.StaticHandler;
-import com.github.fernthedev.lightchat.core.api.event.api.EventHandler;
-import com.github.fernthedev.lightchat.core.api.event.api.Listener;
-import com.github.fernthedev.lightchat.core.codecs.general.compression.CompressionAlgorithms;
-import com.github.fernthedev.lightchat.server.SenderInterface;
-import com.github.fernthedev.lightchat.server.Server;
-import com.github.fernthedev.lightchat.server.event.ServerShutdownEvent;
-import com.github.fernthedev.lightchat.server.event.ServerStartupEvent;
-import com.github.fernthedev.lightchat.server.settings.ServerSettings;
-import com.github.fernthedev.lightchat.server.terminal.ServerTerminal;
-import com.github.fernthedev.lightchat.server.terminal.ServerTerminalSettings;
-import com.github.fernthedev.lightchat.server.terminal.command.Command;
-import com.github.fernthedev.universal.UniversalHandler;
-import lombok.Getter;
-import lombok.SneakyThrows;
-import org.slf4j.Logger;
-
-import java.io.File;
-import java.util.concurrent.atomic.AtomicInteger;
-
-public class GameServer extends ServerTerminal implements IGame {
-
-    @Getter
-    private GameNetworkProcessingHandler processHandler;
-
-    @Getter
-    private ServerGameHandler serverGameHandler;
-
-    @Getter
-    private Thread serverThread;
-
-    @SneakyThrows
-    public GameServer(String[] args, int defaultPort, NewServerEntityRegistry entityHandler, boolean terminal) {
-        entityHandler.setServer(this);
-        new DebugException().printStackTrace();
-
-        if (UniversalHandler.getIGame() == null) UniversalHandler.setIGame(this);
-
-        AtomicInteger port = new AtomicInteger(defaultPort);
-
-        ArgumentArrayUtils.parseArguments(args)
-                .handle("-port", queue -> {
-
-                    try {
-                        port.set(Integer.parseInt(queue.remove()));
-                        if (port.get() <= 0) {
-                            logger.error("-port cannot be less than 0");
-                            port.set(-1);
-                        } else logger.info("Using port {}", port);
-                    } catch (NumberFormatException e) {
-                        logger.error("-port is not a number");
-                        port.set(-1);
+                registerCommand(object : Command("start") {
+                    override fun onCommand(sender: SenderInterface, args: Array<String>) {
+                        ServerTerminal.server.authenticationManager.authenticate(sender)
+                            .thenAccept { aBoolean: Boolean ->
+                                if (aBoolean) {
+                                    serverGameHandler.started = true
+                                }
+                            }
                     }
-
-
-
                 })
-                .handle("-debug", queue -> StaticHandler.setDebug(true))
-                .apply();
-
-        ServerSettings serverSettings = new ServerSettings();
-
-        serverSettings.setCompressionLevel(8);
-        serverSettings.setCompressionAlgorithm(CompressionAlgorithms.ZLIB_STR);
-
-        init(args,
-                ServerTerminalSettings.builder()
-                        .port(port.get())
-                        .allowChangePassword(false)
-                        .allowTermPackets(false)
-                        .launchConsoleInCMDWhenNone(terminal)
-                        .serverSettings(new GsonConfig<>(serverSettings, new File("settings.json")))
-                        .build());
-
-
-        server.setMaxPacketId(CommonUtil.MAX_PACKET_IDS);
-
-        server.addPacketHandler(new ServerPacketHandler(this));
-
-        server.getPluginManager().registerEvents(new Listener() {
-            @EventHandler
-            public void onEvent(ServerStartupEvent event) {
-                UniversalHandler.setRunning(true);
-                server.getLogger().info("Running game startup code");
-
-                CommonUtil.registerNetworking();
-
-                serverThread = server.getServerThread();
-                processHandler = new GameNetworkProcessingHandler(GameServer.this);
-                server.addChannelHandler(processHandler);
-                server.getPluginManager().registerEvents(processHandler);
-
-                serverGameHandler = new ServerGameHandler(GameServer.this, entityHandler);
-                Thread thread = new Thread(serverGameHandler);
-                thread.start();
-
-                registerCommand(new Command("start") {
-                    @Override
-                    public void onCommand(SenderInterface sender, String[] args) {
-                         server.getAuthenticationManager().authenticate(sender).thenAccept(aBoolean -> {
-                            if (aBoolean) {
-                                getServerGameHandler().setStarted(true);
+                registerCommand(object : Command("stop") {
+                    override fun onCommand(sender: SenderInterface, args: Array<String>) {
+                        ServerTerminal.server.authenticationManager.authenticate(sender)
+                            .thenAccept { aBoolean: Boolean ->
+                                if (aBoolean) {
+                                    serverGameHandler.started = false
+                                    entityRegistry.removeRespawnAllPlayers()
+                                }
                             }
-                        });
-
-
                     }
-                });
-
-                registerCommand(new Command("stop") {
-                    @Override
-                    public void onCommand(SenderInterface sender, String[] args) {
-                        server.getAuthenticationManager().authenticate(sender).thenAccept(aBoolean -> {
-                            if (aBoolean) {
-                                getServerGameHandler().setStarted(false);
-                                getEntityRegistry().removeRespawnAllPlayers();
-                            }
-                        });
-                    }
-                });
-
-
+                })
             }
 
             @EventHandler
-            public void onEvent(ServerShutdownEvent e) {
-                UniversalHandler.setRunning(false);
-
+            fun onEvent(e: ServerShutdownEvent?) {
+                UniversalHandler.running = false
             }
-        });
-        startBind();
-
+        })
+        startBind()
     }
 
-    public Server getServer() {
-        return server;
+    val server: Server
+        get() = ServerTerminal.server
+    override fun getEntityRegistry(): NewServerEntityRegistry {
+        return serverGameHandler.entityHandler
     }
 
-    public static void main(String[] args) {
-        new GameServer(args, UniversalHandler.MULTIPLAYER_PORT, new NewServerEntityRegistry(), true);
-
-        server.addShutdownListener(() -> {
-            server.getLogger().info(ColorCode.RED + "Goodbye!");
-            System.exit(0);
-        });
+    override fun getLoggerImpl(): Logger {
+        return ServerTerminal.server.logger
     }
+}
 
-    @Override
-    public NewServerEntityRegistry getEntityRegistry() {
-        return serverGameHandler.getEntityHandler();
-    }
-
-    @Override
-    public Logger getLoggerImpl() {
-        return server.getLogger();
-    }
+fun main(args: Array<String>) {
+    GameServer(args, UniversalHandler.MULTIPLAYER_PORT, true)
 }

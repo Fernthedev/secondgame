@@ -1,57 +1,22 @@
-package com.github.fernthedev.universal.entity;
+package com.github.fernthedev.universal.entity
 
-import com.github.fernthedev.universal.GameObject;
+import com.github.fernthedev.universal.GameObject
 
-import java.awt.*;
+class GsonObject(go: GameObject) : GameObject(
+    location = go.location.copy(),
+    velX = go.velX,
+    velY = go.velY,
+    height = go.height,
+    width = go.width,
+    color = go.color,
+    entityId = go.entityId,
+    uniqueId = go.uniqueId
+) {
 
-@Deprecated
-public class GsonObject extends GameObject {
-    private float alpha = 1;
+    val alpha = 1f
+    var health = 100
+    var coin = 0
+    var life = 0f
 
-    private Color color;
-
-
-    protected int health = 100;
-    protected int coin;
-
-    private int width,height;
-    private float life;
-
-    public int getHealth() {
-        return health;
-    }
-
-    public int getCoin() {
-        return coin;
-    }
-
-    public float getAlpha() {
-        return alpha;
-    }
-
-    public Color getColor() {
-        return color;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public float getLife() {
-        return life;
-    }
-
-    @Override
-    public void tick() {
-
-    }
-
-    @Override
-    public Rectangle getBounds() {
-        return null;
-    }
+    override fun tick() {}
 }
