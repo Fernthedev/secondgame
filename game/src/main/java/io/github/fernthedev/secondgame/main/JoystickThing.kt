@@ -1,6 +1,7 @@
 package io.github.fernthedev.secondgame.main
 
-import com.github.fernthedev.packets.player_updates.SendToServerPlayerInfoPacket
+import com.github.fernthedev.packets.player_updates.ClientWorldUpdatePacket
+import com.github.fernthedev.universal.entity.NewGsonGameObject
 import org.lwjgl.glfw.GLFW
 import java.nio.ByteBuffer
 
@@ -89,8 +90,8 @@ class JoystickThing(private val game: Game) {
         }
         if (Game.screen == null && Game.client != null) {
             Game.client!!.sendObject(
-                SendToServerPlayerInfoPacket(
-                    Game.mainPlayer!!,
+                ClientWorldUpdatePacket(
+                    NewGsonGameObject(Game.mainPlayer!!),
                     Game.staticEntityRegistry.objectsAndHashCode
                 )
             )

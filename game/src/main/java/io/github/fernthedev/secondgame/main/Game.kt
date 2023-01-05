@@ -11,6 +11,7 @@ import com.github.fernthedev.config.common.Config
 import com.github.fernthedev.config.gson.GsonConfig
 import com.github.fernthedev.game.server.GameServer
 import com.github.fernthedev.lightchat.client.Client
+import com.github.fernthedev.lightchat.core.PacketRegistry
 import com.github.fernthedev.lightchat.core.StaticHandler
 import com.github.fernthedev.lightchat.core.api.event.api.EventHandler
 import com.github.fernthedev.lightchat.core.api.event.api.Listener
@@ -22,7 +23,7 @@ import io.github.fernthedev.secondgame.main.inputs.joystick.JoystickHandler
 import io.github.fernthedev.secondgame.main.inputs.keyboard.KeyInput
 import io.github.fernthedev.secondgame.main.logic.NewClientEntityRegistry
 import io.github.fernthedev.secondgame.main.logic.Settings
-import io.github.fernthedev.secondgame.main.netty.client.PacketHandler
+import io.github.fernthedev.secondgame.main.netty.client.ClientPacketHandler
 import io.github.fernthedev.secondgame.main.ui.MouseHandler
 import io.github.fernthedev.secondgame.main.ui.api.Screen
 import io.github.fernthedev.secondgame.main.ui.screens.EndScreen
@@ -98,6 +99,7 @@ class Game : Canvas(), Runnable, IGame {
     override fun run() {
         this.requestFocus()
 
+        try {
         var lastTime = System.nanoTime()
         val amountOfTicks = 60.0
         val ns = 1000000000 / amountOfTicks
@@ -130,6 +132,11 @@ class Game : Canvas(), Runnable, IGame {
             }
 
         }
+            } catch (e: Throwable) {
+                Game.loggerImpl.error("Main thread crashed")
+                e.printStackTrace()
+                exitProcess(-1)
+            }
     }
 
     /**
@@ -289,17 +296,19 @@ class Game : Canvas(), Runnable, IGame {
         fun setupJoiningMultiplayer() {
             staticEntityRegistry.clearObjects()
             val client =
-                Client(gameSettings.getConfigData().host, gameSettings.getConfigData().port)
+                Client(gameSettings.configData.host, gameSettings.configData.port)
             client.clientSettingsManager = gameSettings
             client.maxPacketId = CommonUtil.MAX_PACKET_IDS
             Companion.client = client
             screen = null
             CommonUtil.registerNetworking()
+            PacketRegistry.registerDefaultPackets()
 
-            val packetHandler = PacketHandler()
 
-            client.pluginManager.registerEvents(packetHandler)
-            client.addPacketHandler(packetHandler)
+            val clientPacketHandler = ClientPacketHandler()
+
+            client.pluginManager.registerEvents(clientPacketHandler)
+            client.addPacketHandler(clientPacketHandler)
 
             var name = client.name
 

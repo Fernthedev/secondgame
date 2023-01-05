@@ -10,7 +10,8 @@ class ClientGameData(
     val clientConnection: ClientConnection,
     val uuid: UUID,
     var entityPlayer: EntityPlayer,
-    var clientSidePlayerHashCode: Int = 0
+    var clientSidePlayerHashCode: Int = 0,
+    var forcedUpdate: Boolean = true
 ){
 
 

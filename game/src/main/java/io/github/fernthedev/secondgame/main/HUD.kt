@@ -5,7 +5,6 @@
 package io.github.fernthedev.secondgame.main
 
 
-import com.github.fernthedev.GameMathUtil
 import io.github.fernthedev.secondgame.main.ui.api.ScreenFont
 import java.awt.Color
 import java.awt.Font
@@ -19,7 +18,6 @@ class HUD {
 
     val textFont: ScreenFont = ScreenFont(Font("arial", Font.PLAIN, 12), Color.WHITE)
     fun tick() {
-        Game.mainPlayer!!.health = GameMathUtil.clamp(Game.mainPlayer!!.health, 0, 100)
         greenvalue = Game.clamp(greenvalue.toFloat(), 0.0f, 255.0f).toInt()
         greenvalue = Game.mainPlayer!!.health * 2
         score++
@@ -27,21 +25,32 @@ class HUD {
 
     fun render(g: Graphics2D) {
         g.font = textFont.font
-        g.color = Color.GRAY
-        g.fillRect(15, 15, 200, 32)
-        g.color = Color(75, greenvalue, 0)
-        g.fillRect(15, 15, Game.mainPlayer!!.health * 2, 32)
-        if (Game.mainPlayer!!.health == 0) {
-            g.color = Color.RED
-            g.drawRect(15, 15, 200, 32)
-        } else {
+
+        val mainPlayer = Game.mainPlayer
+
+        if (mainPlayer != null) {
+            g.color = Color.GRAY
+            g.fillRect(15, 15, 200, 32)
+
+            g.color = Color(75, greenvalue, 0)
+            g.fillRect(15, 15, mainPlayer.health * 2, 32)
+
+            if (mainPlayer.health == 0) {
+                g.color = Color.RED
+                g.drawRect(15, 15, 200, 32)
+            } else {
+                g.color = Color.WHITE
+                g.drawRect(15, 15, 200, 32)
+            }
+
             g.color = Color.WHITE
-            g.drawRect(15, 15, 200, 32)
+            g.drawString("Coins: " + mainPlayer.coin, 15, 96)
         }
+        
         g.color = Color.WHITE
         g.drawString("Score: $score", 15, 64)
         g.drawString("Level: $level", 15, 80)
-        g.drawString("Coins: " + Game.mainPlayer!!.coin, 15, 96)
+
         if (Game.client != null) {
             try {
                 g.drawString("Ping: " + Game.client!!.getPingTime(TimeUnit.MILLISECONDS) + "ms", 15, 112)

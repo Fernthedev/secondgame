@@ -4,7 +4,7 @@ import com.github.fernthedev.GameMathUtil
 import com.github.fernthedev.INewEntityRegistry
 import com.github.fernthedev.exceptions.DebugException
 import com.github.fernthedev.game.server.NewServerEntityRegistry
-import com.github.fernthedev.packets.player_updates.SendToServerPlayerInfoPacket
+import com.github.fernthedev.packets.player_updates.ClientWorldUpdatePacket
 import com.github.fernthedev.universal.GameObject
 import com.github.fernthedev.universal.Location
 import com.github.fernthedev.universal.UniversalHandler
@@ -63,15 +63,21 @@ class NewClientEntityRegistry : INewEntityRegistry() {
 
     override suspend fun tick() {
         super.tick()
-        finishEntityUpdate()
+
+        if (Game.client == null) {
+            val mainPlayer = Game.mainPlayer
+            if (mainPlayer != null) mainPlayer.health = GameMathUtil.clamp(mainPlayer.health, 0, 100)
+        }
+
         if (Game.client != null && !stopwatch.isRunning) stopwatch.start()
+
         if (Game.screen == null && Game.client != null && Game.client!!.isRegistered && Game.mainPlayer != null && stopwatch.elapsed(
                 TimeUnit.MILLISECONDS
-            ) >= 500
+            ) >= 200
         ) {
             Game.client!!.sendObject(
-                SendToServerPlayerInfoPacket(
-                    Game.mainPlayer!!,
+                ClientWorldUpdatePacket(
+                    NewGsonGameObject(Game.mainPlayer!!),
                     Game.staticEntityRegistry.objectsAndHashCode
                 )
             )
@@ -80,7 +86,7 @@ class NewClientEntityRegistry : INewEntityRegistry() {
         }
     }
 
-    protected fun finishEntityUpdate() {}
+
     fun clearObjects() {
         DebugException("Cleared objects").printStackTrace()
         Game.loggerImpl.info("Clearing ")
@@ -117,7 +123,7 @@ class NewClientEntityRegistry : INewEntityRegistry() {
     }
 
     private fun <T : GameObject> renderEntity(g: Graphics2D, `object`: T) {
-        val prevLoc = previousLocations[`object`.uniqueId]!!
+        val prevLoc = previousLocations[`object`.uniqueId] ?: `object`.location
 
         val entityRenderer = getRenderer(`object`.javaClass)
         val drawX =
@@ -131,7 +137,7 @@ class NewClientEntityRegistry : INewEntityRegistry() {
                     Trail(
                         Location(drawX,
                         drawY),
-                        color = `object`.color!!,
+                        color = `object`.color,
                         width = `object`.width,
                         height = `object`.height,
                         life = 0.04f

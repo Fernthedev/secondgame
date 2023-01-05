@@ -13,16 +13,16 @@ class SmartEnemy(location: Location, var playerUUID: UUID? = null) : GameObject(
 
 
     override fun tick() {
-        var player: GameObject? = null
         val objects: Map<UUID, GameObject> = UniversalHandler.iGame.entityRegistry.gameObjects
-        if (!objects.containsKey(playerUUID)) {
+
+        var player: GameObject? = objects[playerUUID]
+
+        if (player == null) {
             val option: Optional<GameObject> = objects
                 .values.parallelStream()
                 .filter { gameObjectLongPair -> gameObjectLongPair is EntityPlayer }
                 .findAny()
             if (option.isPresent) player = option.get()
-        } else {
-            player = UniversalHandler.iGame.entityRegistry.gameObjects[playerUUID]
         }
 
         if (player == null) {
@@ -30,9 +30,8 @@ class SmartEnemy(location: Location, var playerUUID: UUID? = null) : GameObject(
             velY = 0f
             return
         }
-        playerUUID = player.uniqueId
 
-//        @NonNull GameObject player = playerPair.getKey();
+        playerUUID = player.uniqueId
         val diffX: Float = location.x - player.location.x - player.width
         val diffY: Float = location.y - player.location.y - player.height
         val distance =

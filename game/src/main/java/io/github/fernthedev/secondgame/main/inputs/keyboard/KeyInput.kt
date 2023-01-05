@@ -4,8 +4,9 @@
 //
 package io.github.fernthedev.secondgame.main.inputs.keyboard
 
-import com.github.fernthedev.packets.player_updates.SendToServerPlayerInfoPacket
+import com.github.fernthedev.packets.player_updates.ClientWorldUpdatePacket
 import com.github.fernthedev.universal.UniversalHandler
+import com.github.fernthedev.universal.entity.NewGsonGameObject
 import io.github.fernthedev.secondgame.main.Game
 import io.github.fernthedev.secondgame.main.inputs.InputHandler
 import io.github.fernthedev.secondgame.main.inputs.InputType
@@ -81,17 +82,6 @@ class KeyInput    //        glfwPollEvents();
             }
             if (Game.mainPlayer?.velX != velX.toFloat() || Game.mainPlayer?.velY != velY.toFloat()) toUpdate = true
 
-            //VERTICAL
-//            if (!keyDown[0] && !keyDown[1] && Game.mainPlayer.getVelY() != 0 && InputHandler.inputType == InputType.KEYBOARD) {
-//                Game.mainPlayer.setVelY(0);
-//                toUpdate = true;
-//            }
-//
-//            //HORIZONTAL
-//            if (!keyDown[2] && !keyDown[3] && Game.mainPlayer.getVelX() != 0 && InputHandler.inputType == InputType.KEYBOARD) {
-//                Game.mainPlayer.setVelX(0);
-//                toUpdate = true;
-//            }
             if (toUpdate) {
                 Game.mainPlayer!!.velX = (velX.toFloat())
                 Game.mainPlayer!!.velY = (velY.toFloat())
@@ -106,8 +96,8 @@ class KeyInput    //        glfwPollEvents();
         toUpdate = false
         if (Game.screen == null && Game.client?.isRegistered == true && Game.mainPlayer != null) {
             Game.client!!.sendObject(
-                SendToServerPlayerInfoPacket(
-                    Game.mainPlayer!!,
+                ClientWorldUpdatePacket(
+                    NewGsonGameObject(Game.mainPlayer!!),
                     Game.staticEntityRegistry.objectsAndHashCode
                 )
             )

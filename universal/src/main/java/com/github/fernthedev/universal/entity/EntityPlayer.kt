@@ -19,7 +19,20 @@ class EntityPlayer
     velY: Float = 0F,
     uniqueId: UUID = UUID.randomUUID(),
     color: Color? = null,
-) : GameObject(location, entityId = EntityID.PLAYER, velX = velX, velY = velY, uniqueId,   color = color ?: Color(UniversalHandler.RANDOM.nextInt(255),UniversalHandler.RANDOM.nextInt(255),UniversalHandler.RANDOM.nextInt(255)), 32F, 32F), Cloneable {
+) : GameObject(
+    location,
+    entityId = EntityID.PLAYER,
+    velX = velX,
+    velY = velY,
+    uniqueId,
+    color = color ?: Color(
+        UniversalHandler.RANDOM.nextInt(255),
+        UniversalHandler.RANDOM.nextInt(255),
+        UniversalHandler.RANDOM.nextInt(255)
+    ),
+    32F,
+    32F
+), Cloneable {
 
 
     companion object {

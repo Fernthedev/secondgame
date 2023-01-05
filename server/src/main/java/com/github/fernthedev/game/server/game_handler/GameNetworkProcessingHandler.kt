@@ -14,7 +14,6 @@ import com.github.fernthedev.universal.UniversalHandler
 import com.github.fernthedev.universal.entity.EntityPlayer
 import io.netty.channel.ChannelHandler
 import io.netty.channel.ChannelInboundHandlerAdapter
-import java.util.*
 
 @ChannelHandler.Sharable
 class GameNetworkProcessingHandler(
@@ -23,22 +22,18 @@ class GameNetworkProcessingHandler(
     @EventHandler
     fun playerJoin(e: PlayerJoinEvent) {
         server.server.logger
-            .info(ColorCode.YELLOW.toString() + "handling player " + e.getJoinPlayer().getName() + " giving data")
+            .info(ColorCode.YELLOW.toString() + "handling player " + e.joinPlayer.name + " giving data")
         val clientConnection: ClientConnection = e.joinPlayer
         val universalPlayer = EntityPlayer(
             Location(
-            UniversalHandler.WIDTH.toFloat() / 2f - 32f,
-            (UniversalHandler.HEIGHT.toFloat() / 2f - 32f),
+                UniversalHandler.WIDTH.toFloat() / 2f - 32f,
+                (UniversalHandler.HEIGHT.toFloat() / 2f - 32f),
             ),
             clientConnection.name,
         )
         server.serverGameHandler.entityHandler.addClientData(
-            clientConnection, ClientGameData(clientConnection, universalPlayer.uniqueId, universalPlayer), Objects.hash(
-                Any()
-            )
+            clientConnection, ClientGameData(clientConnection, universalPlayer.uniqueId, universalPlayer)
         )
-
-        server.serverGameHandler.entityHandler.finishEntityUpdate()
     }
 
     @EventHandler

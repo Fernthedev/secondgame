@@ -6,7 +6,7 @@ import com.github.fernthedev.lightchat.core.ColorCode
 import com.github.fernthedev.lightchat.core.StaticHandler
 import com.github.fernthedev.lightchat.server.ClientConnection
 import com.github.fernthedev.packets.object_updates.SetCoin
-import com.github.fernthedev.packets.player_updates.SendToServerPlayerInfoPacket
+import com.github.fernthedev.packets.player_updates.ClientWorldUpdatePacket
 import com.github.fernthedev.universal.EntityID
 import com.github.fernthedev.universal.GameObject
 import com.github.fernthedev.universal.Location
@@ -24,15 +24,13 @@ class NewServerEntityRegistry(
     val isClientDataEmpty: Boolean
         get() = clientGameDataMap.isEmpty()
 
-    private fun getClientData(connection: ClientConnection): ClientGameData? {
-        return clientGameDataMap.getOrDefault(connection, null)
-    }
-
-    fun addClientData(connection: ClientConnection, clientGameData: ClientGameData, entityHashCode: Int) {
-        clientGameData.clientSidePlayerHashCode = entityHashCode
+    fun addClientData(connection: ClientConnection, clientGameData: ClientGameData) {
+        clientGameData.clientSidePlayerHashCode = -1
 
         clientGameDataMap[connection] = clientGameData
         addEntityObject(clientGameData.entityPlayer)
+
+        clientGameData.forcedUpdate = true
     }
 
     fun removeClientData(connection: ClientConnection) {
@@ -40,27 +38,28 @@ class NewServerEntityRegistry(
         removeEntityObject(connection.uuid)
     }
 
-    fun updatePlayerObject(clientPlayerE: ClientConnection, universalPlayer: EntityPlayer) {
+    private fun updatePlayerObject(clientPlayerE: ClientConnection, universalPlayer: EntityPlayer) {
         if (!gameObjects.containsKey(universalPlayer.uniqueId)) {
             StaticHandler.getCore().logger
                 .debug(ColorCode.RED.toString() + "Player updating but is removed from game")
             return
         }
-        getClientData(clientPlayerE)!!.entityPlayer = universalPlayer
+
+
+        clientGameDataMap[clientPlayerE]!!.entityPlayer = universalPlayer
         addEntityObject(universalPlayer)
         StaticHandler.getCore().logger.debug("Attempting to update info {}", universalPlayer)
     }
 
     override suspend fun tick() = coroutineScope {
         super.tick()
-        if (clientGameDataMap.isNotEmpty()) finishEntityUpdate()
     }
 
     override fun collisionCheck(universalPlayer: EntityPlayer) {
         clientGameDataMap.keys
             .filter { connection: ClientConnection -> clientGameDataMap[connection]!!.entityPlayer.uniqueId === universalPlayer.uniqueId }
             .forEach { connection: ClientConnection ->
-                val clientGameData = getClientData(connection)
+                val clientGameData = clientGameDataMap[connection]
                 gameObjects.values
                     .filter { gameObject: GameObject ->
                         gameObject.bounds.intersects(
@@ -71,14 +70,11 @@ class NewServerEntityRegistry(
                         if (tempObject.entityId == EntityID.ENEMY) {
                             //COLLISION CODE
                             universalPlayer.health = universalPlayer.health - 2
-                            connection.sendObject(SendToServerPlayerInfoPacket(universalPlayer, null))
                         }
                         if (tempObject.entityId == EntityID.COIN) {
                             universalPlayer.coin = universalPlayer.coin + 1
                             connection.sendObject(SetCoin(universalPlayer.coin))
                             removeEntityObject(tempObject)
-                            StaticHandler.getCore().logger.debug("Collision checking! COIN")
-                            // this.handler.removeObject(tempObject);
                         }
                     }
                 if (universalPlayer.health <= 0) {
@@ -87,9 +83,6 @@ class NewServerEntityRegistry(
             }
     }
 
-    fun finishEntityUpdate() {
-        server.playerPollUpdateThread.sendUpdate.set(true)
-    }
 
     fun removeRespawnAllPlayers() {
         clearEntities()
@@ -97,14 +90,13 @@ class NewServerEntityRegistry(
             clientGameData.entityPlayer.health = 100
             addEntityObject(clientGameData.entityPlayer)
         }
-        server.serverGameHandler.entityHandler.finishEntityUpdate()
     }
 
-    fun handleClientRespond(clientPlayer: ClientConnection, infoPacket: SendToServerPlayerInfoPacket) {
-        val clientData: ClientGameData = server.serverGameHandler.entityHandler.getClientData(clientPlayer)
+    fun handleClientRespond(clientPlayer: ClientConnection, infoPacket: ClientWorldUpdatePacket) {
+        val clientData: ClientGameData = server.serverGameHandler.entityHandler.clientGameDataMap[clientPlayer]
             ?: return
         val oldPlayer: EntityPlayer = clientData.entityPlayer
-        val packetPlayer: EntityPlayer = infoPacket.playerObject
+        val packetPlayer: EntityPlayer = infoPacket.playerObject.toGameObject() as EntityPlayer
         val velXClamp: Float = GameMathUtil.clamp(
             packetPlayer.velX,
             -EntityPlayer.MAX_VELOCITY.toFloat(),
@@ -116,7 +108,7 @@ class NewServerEntityRegistry(
             EntityPlayer.MAX_VELOCITY.toFloat()
         )
 
-        val copyNewPlayer = EntityPlayer(
+        val copyNewPlayer =  EntityPlayer(
             Location(
                 oldPlayer.location.x + velXClamp,
                 oldPlayer.location.y + velYClamp
@@ -135,7 +127,7 @@ class NewServerEntityRegistry(
             oldPlayer.name
         )
         val clientGameData = clientGameDataMap[clientPlayer]!!
-        clientGameData.clientSidePlayerHashCode = (infoPacket.playerObject.hashCode())
+        clientGameData.clientSidePlayerHashCode = packetPlayer.hashCode()
         clientGameData.objectCacheList.clear()
         clientGameData.objectCacheList.putAll(infoPacket.entitiesHashCodeMap!!)
 

@@ -12,15 +12,6 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.system.measureTimeMillis
 
 abstract class INewEntityRegistry : TickRunnable {
-//    private val tickThreadGroup: Array<Thread>
-//    init {
-//        val size = max(Runtime.getRuntime().availableProcessors() / 2, 1)
-//        tickThreadGroup = Array(size, i -> {
-//            Thread()
-//        })
-//
-//    }
-
     private val _gameObjects: MutableMap<UUID, GameObject> = ConcurrentHashMap()
     private val _previousLocations: MutableMap<UUID, Location> = ConcurrentHashMap()
 
@@ -34,17 +25,13 @@ abstract class INewEntityRegistry : TickRunnable {
         _previousLocations.clear()
     }
 
-    fun addEntityObject(gameObject: GameObject) {
-//        if (gameObjects.containsKey(gameObject.uniqueId)) {
-//            throw IllegalArgumentException("GameObject ${gameObject.uniqueId} already exists")
-//        }
-
+    open fun addEntityObject(gameObject: GameObject) {
         // For interpolation
         _gameObjects[gameObject.uniqueId] = gameObject
         _previousLocations[gameObject.uniqueId] = gameObject.location.copy()
     }
 
-    fun removeEntityObject(gameObject: UUID) {
+    open fun removeEntityObject(gameObject: UUID) {
         _gameObjects.remove(gameObject)
         _previousLocations.remove(gameObject)
     }

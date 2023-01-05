@@ -4,13 +4,13 @@ import com.github.fernthedev.CommonUtil
 import com.github.fernthedev.IGame
 import com.github.fernthedev.Ticker
 import com.github.fernthedev.config.gson.GsonConfig
-import com.github.fernthedev.exceptions.DebugException
 import com.github.fernthedev.fernutils.console.ArgumentArrayUtils.parseArguments
 import com.github.fernthedev.game.server.game_handler.GameNetworkProcessingHandler
-import com.github.fernthedev.game.server.game_handler.PlayerPollUpdateThread
+import com.github.fernthedev.game.server.game_handler.PlayerUpdateHandler
 import com.github.fernthedev.game.server.game_handler.ServerGameHandler
 import com.github.fernthedev.game.server.game_handler.Spawn
 import com.github.fernthedev.lightchat.core.ColorCode
+import com.github.fernthedev.lightchat.core.PacketRegistry
 import com.github.fernthedev.lightchat.core.StaticHandler
 import com.github.fernthedev.lightchat.core.api.event.api.EventHandler
 import com.github.fernthedev.lightchat.core.api.event.api.Listener
@@ -38,19 +38,13 @@ class GameServer constructor(
 
     val entityHandler: NewServerEntityRegistry = NewServerEntityRegistry(this)
     val processHandler: GameNetworkProcessingHandler = GameNetworkProcessingHandler(this)
-    val playerPollUpdateThread: PlayerPollUpdateThread = PlayerPollUpdateThread(this)
+    val playerUpdateHandler: PlayerUpdateHandler = PlayerUpdateHandler(this)
     val spawn: Spawn = Spawn(this)
-    val serverGameHandler: ServerGameHandler = ServerGameHandler(entityHandler, spawn, this)
+    val serverGameHandler: ServerGameHandler = ServerGameHandler(this, entityHandler, spawn, playerUpdateHandler)
 
     lateinit var serverThread: Thread
 
     init {
-        ServerTerminal.server.addShutdownListener {
-            ServerTerminal.server.logger.info(ColorCode.RED.toString() + "Goodbye!")
-            exitProcess(0)
-        }
-
-        DebugException().printStackTrace()
         UniversalHandler.iGame = this
 
         val port = AtomicInteger(defaultPort)
@@ -84,6 +78,11 @@ class GameServer constructor(
                 .serverSettings(GsonConfig<ServerSettings>(serverSettings, File("settings.json")))
                 .build()
         )
+        ServerTerminal.server.addShutdownListener {
+            ServerTerminal.server.logger.info(ColorCode.RED.toString() + "Goodbye!")
+            exitProcess(0)
+        }
+
         ServerTerminal.server.maxPacketId = CommonUtil.MAX_PACKET_IDS
         ServerTerminal.server.addPacketHandler(ServerPacketHandler(this))
         ServerTerminal.server.pluginManager.registerEvents(object : Listener {
@@ -101,7 +100,6 @@ class GameServer constructor(
 
                 val thread = Thread(Ticker(serverGameHandler))
                 thread.start()
-                playerPollUpdateThread.start()
 
 
                 registerCommand(object : Command("start") {
@@ -128,10 +126,11 @@ class GameServer constructor(
             }
 
             @EventHandler
-            fun onEvent(e: ServerShutdownEvent?) {
+            fun onEvent(e: ServerShutdownEvent) {
                 UniversalHandler.running = false
             }
         })
+        PacketRegistry.registerDefaultPackets()
         startBind()
     }
 
@@ -146,6 +145,3 @@ class GameServer constructor(
     }
 }
 
-fun main(args: Array<String>) {
-    GameServer(args, UniversalHandler.MULTIPLAYER_PORT, true)
-}

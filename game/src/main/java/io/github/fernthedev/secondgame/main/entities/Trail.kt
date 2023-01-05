@@ -73,7 +73,6 @@ class Trail(
             if (gameObject.width == 0f) values.add("width")
             if (gameObject.life <= 0.0) values.add("life " + gameObject.life)
             if (gameObject.alpha >= 1.0001) values.add("alpha " + gameObject.alpha)
-            if (gameObject.color == null) values.add("color")
             require(values.isEmpty()) { "These values are incorrect: $values" }
         }
     }

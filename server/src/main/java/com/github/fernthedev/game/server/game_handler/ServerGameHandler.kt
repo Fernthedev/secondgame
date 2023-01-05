@@ -9,9 +9,10 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 class ServerGameHandler(
+    val server: GameServer,
     val entityHandler: NewServerEntityRegistry,
     val spawn: Spawn,
-    val server: GameServer
+    val playerUpdateHandler: PlayerUpdateHandler
 ) : TickRunnable {
     var started = false
 
@@ -24,8 +25,13 @@ class ServerGameHandler(
             entityHandler.tick()
         }
 
+        val playerJob = launch {
+            playerUpdateHandler.update()
+        }
+
         entityJob.join()
         spawnJob.join()
+        playerJob.join()
 
         if (started && !entityHandler.gameObjects
                 .any { (_, gameObject) -> gameObject is EntityPlayer }
