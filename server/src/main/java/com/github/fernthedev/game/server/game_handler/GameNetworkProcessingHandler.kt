@@ -30,7 +30,7 @@ class GameNetworkProcessingHandler(
             UniversalHandler.WIDTH.toFloat() / 2f - 32f,
             (UniversalHandler.HEIGHT.toFloat() / 2f - 32f),
             ),
-            clientConnection.name
+            clientConnection.name,
         )
         server.serverGameHandler.entityHandler.addClientData(
             clientConnection, ClientGameData(clientConnection, universalPlayer.uniqueId, universalPlayer), Objects.hash(

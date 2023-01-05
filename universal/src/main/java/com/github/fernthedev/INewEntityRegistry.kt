@@ -35,12 +35,13 @@ abstract class INewEntityRegistry : TickRunnable {
     }
 
     fun addEntityObject(gameObject: GameObject) {
-        if (gameObjects.containsKey(gameObject.uniqueId)) {
-            throw IllegalArgumentException("GameObject ${gameObject.uniqueId} already exists")
-        }
+//        if (gameObjects.containsKey(gameObject.uniqueId)) {
+//            throw IllegalArgumentException("GameObject ${gameObject.uniqueId} already exists")
+//        }
+
         // For interpolation
         _gameObjects[gameObject.uniqueId] = gameObject
-        _previousLocations[gameObject.uniqueId] = Location(0f, 0f)
+        _previousLocations[gameObject.uniqueId] = gameObject.location.copy()
     }
 
     fun removeEntityObject(gameObject: UUID) {
@@ -115,9 +116,11 @@ abstract class INewEntityRegistry : TickRunnable {
             if (location.y <= 0 || location.y >= maxY) gameObject.velY *= -1f
         }
 
-        val prevLoc = previousLocations[gameObject.uniqueId]!!
-        prevLoc.x = gameObject.location.x
-        prevLoc.y = gameObject.location.y
+        val prevLoc = previousLocations[gameObject.uniqueId]
+        if (prevLoc != null) {
+            prevLoc.x = gameObject.location.x
+            prevLoc.y = gameObject.location.y
+        }
 
         gameObject.location.x = newX
         gameObject.location.y = newY

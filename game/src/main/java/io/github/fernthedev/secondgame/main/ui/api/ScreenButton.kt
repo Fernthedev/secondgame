@@ -2,7 +2,6 @@ package io.github.fernthedev.secondgame.main.ui.api
 
 import com.github.fernthedev.lightchat.core.StaticHandler
 import com.github.fernthedev.universal.Location
-import org.apache.commons.lang3.Validate
 import java.awt.Color
 import java.awt.Font
 import java.awt.Graphics2D
@@ -22,7 +21,7 @@ class ScreenButton {
     var buttonFont = ScreenFont(Font("arial", Font.BOLD, 30), Color.WHITE)
     var buttonSize: Size
 
-    var location: Location?
+    private var location: Location?
     lateinit var renderedLocation: Location
 
     constructor(string: String, buttonSize: Size? = null, location: Location? = null, onClick: Runnable) {
@@ -58,7 +57,6 @@ class ScreenButton {
         var buttonDrawLocation = location
 
         if (buttonDrawLocation == null) {
-            Validate.notNull<Any>(loc)
             buttonDrawLocation = loc
             returnStatus = true
         }

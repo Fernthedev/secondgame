@@ -183,7 +183,11 @@ class Game : Canvas(), Runnable, IGame {
             g.drawString("Paused", 100, 100)
         }
 
-        if (screen != null) screen!!.render(g) else hud.render(g)
+        if (screen != null) {
+            screen!!.render(g)
+        } else {
+            hud.render(g)
+        }
 
         g.dispose()
         bs.show()
@@ -320,8 +324,6 @@ class Game : Canvas(), Runnable, IGame {
 
         fun setupHostingMultiplayer() {
             staticEntityRegistry.startGame()
-            //        EntityHandler entityHandler = new EntityHandler();
-//        UniversalHandler.getInstance().setup(entityHandler);
 
             val server = GameServer(
                 arrayOf(),
@@ -335,7 +337,6 @@ class Game : Canvas(), Runnable, IGame {
                 @EventHandler
                 fun onEvent(e: ServerStartupEvent) {
                     staticEntityRegistry.addEntityObject(mainPlayer!!)
-                    //                server.getServerGameHandler().getEntityHandler().addEntityObject(Game.getMainPlayer());
                 }
             })
         }

@@ -19,7 +19,8 @@ abstract class Screen(private val title: String) {
     val DEFAULT_BACK_BUTTON by lazy { ScreenButton("Back", null, null) { returnToParentScreen() } }
 
     fun incrementY(increment: Int): Int {
-        return increment + buttonSpacing.let { yButtonIncrement += it; yButtonIncrement }
+        yButtonIncrement += increment + buttonSpacing
+        return yButtonIncrement
     }
 
     fun resetY(): Int {
@@ -79,8 +80,8 @@ abstract class Screen(private val title: String) {
     }
 
     companion object {
-        private val buttonYStart: Int = (UniversalHandler.HEIGHT - UniversalHandler.HEIGHT * 0.7).toInt()
-        private val xCenter: Int = UniversalHandler.WIDTH / 2
+        private const val buttonYStart: Int = (UniversalHandler.HEIGHT - UniversalHandler.HEIGHT * 0.7).toInt()
+        private const val xCenter: Int = UniversalHandler.WIDTH / 2
         @JvmStatic
         protected fun addMenuParticles() {
             val r: Random = UniversalHandler.RANDOM

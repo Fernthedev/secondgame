@@ -14,7 +14,7 @@ class Trail(
     width: Float,
     height: Float,
 
-    color: Color?,
+    color: Color,
 
     private val life: Float = 0f
 ) : GameObject(

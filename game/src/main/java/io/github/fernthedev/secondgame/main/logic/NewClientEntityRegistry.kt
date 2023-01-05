@@ -17,17 +17,15 @@ import io.github.fernthedev.secondgame.main.entities.PlayerRender
 import io.github.fernthedev.secondgame.main.entities.Trail
 import java.awt.Graphics2D
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
-class NewClientEntityRegistry(
-
-) : INewEntityRegistry() {
+class NewClientEntityRegistry : INewEntityRegistry() {
     private val stopwatch = Stopwatch.createUnstarted()
     var serverEntityRegistry: NewServerEntityRegistry? = null
 
-    override val gameObjects: Map<UUID, GameObject> = ConcurrentHashMap()
-        get() = if (entityRegistryInUse === this) field else entityRegistryInUse.gameObjects
+    override val gameObjects: Map<UUID, GameObject>
+        get() = if (entityRegistryInUse === this) super.gameObjects else entityRegistryInUse.gameObjects
+
     private val entityRegistryInUse: INewEntityRegistry
         get() = if (Game.gameServer != null) serverEntityRegistry!! else this
 
@@ -118,7 +116,7 @@ class NewClientEntityRegistry(
         // addObject(player);
     }
 
-    protected fun <T : GameObject> renderEntity(g: Graphics2D, `object`: T) {
+    private fun <T : GameObject> renderEntity(g: Graphics2D, `object`: T) {
         val prevLoc = previousLocations[`object`.uniqueId]!!
 
         val entityRenderer = getRenderer(`object`.javaClass)
@@ -133,7 +131,7 @@ class NewClientEntityRegistry(
                     Trail(
                         Location(drawX,
                         drawY),
-                        color = `object`.color,
+                        color = `object`.color!!,
                         width = `object`.width,
                         height = `object`.height,
                         life = 0.04f

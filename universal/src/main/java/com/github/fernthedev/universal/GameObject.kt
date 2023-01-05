@@ -16,7 +16,7 @@ abstract class GameObject(
     val uniqueId: UUID = UUID.randomUUID(),
 
 
-    var color: Color? = null,
+    var color: Color,
 
     var width: Float = 0F, var height: Float = 0F
 ) : Serializable, Cloneable {

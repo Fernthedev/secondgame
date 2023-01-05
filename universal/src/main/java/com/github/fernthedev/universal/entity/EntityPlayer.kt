@@ -4,6 +4,7 @@ import com.github.fernthedev.CommonUtil
 import com.github.fernthedev.universal.EntityID
 import com.github.fernthedev.universal.GameObject
 import com.github.fernthedev.universal.Location
+import com.github.fernthedev.universal.UniversalHandler
 import java.awt.Color
 import java.util.*
 import kotlin.math.abs
@@ -18,7 +19,7 @@ class EntityPlayer
     velY: Float = 0F,
     uniqueId: UUID = UUID.randomUUID(),
     color: Color? = null,
-) : GameObject(location, entityId = EntityID.PLAYER, velX = velX, velY = velY, uniqueId, color, 32F, 32F), Cloneable {
+) : GameObject(location, entityId = EntityID.PLAYER, velX = velX, velY = velY, uniqueId,   color = color ?: Color(UniversalHandler.RANDOM.nextInt(255),UniversalHandler.RANDOM.nextInt(255),UniversalHandler.RANDOM.nextInt(255)), 32F, 32F), Cloneable {
 
 
     companion object {

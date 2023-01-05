@@ -19,7 +19,7 @@ class MouseHandler : MouseAdapter() {
         val my = e.y
         if (Game.screen != null) {
             val screen: Screen = Game.screen!!
-            screen.buttonList.parallelStream().forEach { screenButton ->
+            screen.buttonList.toList().forEach { screenButton ->
                 if (mouseOver(mx, my, screenButton)) {
                     screenButton.onClick.run()
                 }
