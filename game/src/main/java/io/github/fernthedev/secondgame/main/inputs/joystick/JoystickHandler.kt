@@ -1,92 +1,17 @@
-package io.github.fernthedev.secondgame.main.inputs.joystick;
+package io.github.fernthedev.secondgame.main.inputs.joystick
 
-import com.github.fernthedev.packets.player_updates.SendToServerPlayerInfoPacket;
-import io.github.fernthedev.secondgame.main.Game;
-import io.github.fernthedev.secondgame.main.inputs.InputHandler;
-import io.github.fernthedev.secondgame.main.inputs.InputType;
+import com.github.fernthedev.packets.player_updates.SendToServerPlayerInfoPacket
+import io.github.fernthedev.secondgame.main.Game
+import io.github.fernthedev.secondgame.main.inputs.InputHandler
+import io.github.fernthedev.secondgame.main.inputs.InputType
 
-
-public class JoystickHandler {
-
-    private JInputJoystick joystick1;
-
-    private final int xDeadzone = 20;
-    private final int yDeadzone = 20;
-
-
-    int oldHorizontal = 0,oldVertical = 0;
-
-    public static boolean[] getConnectedController() {
-        return connectedController;
-    }
-
-    private static boolean connectedController[] = new boolean[4];
-
-    public JoystickHandler() {
-
-//        return;
-//        /* Create an event object for the underlying plugin to populate */
-//        Event event = new Event();
-//
-//        /* Get the available controllers */
-//        Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
-//
-//        joystick1 = new JInputJoystick(Controller.Type.STICK, Controller.Type.GAMEPAD, 0);
-//
-//        for (Controller controller : controllers) {
-//            System.out.println("H");
-//            /* Remember to poll each one */
-//            controller.poll();
-//            System.out.println("T");
-//
-//            /* Get the controllers event queue */
-//            EventQueue queue = controllers[0].getEventQueue();
-//
-//            /* For each object in the queue */
-//            while (queue.getNextEvent(event)) {
-//                /* Get event component */
-//                Component comp = event.getComponent();
-//
-//                /* Process event (your awesome code) */
-//
-//                /*
-//                 * Create a strug buffer and put in it, the controller name,
-//                 * the time stamp of the event, the name of the component
-//                 * that changed and the new value.
-//                 *
-//                 * Note that the timestamp is a relative thing, not
-//                 * absolute, we can tell what order events happened in
-//                 * across controllers this way. We can not use it to tell
-//                 * exactly *when* an event happened just the order.
-//                 */
-//                StringBuilder buffer = new StringBuilder(controller
-//                        .getName());
-//                buffer.append(" at ");
-//                buffer.append(event.getNanos()).append(", ");
-//                buffer.append(comp.getName()).append(" changed to ");
-//                float value = event.getValue();
-//
-//                /*
-//                 * Check the type of the component and display an
-//                 * appropriate value
-//                 */
-//                if (comp.isAnalog()) {
-//                    buffer.append(value);
-//                } else {
-//                    if (value == 1.0f) {
-//                        buffer.append("On");
-//                    } else {
-//                        buffer.append("Off");
-//                    }
-//                }
-//
-//
-//                Game.getStaticLogger().info(buffer.toString());
-//            }
-//        }
-    }
-
-    public void tick() {
+class JoystickHandler {
+    private val joystick1: JInputJoystick? = null
+    private val xDeadzone = 20
+    private val yDeadzone = 20
+    var oldHorizontal = 0
+    var oldVertical = 0
+    fun tick() {
 //
 //        Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
 //
@@ -181,7 +106,7 @@ public class JoystickHandler {
 //                    }
 //
 //
-//                    if (Game.getScreen() == null && (Game.getMainPlayer().getVelX() != horizontal || Game.getMainPlayer().getVelY() != vertical)) {
+//                    if (Game.getScreen() == null && (Game.Game.mainPlayer.getVelX() != horizontal || Game.Game.mainPlayer.getVelY() != vertical)) {
 //                        updatePlayer(vertical, horizontal);
 //                    }
 //
@@ -197,20 +122,22 @@ public class JoystickHandler {
 //        }
     }
 
-    public void updatePlayer(double vertical,double horizontal) {
-        InputHandler.inputType = InputType.JOYSTICK;
-
-        Game.getLogger().info("Updating player");
-
-        Game.getMainPlayer().setVelY(vertical);
-        Game.getMainPlayer().setVelX(horizontal);
-
-        if(Game.getScreen() == null && Game.getClient() != null) {
-            Game.getClient().sendObject(new SendToServerPlayerInfoPacket(Game.getMainPlayer(), Game.getStaticEntityRegistry().getObjectsAndHashCode()));
+    fun updatePlayer(vertical: Float, horizontal: Float) {
+        InputHandler.inputType = InputType.JOYSTICK
+        Game.loggerImpl.info("Updating player")
+        Game.mainPlayer?.velY = (vertical)
+        Game.mainPlayer?.velX = (horizontal)
+        if (Game.screen == null && Game.client != null) {
+            Game.client!!.sendObject(
+                SendToServerPlayerInfoPacket(
+                    Game.mainPlayer!!,
+                    Game.staticEntityRegistry.objectsAndHashCode
+                )
+            )
         }
     }
 
-
+    companion object {
+        val connectedController = BooleanArray(4)
+    }
 }
-
-

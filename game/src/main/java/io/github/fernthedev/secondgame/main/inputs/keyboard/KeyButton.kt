@@ -1,27 +1,19 @@
-package io.github.fernthedev.secondgame.main.inputs.keyboard;
+package io.github.fernthedev.secondgame.main.inputs.keyboard
 
-import lombok.*;
 
-@RequiredArgsConstructor
-@ToString
-public class KeyButton {
+class KeyButton(
+    val charCode: Int = 0,
+    var held: Boolean = false
+) {
 
-    @Getter
-    private final int charCode;
+    private var pressed = 0
 
-    @Getter
-    @Setter
-    @NonNull
-    private boolean held;
-
-    private int pressed = 0;
-
-    public boolean isPressed() {
+    fun isPressed(): Boolean {
         if (held && pressed != 0) {
-            pressed--;
-            return true;
+            pressed--
+            return true
         }
-        return false;
+        return false
     }
 
 }

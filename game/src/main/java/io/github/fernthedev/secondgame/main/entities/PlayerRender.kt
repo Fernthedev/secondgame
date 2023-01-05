@@ -1,39 +1,30 @@
-package io.github.fernthedev.secondgame.main.entities;
+package io.github.fernthedev.secondgame.main.entities
 
-import com.github.fernthedev.universal.UniversalHandler;
-import com.github.fernthedev.universal.entity.EntityPlayer;
-import io.github.fernthedev.secondgame.main.Game;
-import io.github.fernthedev.secondgame.main.logic.IEntityRenderer;
-import io.github.fernthedev.secondgame.main.ui.api.ScreenFont;
+import com.github.fernthedev.universal.UniversalHandler
+import com.github.fernthedev.universal.entity.EntityPlayer
+import io.github.fernthedev.secondgame.main.Game
+import io.github.fernthedev.secondgame.main.logic.IEntityRenderer
+import io.github.fernthedev.secondgame.main.ui.api.ScreenFont
+import java.awt.Color
+import java.awt.Font
+import java.awt.Graphics2D
 
-import java.awt.*;
-
-public class PlayerRender implements IEntityRenderer<EntityPlayer> {
-
-    protected ScreenFont textFont = new ScreenFont(new Font("arial", Font.BOLD, 15), Color.WHITE);
-
-    @Override
-    public void render(Graphics g, EntityPlayer gameObject, float drawX, float drawY) {
+class PlayerRender : IEntityRenderer<EntityPlayer> {
+    protected var textFont = ScreenFont(Font("arial", Font.BOLD, 15), Color.WHITE)
+    override fun render(g: Graphics2D, gameObject: EntityPlayer, drawX: Float, drawY: Float) {
 //        float drawX = gameObject.getX() + (gameObject.getX() - gameObject.getPrevX()) * Game.getRenderTime();
 //        float drawY = gameObject.getY() + (gameObject.getY() - gameObject.getPrevY()) * Game.getRenderTime();
-
-
-        g.setColor(gameObject.getColor());
-        g.fillRect((int)drawX, (int) drawY, gameObject.getWidth(), gameObject.getHeight());
-
-        if (Game.getClient() != null && Game.getClient().isRegistered()) {
-            int y = (int) (drawY - gameObject.getHeight() / 4f);
-
-            float maxY = (float) UniversalHandler.HEIGHT - (float) gameObject.getHeight()*2f;
-
-            boolean outOfBoundsRoof = y - gameObject.getHeight() <= 0;
-            boolean outOfBoundsFloor = y + gameObject.getHeight() >= maxY;
-
-            if ((outOfBoundsRoof || gameObject.getVelY() > 2) && !outOfBoundsFloor)
-                y = (int) (drawY + gameObject.getHeight()*1.5);
-
-            g.setFont(textFont.getFont());
-            g.drawString(gameObject.getName(), (int) gameObject.getX(), y);
+        g.color = gameObject.color
+        g.fillRect(drawX.toInt(), drawY.toInt(), gameObject.width.toInt(), gameObject.height.toInt())
+        if (Game.client?.isRegistered == true) {
+            var y = (drawY - gameObject.height / 4f).toInt()
+            val maxY = UniversalHandler.HEIGHT.toFloat() - gameObject.height * 2f
+            val outOfBoundsRoof = y - gameObject.height <= 0
+            val outOfBoundsFloor = y + gameObject.height >= maxY
+            if ((outOfBoundsRoof || gameObject.velY > 2) && !outOfBoundsFloor) y =
+                (drawY + gameObject.height * 1.5).toInt()
+            g.font = textFont.font
+            g.drawString(gameObject.name, gameObject.location.x.toInt(), y)
         }
     }
 }

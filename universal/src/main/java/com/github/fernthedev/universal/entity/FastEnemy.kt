@@ -6,8 +6,8 @@ import com.github.fernthedev.universal.Location
 import java.awt.Color
 
 
-class FastEnemy(location: Location, entityId: EntityID) :
-    GameObject(location, entityId, 5F, 7F, width = 16f, height = 16f, color = Color.CYAN) {
+class FastEnemy(location: Location) :
+    GameObject(location, EntityID.ENEMY, 5F, 7F, width = 16f, height = 16f, color = Color.CYAN) {
 
     override fun tick() {}
 }

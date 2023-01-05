@@ -1,8 +1,5 @@
-package io.github.fernthedev.secondgame.main.inputs;
+package io.github.fernthedev.secondgame.main.inputs
 
-public enum InputType {
-
-    KEYBOARD,
-    JOYSTICK
-
+enum class InputType {
+    KEYBOARD, JOYSTICK
 }

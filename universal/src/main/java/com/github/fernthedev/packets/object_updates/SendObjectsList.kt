@@ -9,6 +9,6 @@ import java.util.*
 
 @PacketInfo(name = "SEND_OBJECT_LIST")
 class SendObjectsList(
-    val objectList: Map<UUID, NewGsonGameObject>,
+    val objectList: Map<UUID, NewGsonGameObject?>,
     val mainPlayer: EntityPlayer
 ) : Packet(), Serializable

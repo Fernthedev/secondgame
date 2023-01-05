@@ -1,24 +1,14 @@
-package io.github.fernthedev.secondgame.main.ui.api;
+package io.github.fernthedev.secondgame.main.ui.api
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NonNull;
+import java.awt.Color
+import java.awt.Font
 
-import java.awt.*;
 
-@Data
-@AllArgsConstructor
-@Getter
-public class ScreenFont {
+data class ScreenFont(
+    val font: Font,
+    val color: Color
+) {
 
-    @NonNull
-    private Font font;
-
-    @NonNull
-    private Color color;
-
-    public int getSize() {
-        return font.getSize();
-    }
+    val size: Int
+        get() = font.size
 }

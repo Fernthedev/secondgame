@@ -1,14 +1,6 @@
-package io.github.fernthedev.secondgame.main.ui.api;
+package io.github.fernthedev.secondgame.main.ui.api
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-
-@Getter
-@AllArgsConstructor
-@Data
-public class Size {
-
-    private int width, height;
-
-}
+data class Size(
+    val width: Int = 0,
+    val height: Int =0
+)

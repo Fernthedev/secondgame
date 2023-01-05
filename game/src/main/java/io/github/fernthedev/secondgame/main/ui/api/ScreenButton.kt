@@ -1,72 +1,49 @@
-package io.github.fernthedev.secondgame.main.ui.api;
+package io.github.fernthedev.secondgame.main.ui.api
 
-import com.github.fernthedev.lightchat.core.StaticHandler;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
-import org.apache.commons.lang3.Validate;
+import com.github.fernthedev.lightchat.core.StaticHandler
+import com.github.fernthedev.universal.Location
+import org.apache.commons.lang3.Validate
+import java.awt.Color
+import java.awt.Font
+import java.awt.Graphics2D
 
-import javax.annotation.Nullable;
-import java.awt.*;
-
-public class ScreenButton {
-
-
-    private String string;
+class ScreenButton {
+    private var string: String
+    var parentScreen: Screen? = null
 
 
-    protected Screen parentScreen;
+    val onClick: Runnable
 
-    @Getter
-    private final Runnable onClick;
+    var defaultButtonWidth = 200
+    var defaultButtonHeight = 64
+    var defaultButtonWidthSpace = 30
 
-    protected int defaultButtonWidth = 200, defaultButtonHeight = 64, defaultButtonWidthSpace = 30;
 
-    @NonNull
-    protected ScreenFont buttonFont = new ScreenFont(new Font("arial", Font.BOLD, 30), Color.WHITE );
+    var buttonFont = ScreenFont(Font("arial", Font.BOLD, 30), Color.WHITE)
+    var buttonSize: Size
 
-    @Setter
-    protected Size buttonSize = null;
+    var location: Location?
+    lateinit var renderedLocation: Location
 
-    @Getter
-    @Setter
-    @Nullable
-    protected Location location = null;
-
-    @Getter
-    protected Location renderedLocation;
-
-    public ScreenButton(String string, Runnable onClick) {
-        this.string = string;
-        this.onClick = onClick;
+    constructor(string: String, buttonSize: Size? = null, location: Location? = null, onClick: Runnable) {
+        this.string = string
+        this.onClick = onClick
+        this.buttonSize = buttonSize ?: sizeDependingLength
+        this.location = location
     }
 
-    public ScreenButton(String string, Runnable onClick, Size buttonSize) {
-        this.string = string;
-        this.onClick = onClick;
-        this.buttonSize = buttonSize;
-    }
-
-    public ScreenButton(String string, Runnable onClick, Size buttonSize, Location location) {
-        this.string = string;
-        this.onClick = onClick;
-        this.buttonSize = buttonSize;
-        this.location = location;
-    }
-
-    public ScreenButton(String string, Runnable onClick, Location location) {
-        this.string = string;
-        this.onClick = onClick;
-        this.location = location;
-    }
-
-    public ScreenButton(String string, Runnable onClick, @NonNull ScreenFont buttonFont, Size buttonSize, Location location) {
-        this.string = string;
-        this.onClick = onClick;
-        this.buttonFont = buttonFont;
-        this.buttonSize = buttonSize;
-
-        this.location = location;
+    constructor(
+        string: String,
+        buttonFont: ScreenFont,
+        buttonSize: Size?,
+        location: Location?,
+        onClick: Runnable,
+    ) {
+        this.string = string
+        this.onClick = onClick
+        this.buttonFont = buttonFont
+        this.buttonSize = buttonSize ?: sizeDependingLength
+        this.location = location
     }
 
     /**
@@ -75,64 +52,40 @@ public class ScreenButton {
      * @param loc default location
      * @return true if using the location defined in parameter
      */
-    public boolean render(Graphics g, Location loc) {
-        getButtonSize();
-        boolean returnStatus = false;
+    fun render(g: Graphics2D, loc: Location): Boolean {
+        var returnStatus = false
 
-        Location buttonDrawLocation = this.location;
+        var buttonDrawLocation = location
 
         if (buttonDrawLocation == null) {
-            Validate.notNull(loc);
-            buttonDrawLocation = loc;
-
-            returnStatus = true;
-        } else {
-            if (buttonDrawLocation.getX() == null) {
-                Validate.notNull(loc);
-                buttonDrawLocation.setX(loc.getX());
-            }
-
-            if (buttonDrawLocation.getY() == null) {
-                Validate.notNull(loc);
-                buttonDrawLocation.setX(loc.getY());
-            }
+            Validate.notNull<Any>(loc)
+            buttonDrawLocation = loc
+            returnStatus = true
         }
 
-        renderedLocation = buttonDrawLocation;
-                        // 70
-        int stringX = (int) (buttonDrawLocation.getX() + (buttonSize.getWidth()/2.0) - (buttonFont.getSize() * string.length() * 0.26)); //((((string.length() / buttonFont.getSize())) + (buttonSize.getWidth())) + buttonSize.getWidth()/2); //- ((buttonSize.getWidth() / 2) ) ; //( (width / 2) - (size + (string.length() * 2) - string.length() / 2));
 
-        int stringY = buttonDrawLocation.getY() + ( buttonSize.getHeight() - (buttonFont.getSize() - buttonSize.getHeight()/8));
+        renderedLocation = buttonDrawLocation
+        // 70
+        val stringX =
+            (buttonDrawLocation.x + buttonSize.width / 2.0f - buttonFont.size * string.length * 0.26f).toInt() //((((string.length() / buttonFont.getSize())) + (buttonSize.getWidth())) + buttonSize.getWidth()/2); //- ((buttonSize.getWidth() / 2) ) ; //( (width / 2) - (size + (string.length() * 2) - string.length() / 2));
+        val stringY: Int =
+            (buttonDrawLocation.y + (buttonSize.height - (buttonFont.size - buttonSize.height / 8f))).toInt()
+        g.font = buttonFont.font
+        g.color = buttonFont.color
+        g.drawRect(buttonDrawLocation.x.toInt(), buttonDrawLocation.y.toInt(), buttonSize.width, buttonSize.height)
+        g.drawString(string, stringX, stringY)
+        if (StaticHandler.isDebug()) g.drawRect(stringX, stringY, 15, 15)
 
-
-
-        g.setFont(buttonFont.getFont());
-        g.setColor(buttonFont.getColor());
-
-        g.drawRect(buttonDrawLocation.getX(), buttonDrawLocation.getY(), buttonSize.getWidth(), buttonSize.getHeight());
-        g.drawString(string, stringX, stringY);
-
-        if (StaticHandler.isDebug())
-            g.drawRect(stringX, stringY, 15, 15);
-
-        return returnStatus;
+        return returnStatus
     }
 
-    protected Size getSizeDependingLength() {
-        int width = defaultButtonWidth;
-
-        if (string.length()*(buttonFont.getSize()/2) > (width - defaultButtonWidthSpace*2) / 2) {
-            width = ((string.length()*buttonFont.getSize()/2) + width/2); //(string.length() + defaultButtonWidthSpace + (width/2)) * 2;
+    protected val sizeDependingLength: Size
+        get() {
+            var width = defaultButtonWidth
+            if (string.length * (buttonFont.size / 2) > (width - defaultButtonWidthSpace * 2) / 2) {
+                width =
+                    string.length * buttonFont.size / 2 + width / 2 //(string.length() + defaultButtonWidthSpace + (width/2)) * 2;
+            }
+            return Size(width, defaultButtonHeight)
         }
-
-        return new Size(width, defaultButtonHeight);
-    }
-
-
-    public Size getButtonSize() {
-        if (buttonSize == null)
-            buttonSize = getSizeDependingLength();
-
-        return buttonSize;
-    }
 }

@@ -65,7 +65,7 @@ shadowJar {
     mergeServiceFiles()
 }
 
-configurations.all {
+configurations.configureEach {
     resolutionStrategy {
         preferProjectModules()
     }

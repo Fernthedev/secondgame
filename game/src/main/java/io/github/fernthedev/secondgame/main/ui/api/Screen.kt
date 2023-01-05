@@ -1,122 +1,107 @@
-package io.github.fernthedev.secondgame.main.ui.api;
+package io.github.fernthedev.secondgame.main.ui.api
 
-import com.github.fernthedev.lightchat.core.StaticHandler;
-import com.github.fernthedev.universal.EntityID;
-import com.github.fernthedev.universal.UniversalHandler;
-import io.github.fernthedev.secondgame.main.Game;
-import io.github.fernthedev.secondgame.main.entities.MenuParticle;
-import lombok.Getter;
-import lombok.Setter;
-import org.jetbrains.annotations.Nullable;
+import com.github.fernthedev.lightchat.core.StaticHandler
+import com.github.fernthedev.universal.Location
+import com.github.fernthedev.universal.UniversalHandler
+import io.github.fernthedev.secondgame.main.Game
+import io.github.fernthedev.secondgame.main.entities.MenuParticle
+import java.awt.Color
+import java.awt.Font
+import java.awt.Graphics2D
+import java.util.*
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+abstract class Screen(private val title: String) {
 
-public abstract class Screen {
+    var parentScreen: Screen? = null
 
-    private final String title;
+    private var yButtonIncrement = resetY()
 
-    @Nullable
-    @Getter
-    @Setter
-    protected Screen parentScreen = null;
+    val DEFAULT_BACK_BUTTON by lazy { ScreenButton("Back", null, null) { returnToParentScreen() } }
 
-    protected final ScreenButton DEFAULT_BACK_BUTTON = new ScreenButton("Back", this::returnToParentScreen);
-
-    @Getter
-    protected int buttonSpacing = 10;
-
-    @Getter
-    protected boolean setParentScreenOnSet = true;
-
-    @Getter
-    private int yButtonIncrement = resetY();
-
-    public int incrementY(int increment) {
-        return yButtonIncrement += increment + buttonSpacing;
+    fun incrementY(increment: Int): Int {
+        return increment + buttonSpacing.let { yButtonIncrement += it; yButtonIncrement }
     }
 
-    public int resetY() {
-        return yButtonIncrement = buttonYStart() - buttonSpacing;
+    fun resetY(): Int {
+        return buttonYStart() - buttonSpacing.also { yButtonIncrement = it }
     }
 
-    public Screen(String title) {
-        this.title = title;
+
+    protected var textFont = ScreenFont(Font("arial", Font.BOLD, 50), Color.WHITE)
+
+
+    var buttonList: MutableList<ScreenButton> = ArrayList()
+    fun addButton(button: ScreenButton) {
+        buttonList.add(button)
     }
 
-    @Getter
-    protected ScreenFont textFont = new ScreenFont(new Font("arial", Font.BOLD, 50), Color.WHITE);
-
-    @Getter
-    protected List<ScreenButton> buttonList = new ArrayList<>();
-
-
-    public void addButton(ScreenButton button) {
-        buttonList.add(button);
+    protected abstract fun draw(g: Graphics2D)
+    fun buttonX(screenButton: ScreenButton): Int {
+        return xCenter - screenButton.buttonSize.width / 2
     }
 
-    protected abstract void draw(Graphics g);
-
-    private static final int buttonYStart = (int) (UniversalHandler.HEIGHT - (UniversalHandler.HEIGHT * 0.7));
-    private static final int xCenter = UniversalHandler.WIDTH / 2;
-
-    public int buttonX(ScreenButton screenButton) {
-        return xCenter - (screenButton.getButtonSize().getWidth() / 2);
+    fun buttonYStart(): Int {
+        return buttonYStart
     }
 
-    public int buttonYStart() {
-        return buttonYStart;
-    }
+    fun render(g: Graphics2D) {
+        buttonList.clear()
+        resetY()
+        draw(g)
+        g.font = textFont.font
+        g.color = textFont.color
 
-    public void render(Graphics g) {
-        buttonList.clear();
-        resetY();
-        draw(g);
-
-        g.setFont(textFont.getFont());
-        g.setColor(textFont.getColor());
-
-        g.drawString(title, UniversalHandler.WIDTH / 2 - (textFont.getSize() / 2 * title.length()), (int) (UniversalHandler.HEIGHT - (UniversalHandler.HEIGHT * 0.85)));
-
-        if (StaticHandler.isDebug())
-            g.drawRect(UniversalHandler.WIDTH / 2 - (textFont.getSize() / 2 * title.length()), (int) (UniversalHandler.HEIGHT - (UniversalHandler.HEIGHT - (UniversalHandler.HEIGHT * 0.2))), 15, 15);
-
-        for (ScreenButton button : buttonList) {
-            button.parentScreen = this;
-
-            int x = buttonX(button);
-            int y = getYButtonIncrement();
-
-            if (button.render(g, new Location(x, y))) {
-                incrementY(button.getButtonSize().getHeight());
-
+        g.drawString(
+            title,
+            UniversalHandler.WIDTH / 2 - textFont.size / 2 * title.length,
+            (UniversalHandler.HEIGHT - UniversalHandler.HEIGHT * 0.85).toInt()
+        )
+        if (StaticHandler.isDebug()) {
+            g.drawRect(
+                UniversalHandler.WIDTH / 2 - textFont.size / 2 * title.length,
+                (UniversalHandler.HEIGHT - (UniversalHandler.HEIGHT - UniversalHandler.HEIGHT * 0.2)).toInt(),
+                15,
+                15
+            )
+        }
+        for (button in buttonList) {
+            button.parentScreen = this
+            val x = buttonX(button)
+            val y: Int = yButtonIncrement
+            if (button.render(g, Location(x.toFloat(), y.toFloat()))) {
+                incrementY(button.buttonSize.height)
             }
         }
     }
 
-    public void returnToParentScreen() {
-        Game.setScreen(parentScreen);
+    open fun returnToParentScreen() {
+        Game.screen = parentScreen
     }
 
-    protected static void addMenuParticles() {
-        Random r = UniversalHandler.RANDOM;
-
-        Game.getStaticEntityRegistry().clearObjects();
-
-
-        int WIDTH = UniversalHandler.WIDTH;
-        int HEIGHT = UniversalHandler.HEIGHT;
-
-        int amount = r.nextInt(15);
-        if (amount < 10) amount = 10;
-        for (int i = 0; i < amount; i++) {
-            Game.getStaticEntityRegistry().addEntityObject(new MenuParticle(r.nextInt(WIDTH - 40) + 20, r.nextInt(HEIGHT - 40) + 20, EntityID.MENU_PARTICLE));
+    companion object {
+        private val buttonYStart: Int = (UniversalHandler.HEIGHT - UniversalHandler.HEIGHT * 0.7).toInt()
+        private val xCenter: Int = UniversalHandler.WIDTH / 2
+        @JvmStatic
+        protected fun addMenuParticles() {
+            val r: Random = UniversalHandler.RANDOM
+            Game.staticEntityRegistry.clearObjects()
+            val WIDTH: Int = UniversalHandler.WIDTH
+            val HEIGHT: Int = UniversalHandler.HEIGHT
+            var amount = r.nextInt(15)
+            if (amount < 10) amount = 10
+            for (i in 0 until amount) {
+                Game.staticEntityRegistry.addEntityObject(
+                    MenuParticle(
+                        Location(
+                        r.nextFloat(WIDTH - 40f) + 20f,
+                        r.nextFloat(HEIGHT - 40f) + 20f,
+                        )
+                    )
+                )
+            }
         }
+
+        const val buttonSpacing = 10
+        var setParentScreenOnSet = true
     }
-
-
-
-
 }

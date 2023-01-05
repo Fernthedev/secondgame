@@ -12,6 +12,13 @@ object GameMathUtil {
         }
     }
 
+    fun clamp(v: Int, min: Int, max: Int): Int {
+        return when {
+            v < max -> max(v, min)
+            else -> max
+        }
+    }
+
     @JvmStatic
     fun lerp(start: Float, end: Float, time: Float): Float {
         return start + (end - start) * time

@@ -1,10 +1,8 @@
-package io.github.fernthedev.secondgame.main.logic;
+package io.github.fernthedev.secondgame.main.logic
 
-import com.github.fernthedev.universal.GameObject;
+import com.github.fernthedev.universal.GameObject
+import java.awt.Graphics2D
 
-import java.awt.*;
-
-public interface IEntityRenderer<T extends GameObject> {
-
-    void render(Graphics g, T gameObject, float drawX, float drawY);
+interface IEntityRenderer<T : GameObject?> {
+    fun render(g: Graphics2D, gameObject: T, drawX: Float, drawY: Float)
 }

@@ -1,191 +1,168 @@
-package io.github.fernthedev.secondgame.main.logic;
+package io.github.fernthedev.secondgame.main.logic
 
-import com.github.fernthedev.GameMathUtil;
-import com.github.fernthedev.INewEntityRegistry;
-import com.github.fernthedev.exceptions.DebugException;
-import com.github.fernthedev.game.server.NewServerEntityRegistry;
-import com.github.fernthedev.packets.player_updates.SendToServerPlayerInfoPacket;
-import com.github.fernthedev.universal.EntityID;
-import com.github.fernthedev.universal.GameObject;
-import com.github.fernthedev.universal.UniversalHandler;
-import com.github.fernthedev.universal.entity.*;
-import com.google.common.base.Stopwatch;
-import io.github.fernthedev.secondgame.main.Game;
-import io.github.fernthedev.secondgame.main.entities.CoinRenderer;
-import io.github.fernthedev.secondgame.main.entities.MenuParticle;
-import io.github.fernthedev.secondgame.main.entities.PlayerRender;
-import io.github.fernthedev.secondgame.main.entities.Trail;
-import lombok.Getter;
-import lombok.Setter;
-import org.jetbrains.annotations.Nullable;
+import com.github.fernthedev.GameMathUtil
+import com.github.fernthedev.INewEntityRegistry
+import com.github.fernthedev.exceptions.DebugException
+import com.github.fernthedev.game.server.NewServerEntityRegistry
+import com.github.fernthedev.packets.player_updates.SendToServerPlayerInfoPacket
+import com.github.fernthedev.universal.GameObject
+import com.github.fernthedev.universal.Location
+import com.github.fernthedev.universal.UniversalHandler
+import com.github.fernthedev.universal.entity.*
+import com.google.common.base.Stopwatch
+import io.github.fernthedev.secondgame.main.Game
+import io.github.fernthedev.secondgame.main.entities.CoinRenderer
+import io.github.fernthedev.secondgame.main.entities.MenuParticle
+import io.github.fernthedev.secondgame.main.entities.PlayerRender
+import io.github.fernthedev.secondgame.main.entities.Trail
+import java.awt.Graphics2D
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
 
-import java.awt.*;
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+class NewClientEntityRegistry(
 
-public class NewClientEntityRegistry extends INewEntityRegistry {
+) : INewEntityRegistry() {
+    private val stopwatch = Stopwatch.createUnstarted()
+    var serverEntityRegistry: NewServerEntityRegistry? = null
 
-    private final ExecutorService executorService = Executors.newCachedThreadPool();
-    private Stopwatch stopwatch = Stopwatch.createUnstarted();
+    override val gameObjects: Map<UUID, GameObject> = ConcurrentHashMap()
+        get() = if (entityRegistryInUse === this) field else entityRegistryInUse.gameObjects
+    private val entityRegistryInUse: INewEntityRegistry
+        get() = if (Game.gameServer != null) serverEntityRegistry!! else this
 
-    public NewClientEntityRegistry() {
-        DefaultEntityRenderer defaultEntityRenderer = new DefaultEntityRenderer();
-        registerEntity(BasicEnemy.class, defaultEntityRenderer);
-        registerEntity(FastEnemy.class, defaultEntityRenderer);
-        registerEntity(SmartEnemy.class, defaultEntityRenderer);
-        registerEntity(EntityPlayer.class,  new PlayerRender());
-        registerEntity(MenuParticle.class, defaultEntityRenderer);
-        registerEntity(Trail.class, new Trail.Renderer());
-
-
-        registerEntity(Coin.class, new CoinRenderer());
+    init {
+        val defaultEntityRenderer = DefaultEntityRenderer()
+        registerEntity(BasicEnemy::class.java, defaultEntityRenderer)
+        registerEntity(FastEnemy::class.java, defaultEntityRenderer)
+        registerEntity(SmartEnemy::class.java, defaultEntityRenderer)
+        registerEntity(EntityPlayer::class.java, PlayerRender())
+        registerEntity(MenuParticle::class.java, defaultEntityRenderer)
+        registerEntity(Trail::class.java, Trail.Renderer())
+        registerEntity(Coin::class.java, CoinRenderer())
     }
 
-    @Nullable
-    @Getter
-    @Setter
-    private NewServerEntityRegistry serverEntityRegistry;
-
-    private static final Map<Class<? extends GameObject>, IEntityRenderer<? extends GameObject>> RENDER_REGISTRY = new HashMap<>();
-
-    public <T extends GameObject> void registerEntity(Class<T> gameObject, IEntityRenderer<? extends GameObject> renderer) {
-        RENDER_REGISTRY.put(gameObject, renderer);
+    private fun <T : GameObject> registerEntity(gameObject: Class<T>, renderer: IEntityRenderer<out GameObject>) {
+        RENDER_REGISTRY[gameObject] = renderer
     }
 
-    public <T extends GameObject> IEntityRenderer<T> getRenderer(Class<T> clazz) {
-        if (!RENDER_REGISTRY.containsKey(clazz)) throw new IllegalArgumentException("The GameObject " + clazz.getName() + " does not have a renderer registered or assigned.");
-        return (IEntityRenderer<T>) RENDER_REGISTRY.get(clazz);
+    private fun <T : GameObject> getRenderer(clazz: Class<T>): IEntityRenderer<T> {
+        require(RENDER_REGISTRY.containsKey(clazz)) { "The GameObject " + clazz.name + " does not have a renderer registered or assigned." }
+        return RENDER_REGISTRY[clazz] as IEntityRenderer<T>
     }
 
 
-    @Override
-    public Map<UUID, GameObject> getGameObjects() {
-        if (getEntityRegistryInUse() == this) return gameObjects;
-        return getEntityRegistryInUse().getGameObjects();
+
+    override fun collisionCheck(universalPlayer: EntityPlayer) {
+        if (Game.client == null && Game.gameServer == null) super.collisionCheck(universalPlayer)
     }
 
-    private INewEntityRegistry getEntityRegistryInUse() {
-        if (Game.getGameServer() != null) return serverEntityRegistry;
-        else return this;
+    override fun clampAndTP(gameObject: GameObject) {
+         if (Game.client == null && Game.gameServer == null || Game.mainPlayer != null && gameObject.uniqueId == Game.mainPlayer?.uniqueId) {
+             super.clampAndTP(gameObject)
+         }
     }
 
-    @Override
-    public void collisionCheck(EntityPlayer universalPlayer) {
-        if (Game.getClient() == null && Game.getGameServer() == null)
-            super.collisionCheck(universalPlayer);
-    }
-
-    @Override
-    protected String clampAndTP(GameObject gameObject) {
-        if ((Game.getClient() == null && Game.getGameServer() == null) || (gameObject != null && Game.getMainPlayer() != null && gameObject.getUniqueId() == Game.getMainPlayer().getUniqueId()))
-            return super.clampAndTP(gameObject);
-
-        return null;
-    }
-
-    @Override
-    public void tick() {
-        super.tick();
-
-        finishEntityUpdate();
-
-        if (Game.getClient() != null && !stopwatch.isRunning())
-            stopwatch.start();
-
-        if (Game.getScreen() == null && Game.getClient() != null && Game.getClient().isRegistered() && Game.getMainPlayer() != null && stopwatch.elapsed(TimeUnit.MILLISECONDS) >= 500) {
-            Game.getClient().sendObject(new SendToServerPlayerInfoPacket(Game.getMainPlayer(), Game.getStaticEntityRegistry().getObjectsAndHashCode()));
-            stopwatch.reset();
-            Game.getLogger().info("Sent update packet " + Game.getMainPlayer().toString());
+    override suspend fun tick() {
+        super.tick()
+        finishEntityUpdate()
+        if (Game.client != null && !stopwatch.isRunning) stopwatch.start()
+        if (Game.screen == null && Game.client != null && Game.client!!.isRegistered && Game.mainPlayer != null && stopwatch.elapsed(
+                TimeUnit.MILLISECONDS
+            ) >= 500
+        ) {
+            Game.client!!.sendObject(
+                SendToServerPlayerInfoPacket(
+                    Game.mainPlayer!!,
+                    Game.staticEntityRegistry.objectsAndHashCode
+                )
+            )
+            stopwatch.reset()
+            Game.loggerImpl.info("Sent update packet " + Game.mainPlayer.toString())
         }
     }
 
-
-    protected void finishEntityUpdate() {
-
+    protected fun finishEntityUpdate() {}
+    fun clearObjects() {
+        DebugException("Cleared objects").printStackTrace()
+        Game.loggerImpl.info("Clearing ")
+        clearEntities()
     }
 
-
-
-    public void clearObjects() {
-        new DebugException("Cleared objects").printStackTrace();
-        Game.getLogger().info("Clearing ");
-        getGameObjects().clear();
-
+    fun startGame() {
+        clearObjects()
+        Game.mainPlayer = EntityPlayer(
+            Location(UniversalHandler.WIDTH.toFloat() / 2f - 32f,
+            UniversalHandler.HEIGHT.toFloat() / 2f - 32f),
+            ""
+        )
+        Game.screen = null
+        val r: Random = UniversalHandler.RANDOM
+        val HEIGHT: Int = UniversalHandler.HEIGHT
+        val WIDTH: Int = UniversalHandler.WIDTH
+        addEntityObject(Game.mainPlayer!!)
+        addEntityObject(BasicEnemy(Location(r.nextFloat(WIDTH - 50f), r.nextFloat(HEIGHT - 50f))))
+        addEntityObject(Coin(Location(r.nextFloat(WIDTH - 50f), r.nextFloat(UniversalHandler.HEIGHT - 50f))))
     }
 
-
-    public void startGame() {
-        clearObjects();
-
-        Game.setMainPlayer(new EntityPlayer((float) UniversalHandler.WIDTH / 2 - 32, (float) UniversalHandler.HEIGHT /2 - 32, ""));
-
-        Game.setScreen(null);
-        Random r = UniversalHandler.RANDOM;
-        int HEIGHT = UniversalHandler.HEIGHT;
-        int WIDTH = UniversalHandler.WIDTH;
-
-        addEntityObject(Game.getMainPlayer());
-        //handler.addObject(new Player(WIDTH/2-32,HEIGHT/2-32, ID.Player,handler,hud,0));
-        addEntityObject(new BasicEnemy(r.nextInt(WIDTH - 50),r.nextInt(HEIGHT - 50), EntityID.ENEMY));
-        addEntityObject(new Coin(r.nextInt(WIDTH - 50), r.nextInt(UniversalHandler.HEIGHT - 50), EntityID.COIN));
-
+    fun resetLevel() {
+        clearObjects()
+        addEntityObject(Game.mainPlayer!!)
     }
 
-    public void resetLevel() {
-        clearObjects();
-
-        addEntityObject(Game.getMainPlayer());
-    }
-
-    public void setPlayerInfo(EntityPlayer player) {
-
-        if(player != null) {
-            addEntityObject(player);
-            Game.setMainPlayer(player);
+    fun setPlayerInfo(player: EntityPlayer?) {
+        if (player != null) {
+            addEntityObject(player)
+            Game.mainPlayer = player
         }
         // addObject(player);
     }
 
+    protected fun <T : GameObject> renderEntity(g: Graphics2D, `object`: T) {
+        val prevLoc = previousLocations[`object`.uniqueId]!!
 
-
-    protected <T extends GameObject> void renderEntity(Graphics g, T object) {
-        IEntityRenderer<T> entityRenderer = (IEntityRenderer<T>) getRenderer(object.getClass());
-
-        float drawX = (float) GameMathUtil.lerp(object.getPrevX(), object.getX(), Game.getElapsedTime());
-        float drawY = (float) GameMathUtil.lerp(object.getPrevY(), object.getY(), Game.getElapsedTime());
-
-        entityRenderer.render(g, object, drawX, drawY);
-
-        if (object.isHasTrail() && !(object instanceof Trail)) {
+        val entityRenderer = getRenderer(`object`.javaClass)
+        val drawX =
+            GameMathUtil.lerp(prevLoc.x, `object`.location.x, Game.elapsedTime.toFloat())
+        val drawY =
+            GameMathUtil.lerp(prevLoc.y, `object`.location.y, Game.elapsedTime.toFloat())
+        entityRenderer.render(g, `object`, drawX, drawY)
+        if (`object`.hasTrail && `object` !is Trail) {
             try {
-                getEntityRegistryInUse().addEntityObject(new Trail(drawX, drawY, EntityID.TRAIL, object.getColor(), object.getWidth(), object.getHeight(), 0.04f));
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("GameObject: " + object.toString(), e);
+                entityRegistryInUse.addEntityObject(
+                    Trail(
+                        Location(drawX,
+                        drawY),
+                        color = `object`.color,
+                        width = `object`.width,
+                        height = `object`.height,
+                        life = 0.04f
+                    )
+                )
+            } catch (e: IllegalArgumentException) {
+                throw IllegalArgumentException("GameObject: $`object`", e)
             }
         }
     }
 
-    public void render(Graphics g) {
-        for (GameObject gameObject : new ArrayList<>(getGameObjects().values())) {
-            renderEntity(g, gameObject);
+    fun render(g: Graphics2D) {
+        for (gameObject in gameObjects.values) {
+            renderEntity(g, gameObject)
         }
     }
 
-    @Override
-    public Map<UUID, Integer> getObjectsAndHashCode() {
-        Map<UUID, GameObject> uuidGameObjectMap = copyGameObjectsAsMap();
-        return super.getObjectsAndHashCode(uuidGameObjectMap.keySet()
-                .stream()
-                .filter(uuid -> uuidGameObjectMap.get(uuid) != null && !(uuidGameObjectMap.get(uuid) instanceof Trail) && !(uuidGameObjectMap.get(uuid) instanceof MenuParticle))
-                .collect(Collectors.toSet())
-        );
-    }
+    val objectsAndHashCode: Map<UUID, Int>
+        get() {
+            return gameObjects
+                .filter { (uuid, _) -> gameObjects[uuid] != null && gameObjects[uuid] !is Trail && gameObjects[uuid] !is MenuParticle }
+                .map { (uuid, obj) ->
+                    uuid to obj.hashCode()
+                }
+                .toMap()
+        }
 
-    @Override
-    protected ExecutorService getExecutorService() {
-        return executorService;
+    companion object {
+        private val RENDER_REGISTRY: MutableMap<Class<out GameObject>, IEntityRenderer<out GameObject>> =
+            HashMap<Class<out GameObject>, IEntityRenderer<out GameObject>>()
     }
 }

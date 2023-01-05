@@ -6,8 +6,8 @@ import com.github.fernthedev.universal.Location
 import java.awt.Color
 
 
-class Coin(location: Location, entityId: EntityID?) :
-    GameObject(location, width = 16f, height = 16f, entityId = entityId, color = Color.ORANGE, velX = 0F, velY = 0F) {
+class Coin(location: Location) :
+    GameObject(location, width = 16f, height = 16f, entityId = EntityID.COIN, color = Color.ORANGE, velX = 0F, velY = 0F) {
     init {
         hasTrail = false
     }

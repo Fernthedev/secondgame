@@ -13,7 +13,6 @@ import com.github.fernthedev.universal.Location
 import com.github.fernthedev.universal.entity.EntityPlayer
 import kotlinx.coroutines.coroutineScope
 import java.util.concurrent.ConcurrentHashMap
-import java.util.function.BiConsumer
 
 
 class NewServerEntityRegistry(
@@ -93,11 +92,11 @@ class NewServerEntityRegistry(
     }
 
     fun removeRespawnAllPlayers() {
-        gameObjects.clear()
-        clientGameDataMap.forEach(BiConsumer<ClientConnection, ClientGameData> { connection: ClientConnection?, clientGameData: ClientGameData ->
+        clearEntities()
+        clientGameDataMap.forEach { (_: ClientConnection?, clientGameData: ClientGameData) ->
             clientGameData.entityPlayer.health = 100
             addEntityObject(clientGameData.entityPlayer)
-        })
+        }
         server.serverGameHandler.entityHandler.finishEntityUpdate()
     }
 

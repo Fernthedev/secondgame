@@ -6,8 +6,8 @@ import com.github.fernthedev.universal.Location
 import java.awt.Color
 
 
-class BasicEnemy(location: Location, entityId: EntityID?) :
-    GameObject(location, width = 16F, height = 16F, entityId = entityId, color = Color.RED) {
+class BasicEnemy(location: Location) :
+    GameObject(location, width = 16F, height = 16F, entityId = EntityID.ENEMY, color = Color.RED) {
     init {
         velX = 5f
         velY = 5f

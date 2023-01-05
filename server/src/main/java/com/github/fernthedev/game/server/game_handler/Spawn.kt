@@ -3,7 +3,6 @@ package com.github.fernthedev.game.server.game_handler
 import com.github.fernthedev.TickRunnable
 import com.github.fernthedev.game.server.GameServer
 import com.github.fernthedev.packets.LevelUp
-import com.github.fernthedev.universal.EntityID
 import com.github.fernthedev.universal.Location
 import com.github.fernthedev.universal.UniversalHandler
 import com.github.fernthedev.universal.entity.*
@@ -21,7 +20,7 @@ class Spawn(
         if (!server.serverGameHandler.started) return
 
         if (server.serverGameHandler.entityHandler.isClientDataEmpty) {
-            server.serverGameHandler.entityHandler.gameObjects.clear()
+            server.serverGameHandler.entityHandler.clearEntities()
             return
         }
         scoreKeep++
@@ -32,8 +31,7 @@ class Spawn(
                     Location(
                         UniversalHandler.RANDOM.nextFloat(UniversalHandler.WIDTH - 50F) + 1,
                         UniversalHandler.RANDOM.nextFloat(UniversalHandler.HEIGHT - 50F) + 1
-                    ),
-                    EntityID.COIN
+                    )
                 )
             )
         }
@@ -51,8 +49,7 @@ class Spawn(
                             Location(
                                 UniversalHandler.RANDOM.nextFloat(UniversalHandler.WIDTH - 50f),
                                 UniversalHandler.RANDOM.nextFloat(UniversalHandler.HEIGHT - 50f)
-                            ),
-                            EntityID.ENEMY
+                            )
                         )
                     )
                 }
@@ -62,8 +59,7 @@ class Spawn(
                             Location(
                                 UniversalHandler.RANDOM.nextFloat(UniversalHandler.WIDTH - 50F),
                                 UniversalHandler.RANDOM.nextFloat(UniversalHandler.HEIGHT - 50F)
-                            ),
-                            EntityID.ENEMY
+                            )
                         )
                     )
                 }

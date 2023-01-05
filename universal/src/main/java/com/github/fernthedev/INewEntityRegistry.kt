@@ -2,6 +2,7 @@ package com.github.fernthedev
 
 import com.github.fernthedev.universal.EntityID
 import com.github.fernthedev.universal.GameObject
+import com.github.fernthedev.universal.Location
 import com.github.fernthedev.universal.UniversalHandler
 import com.github.fernthedev.universal.entity.EntityPlayer
 import kotlinx.coroutines.coroutineScope
@@ -20,21 +21,31 @@ abstract class INewEntityRegistry : TickRunnable {
 //
 //    }
 
-    val gameObjects: MutableMap<UUID, GameObject> =
-        ConcurrentHashMap()
+    private val _gameObjects: MutableMap<UUID, GameObject> = ConcurrentHashMap()
+    private val _previousLocations: MutableMap<UUID, Location> = ConcurrentHashMap()
 
-    val gameObjectHashcodes: MutableMap<UUID, Long> = ConcurrentHashMap()
+    open val gameObjects: Map<UUID, GameObject>
+        get() = _gameObjects
+    val previousLocations: Map<UUID, Location>
+        get() = _previousLocations
+
+    fun clearEntities() {
+        _gameObjects.clear()
+        _previousLocations.clear()
+    }
 
     fun addEntityObject(gameObject: GameObject) {
         if (gameObjects.containsKey(gameObject.uniqueId)) {
             throw IllegalArgumentException("GameObject ${gameObject.uniqueId} already exists")
         }
         // For interpolation
-        gameObjects[gameObject.uniqueId] = gameObject
+        _gameObjects[gameObject.uniqueId] = gameObject
+        _previousLocations[gameObject.uniqueId] = Location(0f, 0f)
     }
 
     fun removeEntityObject(gameObject: UUID) {
-        gameObjects.remove(gameObject)
+        _gameObjects.remove(gameObject)
+        _previousLocations.remove(gameObject)
     }
 
     fun removeEntityObject(gameObject: GameObject) {
@@ -76,7 +87,9 @@ abstract class INewEntityRegistry : TickRunnable {
 
         }
 
-        println("Tick took $ms")
+        if (ms > 10) {
+            println("Tick took $ms")
+        }
     }
 
     protected open fun clampAndTP(gameObject: GameObject) {
@@ -101,6 +114,10 @@ abstract class INewEntityRegistry : TickRunnable {
             if (location.x <= 0 || location.x >= maxX) gameObject.velX *= -1f
             if (location.y <= 0 || location.y >= maxY) gameObject.velY *= -1f
         }
+
+        val prevLoc = previousLocations[gameObject.uniqueId]!!
+        prevLoc.x = gameObject.location.x
+        prevLoc.y = gameObject.location.y
 
         gameObject.location.x = newX
         gameObject.location.y = newY

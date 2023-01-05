@@ -20,7 +20,7 @@ class NewGsonGameObject : Serializable {
         gameObject = null
     }
 
-    protected var clazz: String?
+    var clazz: String?
     protected var gameObject: String?
     @Throws(ClassNotFoundException::class)
     fun toGameObject(): GameObject? {

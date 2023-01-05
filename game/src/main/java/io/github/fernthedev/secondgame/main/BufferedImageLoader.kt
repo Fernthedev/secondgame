@@ -2,26 +2,20 @@
 // Source code recreated from a .class file by IntelliJ IDEA
 // (powered by Fernflower decompiler)
 //
+package io.github.fernthedev.secondgame.main
 
-package io.github.fernthedev.secondgame.main;
+import java.awt.image.BufferedImage
+import java.io.IOException
+import javax.imageio.ImageIO
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-
-public class BufferedImageLoader {
-    private BufferedImage image;
-
-    public BufferedImageLoader() {
-    }
-
-    public BufferedImage loadImage(String path) {
+class BufferedImageLoader {
+    private var image: BufferedImage? = null
+    fun loadImage(path: String?): BufferedImage? {
         try {
-            this.image = ImageIO.read(this.getClass().getResource(path));
-        } catch (IOException var3) {
-            var3.printStackTrace();
+            image = ImageIO.read(this.javaClass.getResource(path))
+        } catch (var3: IOException) {
+            var3.printStackTrace()
         }
-
-        return this.image;
+        return image
     }
 }

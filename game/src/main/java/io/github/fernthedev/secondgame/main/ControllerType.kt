@@ -1,8 +1,5 @@
-package io.github.fernthedev.secondgame.main;
+package io.github.fernthedev.secondgame.main
 
-public enum ControllerType {
-
-    XBOBX360,
-    XBOXONE,
-    PS4
+enum class ControllerType {
+    XBOBX360, XBOXONE, PS4
 }

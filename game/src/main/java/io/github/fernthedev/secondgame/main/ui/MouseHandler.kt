@@ -1,41 +1,35 @@
-package io.github.fernthedev.secondgame.main.ui;
+package io.github.fernthedev.secondgame.main.ui
 
-import com.github.fernthedev.lightchat.core.StaticHandler;
-import com.github.fernthedev.universal.entity.EntityPlayer;
-import io.github.fernthedev.secondgame.main.Game;
-import io.github.fernthedev.secondgame.main.ui.api.Screen;
-import io.github.fernthedev.secondgame.main.ui.api.ScreenButton;
+import com.github.fernthedev.lightchat.core.StaticHandler
+import com.github.fernthedev.universal.entity.EntityPlayer
+import io.github.fernthedev.secondgame.main.Game
+import io.github.fernthedev.secondgame.main.ui.api.Screen
+import io.github.fernthedev.secondgame.main.ui.api.ScreenButton
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
 
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-
-public class MouseHandler extends MouseAdapter {
-
+class MouseHandler : MouseAdapter() {
     /**
      * {@inheritDoc}
      *
      * @param e
      */
-    @Override
-    public void mousePressed(MouseEvent e) {
-        int mx = e.getX();
-        int my = e.getY();
-        if (Game.getScreen() != null) {
-            Screen screen = Game.getScreen();
-
-            new ArrayList<>(screen.getButtonList()).parallelStream().forEach(screenButton -> {
+    override fun mousePressed(e: MouseEvent) {
+        val mx = e.x
+        val my = e.y
+        if (Game.screen != null) {
+            val screen: Screen = Game.screen!!
+            screen.buttonList.parallelStream().forEach { screenButton ->
                 if (mouseOver(mx, my, screenButton)) {
-                    screenButton.getOnClick().run();
+                    screenButton.onClick.run()
                 }
-            });
+            }
         } else {
             // Debug tool
-            if (Game.getMainPlayer() != null && StaticHandler.isDebug()) {
-                EntityPlayer entityPlayer = Game.getMainPlayer();
-
-                entityPlayer.setX(mx);
-                entityPlayer.setY(my);
+            if (Game.mainPlayer != null && StaticHandler.isDebug()) {
+                val entityPlayer: EntityPlayer = Game.mainPlayer!!
+                entityPlayer.location.x = mx.toFloat()
+                entityPlayer.location.y = my.toFloat()
             }
         }
     }
@@ -45,16 +39,12 @@ public class MouseHandler extends MouseAdapter {
      *
      * @param e
      */
-    @Override
-    public void mouseReleased(MouseEvent e) {
-
+    override fun mouseReleased(e: MouseEvent) {}
+    private fun mouseOver(mx: Int, my: Int, x: Int, y: Int, width: Int, height: Int): Boolean {
+        return mx > x && mx < x + width && my > y && my < y + height
     }
 
-    private boolean mouseOver(int mx, int my, int x, int y, int width, int height) {
-        return (mx > x && mx < x + width) && (my > y && my < y + height);
-    }
-
-    private boolean mouseOver(int mx, int my, ScreenButton ui) {
-        return (mx > ui.getRenderedLocation().getX() && mx < ui.getRenderedLocation().getX() + ui.getButtonSize().getWidth()) && (my > ui.getRenderedLocation().getY() && my < ui.getRenderedLocation().getY() + ui.getButtonSize().getHeight());
+    private fun mouseOver(mx: Int, my: Int, ui: ScreenButton): Boolean {
+        return mx > ui.renderedLocation.x && mx < ui.renderedLocation.x + ui.buttonSize.width && my > ui.renderedLocation.y && my < ui.renderedLocation.y + ui.buttonSize.height
     }
 }

@@ -1,128 +1,80 @@
-package io.github.fernthedev.secondgame.main.entities;
+package io.github.fernthedev.secondgame.main.entities
 
-import com.github.fernthedev.universal.EntityID;
-import com.github.fernthedev.universal.GameObject;
-import io.github.fernthedev.secondgame.main.Game;
-import io.github.fernthedev.secondgame.main.logic.IEntityRenderer;
-import lombok.Getter;
+import com.github.fernthedev.universal.EntityID
+import com.github.fernthedev.universal.GameObject
+import com.github.fernthedev.universal.Location
+import io.github.fernthedev.secondgame.main.Game
+import io.github.fernthedev.secondgame.main.logic.IEntityRenderer
+import java.awt.AlphaComposite
+import java.awt.Color
+import java.awt.Graphics2D
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
+class Trail(
+    location: Location,
+    width: Float,
+    height: Float,
 
-public class Trail extends GameObject {
+    color: Color?,
 
-    @Getter
-    private float alpha = 1;
+    private val life: Float = 0f
+) : GameObject(
+    color = color,
+    location = location,
+    width = width,
+    height = height,
+    entityId = EntityID.TRAIL
+), Cloneable {
+    var alpha: Float = 1f
+    private set
 
-    @Getter
-    private float life;
-
-    {
-        hasTrail = false;
+    init {
+        hasTrail = false
     }
 
-    //life = 0.01 - 0.1
 
-    public Trail(GameObject gameObject, int width, int height, float life,Color color) {
-        this(gameObject);
-        this.width = width;
-        this.height = height;
-        this.life = life;
-        this.color = color;
-
-        checkTrail(this);
-    }
-
-    public Trail(GameObject gameObject) {
-        super(gameObject);
-        if(gameObject instanceof Trail) {
-            Trail trail = (Trail) gameObject;
-            this.life = trail.life;
-
-            this.width = trail.width;
-            this.height = trail.height;
-            this.color = trail.color;
-
-            checkTrail(this);
-        }
-    }
-
-    public Trail(float x, float y, EntityID entityId, Color color, int width, int height, float life) {
-        super(x, y, width, height, entityId, color);
-
-        this.life = life;
-
-
-        checkTrail(this);
-
-        if(life <= 0) new IllegalArgumentException().printStackTrace();
-    }
-
-    public void tick() {
-        checkTrail(this);
-        if(alpha > life) {
-            alpha-= (life - 0.0001f);
+    override fun tick() {
+        checkTrail(this)
+        if (alpha > life) {
+            alpha -= life - 0.0001f
         } else {
-            Game.getStaticEntityRegistry().removeEntityObject(this);
-//            UniversalHandler.getThingHandler().removeEntityObject(this);
+            Game.staticEntityRegistry.removeEntityObject(this)
         }
     }
 
 
-    private static AlphaComposite makeTransparent(float alpha){
-        int type = AlphaComposite.SRC_OVER;
-
-        try {
-            return (AlphaComposite.getInstance(type, alpha));
-        } catch (IllegalArgumentException e) {
-            Game.getLogger().info((alpha >= 0.0F) + " " + (alpha <= 1.0F) + " " + alpha);
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @Override
-    public String toString() {
-        /*
-        try {
-            throw new DebugException("Summoned a trail");
-        } catch (DebugException e) {
-            e.printStackTrace();
-        }*/
-
-        return x + "X " + y + "Y " + velX + "velX " + velY + " velY" + entityId + "EntityID " + uniqueId + "ObjectID " + color + "col " + life + "life " + alpha + "alpha ";
-    }
-
-    public static class Renderer implements IEntityRenderer<Trail> {
-        @Override
-        public void render(Graphics g, Trail gameObject, float drawX, float drawY) {
-            Graphics2D g2d = (Graphics2D) g;
+    class Renderer : IEntityRenderer<Trail> {
+        override fun render(g: Graphics2D, gameObject: Trail, drawX: Float, drawY: Float) {
+            val g2d: Graphics2D = g
 
 //            checkTrail(gameObject);
-
-            g2d.setComposite(makeTransparent(gameObject.getAlpha()));
-
-            g.setColor(gameObject.getColor());
-            g.fillRect((int)drawX,(int)drawY, gameObject.getWidth(),gameObject.getHeight());
-
-            g2d.setComposite(makeTransparent(1));
+            g2d.composite = makeTransparent(gameObject.alpha)
+            g.color = gameObject.color
+            g.fillRect(drawX.toInt(), drawY.toInt(), gameObject.width.toInt(), gameObject.height.toInt())
+            g2d.composite = makeTransparent(1f)
         }
     }
 
-    private static void checkTrail(Trail gameObject) throws IllegalArgumentException {
+    companion object {
+        private fun makeTransparent(alpha: Float): AlphaComposite? {
+            val type: Int = AlphaComposite.SRC_OVER
+            try {
+                return AlphaComposite.getInstance(type, alpha)
+            } catch (e: IllegalArgumentException) {
+                Game.loggerImpl.info((alpha >= 0.0f).toString() + " " + (alpha <= 1.0f) + " " + alpha)
+                e.printStackTrace()
+            }
+            return null
+        }
 
-        List<String> values = new ArrayList<>();
-
-        if (gameObject.getHeight() == 0) values.add("height");
-        if (gameObject.getWidth() == 0) values.add("width");
-        if (gameObject.getLife() <= 0.0) values.add("life " + gameObject.getLife());
-        if (gameObject.getAlpha() >= 1.0001) values.add("alpha " + gameObject.getAlpha());
-        if (gameObject.getColor() == null) values.add("color");
-
-
-        if (!values.isEmpty()) throw new IllegalArgumentException("These values are incorrect: " + values);
+        @Throws(IllegalArgumentException::class)
+        private fun checkTrail(gameObject: Trail) {
+            val values: MutableList<String> = ArrayList()
+            if (gameObject.height == 0f) values.add("height")
+            if (gameObject.width == 0f) values.add("width")
+            if (gameObject.life <= 0.0) values.add("life " + gameObject.life)
+            if (gameObject.alpha >= 1.0001) values.add("alpha " + gameObject.alpha)
+            if (gameObject.color == null) values.add("color")
+            require(values.isEmpty()) { "These values are incorrect: $values" }
+        }
     }
-
-
 }

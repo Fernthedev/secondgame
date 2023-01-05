@@ -42,7 +42,7 @@ class ServerGameHandler(
                     connection.close()
                 }
 
-                entityHandler.gameObjects.clear()
+                entityHandler.clearEntities()
                 entityHandler.clientGameDataMap.clear()
             }
         }
