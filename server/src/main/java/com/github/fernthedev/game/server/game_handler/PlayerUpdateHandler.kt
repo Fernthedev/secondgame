@@ -115,6 +115,11 @@ class PlayerUpdateHandler(private val gameServer: GameServer) {
             )
 
             clientPlayer.sendObject(sendObjectsList)
+
+            // Update hash to avoid redundant reuploads
+            // Assume the client will receive it
+            clientGameData.objectCacheList.clear()
+            clientGameData.objectCacheList.putAll(jsonGameObjects.map { it.key to it.value.value.second })
         }
         clientGameData.forcedUpdate = false
         clientGameData.clientSidePlayerHashCode = clientGameData.entityPlayer.hashCode()

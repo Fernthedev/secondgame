@@ -18,6 +18,8 @@ class HUD {
 
     val textFont: ScreenFont = ScreenFont(Font("arial", Font.PLAIN, 12), Color.WHITE)
     fun tick() {
+        if (Game.mainPlayer == null) return
+
         greenvalue = Game.clamp(greenvalue.toFloat(), 0.0f, 255.0f).toInt()
         greenvalue = Game.mainPlayer!!.health * 2
         score++

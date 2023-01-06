@@ -10,7 +10,6 @@ import com.github.fernthedev.packets.GameOverPacket
 import com.github.fernthedev.packets.LevelUp
 import com.github.fernthedev.packets.object_updates.SendObjectsList
 import com.github.fernthedev.packets.object_updates.SetCoin
-import com.github.fernthedev.packets.player_updates.ClientWorldUpdatePacket
 import com.github.fernthedev.universal.entity.EntityPlayer
 import com.github.fernthedev.universal.entity.NewGsonGameObject
 import io.github.fernthedev.secondgame.main.Game
@@ -29,7 +28,6 @@ class ClientPacketHandler : IPacketHandler, Listener {
             is SendObjectsList -> {
                 val gameObjects = p.objectList
                 val universalPlayer = p.mainPlayer.toGameObject() as EntityPlayer
-                Game.loggerImpl.info("Updated world")
 
                 gameObjects.forEach { (uuid: UUID, newGsonGameObject: NewGsonGameObject?) ->
                     if (newGsonGameObject == null) {
@@ -47,13 +45,6 @@ class ClientPacketHandler : IPacketHandler, Listener {
                 }
 
                 Game.mainPlayer = universalPlayer
-
-                Game.client!!.sendObject(
-                    ClientWorldUpdatePacket(
-                        NewGsonGameObject(Game.mainPlayer!!),
-                        Game.staticEntityRegistry.objectsAndHashCode
-                    )
-                )
             }
 
             is GameOverPacket -> {

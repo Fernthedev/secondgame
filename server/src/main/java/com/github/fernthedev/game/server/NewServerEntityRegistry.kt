@@ -110,8 +110,8 @@ class NewServerEntityRegistry(
 
         val copyNewPlayer =  EntityPlayer(
             Location(
-                oldPlayer.location.x + velXClamp,
-                oldPlayer.location.y + velYClamp
+                oldPlayer.location.x,
+                oldPlayer.location.y
             ),
             uniqueId = oldPlayer.uniqueId,
             velX = velXClamp,

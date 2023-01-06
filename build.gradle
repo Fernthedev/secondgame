@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCach
 
 plugins {
     id 'com.github.johnrengelman.shadow' version '7.1.2'
-    id 'org.jetbrains.kotlin.jvm' version "1.7.21"
+    id 'org.jetbrains.kotlin.jvm' version "1.8.0"
 }
 
 allprojects {
@@ -13,7 +13,7 @@ allprojects {
     apply plugin: 'kotlin'
     apply plugin: 'org.jetbrains.kotlin.jvm'
 
-    ext.lightchat = "4dc2677"
+    ext.lightchat = "487d31c069"
     ext.isBetaLight = true
     ext.log4j_ver = "2.14.0"
 
@@ -42,7 +42,7 @@ allprojects {
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4")
 
         implementation 'com.github.Fernthedev:FernUtils:1.4.0'
-        implementation 'com.google.code.gson:gson:2.8.6'
+        implementation 'com.google.code.gson:gson:2.8.9'
 
         implementation group: 'com.jcraft', name: 'jzlib', version: '1.1.3'
         implementation group: 'org.lz4', name: 'lz4-java', version: '1.7.1'

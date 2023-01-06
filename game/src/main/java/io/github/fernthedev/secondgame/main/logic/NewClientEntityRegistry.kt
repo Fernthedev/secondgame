@@ -73,7 +73,7 @@ class NewClientEntityRegistry : INewEntityRegistry() {
 
         if (Game.screen == null && Game.client != null && Game.client!!.isRegistered && Game.mainPlayer != null && stopwatch.elapsed(
                 TimeUnit.MILLISECONDS
-            ) >= 200
+            ) >= 500
         ) {
             Game.client!!.sendObject(
                 ClientWorldUpdatePacket(
