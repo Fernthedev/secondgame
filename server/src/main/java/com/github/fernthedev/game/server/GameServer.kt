@@ -34,7 +34,7 @@ class GameServer constructor(
     args: Array<String>,
     defaultPort: Int,
     terminal: Boolean
-) : ServerTerminal(), IGame {
+) : IGame {
 
     val entityHandler: NewServerEntityRegistry = NewServerEntityRegistry(this)
     val processHandler: GameNetworkProcessingHandler = GameNetworkProcessingHandler(this)
@@ -43,6 +43,9 @@ class GameServer constructor(
     val serverGameHandler: ServerGameHandler = ServerGameHandler(this, entityHandler, spawn, playerUpdateHandler)
 
     lateinit var serverThread: Thread
+
+    val logger: Logger by lazy { StaticHandler.core.logger }
+
 
     init {
         UniversalHandler.iGame = this
@@ -68,7 +71,7 @@ class GameServer constructor(
         val serverSettings = ServerSettings()
         serverSettings.compressionLevel = 8
         serverSettings.compressionAlgorithm = ZLIB_STR
-        init(
+        ServerTerminal.init(
             args,
             ServerTerminalSettings.builder()
                 .port(port.get())
@@ -93,7 +96,7 @@ class GameServer constructor(
 
                 CommonUtil.registerNetworking()
 
-                serverThread = ServerTerminal.server.serverThread
+                serverThread = ServerTerminal.server.serverThread!!
 
                 ServerTerminal.server.addChannelHandler(processHandler)
                 ServerTerminal.server.pluginManager.registerEvents(processHandler)
@@ -102,7 +105,7 @@ class GameServer constructor(
                 thread.start()
 
 
-                registerCommand(object : Command("start") {
+                ServerTerminal.registerCommand(object : Command("start") {
                     override fun onCommand(sender: SenderInterface, args: Array<String>) {
                         ServerTerminal.server.authenticationManager.authenticate(sender)
                             .thenAccept { aBoolean: Boolean ->
@@ -112,7 +115,7 @@ class GameServer constructor(
                             }
                     }
                 })
-                registerCommand(object : Command("stop") {
+                ServerTerminal.registerCommand(object : Command("stop") {
                     override fun onCommand(sender: SenderInterface, args: Array<String>) {
                         ServerTerminal.server.authenticationManager.authenticate(sender)
                             .thenAccept { aBoolean: Boolean ->
@@ -131,11 +134,12 @@ class GameServer constructor(
             }
         })
         PacketRegistry.registerDefaultPackets()
-        startBind()
+        ServerTerminal.startBind()
     }
 
     val server: Server
         get() = ServerTerminal.server
+
     override fun getEntityRegistry(): NewServerEntityRegistry {
         return serverGameHandler.entityHandler
     }

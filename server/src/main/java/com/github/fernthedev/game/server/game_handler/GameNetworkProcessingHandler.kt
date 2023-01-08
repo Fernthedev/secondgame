@@ -39,6 +39,6 @@ class GameNetworkProcessingHandler(
     @EventHandler
     fun onLeave(e: PlayerDisconnectEvent) {
         server.serverGameHandler.entityHandler.removeClientData(e.disconnectedPlayer)
-        StaticHandler.getCore().logger.debug("Removed player {}", e.disconnectedPlayer.name)
+        StaticHandler.core.logger.debug("Removed player {}", e.disconnectedPlayer.name)
     }
 }

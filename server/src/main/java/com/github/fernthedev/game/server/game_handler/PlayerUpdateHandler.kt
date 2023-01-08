@@ -4,6 +4,7 @@ import com.github.fernthedev.game.server.ClientGameData
 import com.github.fernthedev.game.server.GameServer
 import com.github.fernthedev.game.server.NewServerEntityRegistry
 import com.github.fernthedev.lightchat.core.StaticHandler
+import com.github.fernthedev.lightchat.core.encryption.transport
 import com.github.fernthedev.lightchat.server.ClientConnection
 import com.github.fernthedev.packets.object_updates.SendObjectsList
 import com.github.fernthedev.universal.GameObject
@@ -47,7 +48,7 @@ class PlayerUpdateHandler(private val gameServer: GameServer) {
 
 
         if (time > 10) {
-            StaticHandler.getCore().logger.debug(
+            StaticHandler.core.logger.debug(
                 "Updating players took {}", time
             )
         }
@@ -114,7 +115,7 @@ class PlayerUpdateHandler(private val gameServer: GameServer) {
                 clientChangedObjects, NewGsonGameObject(clientGameData.entityPlayer)
             )
 
-            clientPlayer.sendObject(sendObjectsList)
+            clientPlayer.sendObject(sendObjectsList.transport())
 
             // Update hash to avoid redundant reuploads
             // Assume the client will receive it

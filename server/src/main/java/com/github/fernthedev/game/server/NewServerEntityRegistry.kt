@@ -4,6 +4,7 @@ import com.github.fernthedev.GameMathUtil
 import com.github.fernthedev.INewEntityRegistry
 import com.github.fernthedev.lightchat.core.ColorCode
 import com.github.fernthedev.lightchat.core.StaticHandler
+import com.github.fernthedev.lightchat.core.encryption.transport
 import com.github.fernthedev.lightchat.server.ClientConnection
 import com.github.fernthedev.packets.object_updates.SetCoin
 import com.github.fernthedev.packets.player_updates.ClientWorldUpdatePacket
@@ -40,7 +41,7 @@ class NewServerEntityRegistry(
 
     private fun updatePlayerObject(clientPlayerE: ClientConnection, universalPlayer: EntityPlayer) {
         if (!gameObjects.containsKey(universalPlayer.uniqueId)) {
-            StaticHandler.getCore().logger
+            StaticHandler.core.logger
                 .debug(ColorCode.RED.toString() + "Player updating but is removed from game")
             return
         }
@@ -48,7 +49,7 @@ class NewServerEntityRegistry(
 
         clientGameDataMap[clientPlayerE]!!.entityPlayer = universalPlayer
         addEntityObject(universalPlayer)
-        StaticHandler.getCore().logger.debug("Attempting to update info {}", universalPlayer)
+        StaticHandler.core.logger.debug("Attempting to update info {}", universalPlayer)
     }
 
     override suspend fun tick() = coroutineScope {
@@ -60,6 +61,8 @@ class NewServerEntityRegistry(
             .filter { connection: ClientConnection -> clientGameDataMap[connection]!!.entityPlayer.uniqueId === universalPlayer.uniqueId }
             .forEach { connection: ClientConnection ->
                 val clientGameData = clientGameDataMap[connection]
+                var coinIncrease = 0
+
                 gameObjects.values
                     .filter { gameObject: GameObject ->
                         gameObject.bounds.intersects(
@@ -72,11 +75,16 @@ class NewServerEntityRegistry(
                             universalPlayer.health = universalPlayer.health - 2
                         }
                         if (tempObject.entityId == EntityID.COIN) {
-                            universalPlayer.coin = universalPlayer.coin + 1
-                            connection.sendObject(SetCoin(universalPlayer.coin))
+                            coinIncrease++
                             removeEntityObject(tempObject)
                         }
                     }
+
+                if (coinIncrease > 0) {
+                    universalPlayer.coin = universalPlayer.coin + coinIncrease
+                    connection.sendObject(SetCoin(universalPlayer.coin).transport())
+                }
+
                 if (universalPlayer.health <= 0) {
                     removeEntityObject(clientGameData!!.entityPlayer)
                 }
@@ -132,7 +140,7 @@ class NewServerEntityRegistry(
         clientGameData.objectCacheList.putAll(infoPacket.entitiesHashCodeMap!!)
 
         if (EntityPlayer.isPlayerDifferent(oldPlayer, copyNewPlayer, velXClamp, velYClamp)) {
-            StaticHandler.getCore().logger.debug("Client player is changed")
+            StaticHandler.core.logger.debug("Client player is changed")
         }
 
         updatePlayerObject(clientPlayer, copyNewPlayer)

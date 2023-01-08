@@ -12,7 +12,7 @@ import java.awt.Graphics2D
 import java.awt.Image
 
 class CoinRenderer : IEntityRenderer<Coin> {
-    private val coin_image: Image?
+    private val coin_image: Image
 
     init {
         val loader = BufferedImageLoader()

@@ -3,6 +3,7 @@ package com.github.fernthedev.game.server.game_handler
 import com.github.fernthedev.TickRunnable
 import com.github.fernthedev.game.server.GameServer
 import com.github.fernthedev.game.server.NewServerEntityRegistry
+import com.github.fernthedev.lightchat.core.encryption.transport
 import com.github.fernthedev.packets.GameOverPacket
 import com.github.fernthedev.universal.entity.EntityPlayer
 import kotlinx.coroutines.coroutineScope
@@ -38,9 +39,10 @@ class ServerGameHandler(
         ) {
             started = false
             if (server.server.playerHandler.channelMap.isNotEmpty()) {
+                val packet = GameOverPacket().transport()
                 server.server.playerHandler.channelMap.values.forEach { connection ->
                     try {
-                        connection.sendObject(GameOverPacket()).sync()
+                        connection.sendObject(packet).sync()
                     } catch (e: InterruptedException) {
                         Thread.currentThread().interrupt()
                         e.printStackTrace()

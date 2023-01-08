@@ -28,6 +28,7 @@ import io.github.fernthedev.secondgame.main.ui.MouseHandler
 import io.github.fernthedev.secondgame.main.ui.api.Screen
 import io.github.fernthedev.secondgame.main.ui.screens.EndScreen
 import io.github.fernthedev.secondgame.main.ui.screens.MainMenu
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.lwjgl.Version
 import org.slf4j.Logger
@@ -39,6 +40,7 @@ import java.awt.image.BufferStrategy
 import java.io.File
 import java.text.NumberFormat
 import java.util.*
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.system.exitProcess
 
 class Game : Canvas(), Runnable, IGame {
@@ -246,7 +248,7 @@ class Game : Canvas(), Runnable, IGame {
                 field = value
             }
 
-        lateinit var gameSettings: Config<Settings>
+        lateinit var gameSettings: Config<out Settings>
 
 
         var mainPlayer: EntityPlayer? = null
@@ -316,17 +318,22 @@ class Game : Canvas(), Runnable, IGame {
 
             if (configName.trim { it <= ' ' }.isNotEmpty()) name = configName
 
-            StaticHandler.getCore().logger.debug("Using uuid name: {}", name)
+            StaticHandler.core.logger.debug("Using uuid name: {}", name)
 
             client.name = name
             mainPlayer = null
-            val thread = Thread {
-                try {
-                    client.connect()
-                } catch (e: InterruptedException) {
-                    e.printStackTrace()
-                    Thread.currentThread().interrupt()
+            Dispatchers.Default.dispatch(EmptyCoroutineContext) {
+                runBlocking {
+                    try {
+                        client.connect()
+                    } catch (e: InterruptedException) {
+                        e.printStackTrace()
+                        Thread.currentThread().interrupt()
+                    }
                 }
+            }
+            val thread = Thread {
+
             }
             thread.start()
         }

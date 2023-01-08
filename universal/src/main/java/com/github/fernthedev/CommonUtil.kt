@@ -13,7 +13,7 @@ object CommonUtil {
     
     @JvmStatic
     fun registerNetworking() {
-        StaticHandler.setLineLimit(4 * 1000000)
+        StaticHandler.lineLimit = 4 * 1000000
         PacketRegistry.registerPacketPackageFromClass(GameOverPacket::class.java)
         PacketRegistry.registerPacketPackageFromClass(SendObjectsList::class.java)
         PacketRegistry.registerPacketPackageFromClass(ClientWorldUpdatePacket::class.java)
