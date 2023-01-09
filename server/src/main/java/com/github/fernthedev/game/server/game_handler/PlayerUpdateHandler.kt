@@ -8,6 +8,7 @@ import com.github.fernthedev.lightchat.core.encryption.transport
 import com.github.fernthedev.lightchat.server.ClientConnection
 import com.github.fernthedev.packets.object_updates.SendObjectsList
 import com.github.fernthedev.universal.GameObject
+import com.github.fernthedev.universal.approx
 import com.github.fernthedev.universal.entity.EntityPlayer
 import com.github.fernthedev.universal.entity.NewGsonGameObject
 import kotlinx.coroutines.coroutineScope
@@ -112,7 +113,7 @@ class PlayerUpdateHandler(private val gameServer: GameServer) {
 
         if (clientChangedObjects.isNotEmpty() || clientGameData.forcedUpdate || clientGameData.clientSidePlayerHashCode != clientGameData.entityPlayer.hashCode()) {
             val sendObjectsList = SendObjectsList(
-                clientChangedObjects, NewGsonGameObject(clientGameData.entityPlayer)
+                clientChangedObjects, NewGsonGameObject(clientGameData.entityPlayer), teleport = !clientGameData.entityPlayer.location.approx(clientGameData.clientSideLocation)
             )
 
             clientPlayer.sendObject(sendObjectsList.transport())

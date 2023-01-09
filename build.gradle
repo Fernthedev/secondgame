@@ -13,7 +13,7 @@ allprojects {
     apply plugin: 'kotlin'
     apply plugin: 'org.jetbrains.kotlin.jvm'
 
-    ext.lightchat = "f21dbc0c7e"
+    ext.lightchat = "1c7ac3c1fb"
     ext.isBetaLight = true
     ext.log4j_ver = "2.14.0"
 

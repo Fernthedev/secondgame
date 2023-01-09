@@ -18,16 +18,16 @@ import io.github.fernthedev.secondgame.main.ui.screens.MainMenu
 import java.util.*
 
 class ClientPacketHandler : IPacketHandler, Listener {
-    override fun handlePacket(p: Packet, packetId: Int) {
-        when (p) {
+    override fun handlePacket(packet: Packet, packetId: Int) {
+        when (packet) {
             is SetCoin -> {
                 Game.loggerImpl.info("Coin one up")
-                Game.mainPlayer?.coin = (p.coins)
+                Game.mainPlayer?.coin = (packet.coins)
             }
 
             is SendObjectsList -> {
-                val gameObjects = p.objectList
-                val universalPlayer = p.mainPlayer.toGameObject() as EntityPlayer
+                val gameObjects = packet.objectList
+                val universalPlayer = packet.mainPlayer.toGameObject() as EntityPlayer
 
                 gameObjects.forEach { (uuid: UUID, newGsonGameObject: NewGsonGameObject?) ->
                     if (newGsonGameObject == null) {
@@ -44,6 +44,13 @@ class ClientPacketHandler : IPacketHandler, Listener {
                     }
                 }
 
+                val loc = Game.mainPlayer?.location
+
+                // Don't teleport unnecessarily
+                if (!packet.teleport && loc != null) {
+                    universalPlayer.location.copyFrom(loc)
+                }
+
                 Game.mainPlayer = universalPlayer
             }
 
@@ -54,7 +61,7 @@ class ClientPacketHandler : IPacketHandler, Listener {
             }
 
             is LevelUp -> {
-                Game.hud.level = p.level
+                Game.hud.level = packet.level
             }
         }
     }

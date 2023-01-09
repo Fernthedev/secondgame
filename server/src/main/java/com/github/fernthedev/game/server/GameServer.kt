@@ -14,7 +14,6 @@ import com.github.fernthedev.lightchat.core.PacketRegistry
 import com.github.fernthedev.lightchat.core.StaticHandler
 import com.github.fernthedev.lightchat.core.api.event.api.EventHandler
 import com.github.fernthedev.lightchat.core.api.event.api.Listener
-import com.github.fernthedev.lightchat.core.codecs.general.compression.CompressionAlgorithms.ZLIB_STR
 import com.github.fernthedev.lightchat.server.SenderInterface
 import com.github.fernthedev.lightchat.server.Server
 import com.github.fernthedev.lightchat.server.event.ServerShutdownEvent
@@ -69,8 +68,6 @@ class GameServer constructor(
             .apply()
 
         val serverSettings = ServerSettings()
-        serverSettings.compressionLevel = 8
-        serverSettings.compressionAlgorithm = ZLIB_STR
         ServerTerminal.init(
             args,
             ServerTerminalSettings.builder()

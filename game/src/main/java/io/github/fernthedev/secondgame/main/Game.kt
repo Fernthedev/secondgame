@@ -15,7 +15,6 @@ import com.github.fernthedev.lightchat.core.PacketRegistry
 import com.github.fernthedev.lightchat.core.StaticHandler
 import com.github.fernthedev.lightchat.core.api.event.api.EventHandler
 import com.github.fernthedev.lightchat.core.api.event.api.Listener
-import com.github.fernthedev.lightchat.core.codecs.general.compression.CompressionAlgorithms.ZLIB_STR
 import com.github.fernthedev.lightchat.server.event.ServerStartupEvent
 import com.github.fernthedev.universal.UniversalHandler
 import com.github.fernthedev.universal.entity.EntityPlayer
@@ -29,6 +28,7 @@ import io.github.fernthedev.secondgame.main.ui.api.Screen
 import io.github.fernthedev.secondgame.main.ui.screens.EndScreen
 import io.github.fernthedev.secondgame.main.ui.screens.MainMenu
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.lwjgl.Version
 import org.slf4j.Logger
@@ -73,8 +73,6 @@ class Game : Canvas(), Runnable, IGame {
         loggerImpl.info("Loaded icon")
         UniversalHandler.iGame = this
         val settings = Settings()
-        settings.compressionAlgorithm = ZLIB_STR
-        settings.compressionLevel = 6
         gameSettings = GsonConfig(settings, File("./config_settings.json"))
         gameSettings.load()
         gameSettings.save()
@@ -102,43 +100,43 @@ class Game : Canvas(), Runnable, IGame {
         this.requestFocus()
 
         try {
-        var lastTime = System.nanoTime()
-        val amountOfTicks = 60.0
-        val ns = 1000000000 / amountOfTicks
-        elapsedTime = 0.0
-        var timer = System.currentTimeMillis()
-        var frames = 0
-        while (running) {
-            val now = System.nanoTime()
-            elapsedTime += (now - lastTime) / ns
-            lastTime = now
-            while (elapsedTime >= 1) {
-                runBlocking {
-                    tick()
-                }
-                elapsedTime--
-            }
-            if (running) render()
-            frames++
-            if (System.currentTimeMillis() - timer > 1000) {
-                timer += 1000
-                loggerImpl.info("FPS: " + NumberFormat.getNumberInstance(Locale.US).format(frames.toLong()))
-                frames = 0
-                //updates = 0;
-            }
-            try {
-                Thread.sleep(UniversalHandler.TICK_WAIT.toLong())
-            } catch (e: InterruptedException) {
-                e.printStackTrace()
-                Thread.currentThread().interrupt()
-            }
+            var lastTime = System.nanoTime()
+            val amountOfTicks = 60.0
+            val ns = 1000000000 / amountOfTicks
+            elapsedTime = 0.0
+            var timer = System.currentTimeMillis()
+            var frames = 0
+            runBlocking {
+                while (running) {
+                    val now = System.nanoTime()
+                    elapsedTime += (now - lastTime) / ns
+                    lastTime = now
+                    while (elapsedTime >= 1) {
+                        tick()
 
-        }
-            } catch (e: Throwable) {
-                Game.loggerImpl.error("Main thread crashed")
-                e.printStackTrace()
-                exitProcess(-1)
+                        elapsedTime--
+                    }
+                    if (running) render()
+                    frames++
+                    if (System.currentTimeMillis() - timer > 1000) {
+                        timer += 1000
+                        loggerImpl.info("FPS: " + NumberFormat.getNumberInstance(Locale.US).format(frames.toLong()))
+                        frames = 0
+                        //updates = 0;
+                    }
+                    try {
+                        delay(UniversalHandler.TICK_WAIT.toLong())
+                    } catch (e: InterruptedException) {
+                        e.printStackTrace()
+                        Thread.currentThread().interrupt()
+                    }
+                }
             }
+        } catch (e: Throwable) {
+            Game.loggerImpl.error("Main thread crashed")
+            e.printStackTrace()
+            exitProcess(-1)
+        }
     }
 
     /**
@@ -231,7 +229,7 @@ class Game : Canvas(), Runnable, IGame {
         private const val serialVersionUID = -7376944666695581278L
 
 
-        val loggerImpl: Logger by lazy {  LoggerFactory.getLogger(Game::class.java.name) }
+        val loggerImpl: Logger by lazy { LoggerFactory.getLogger(Game::class.java.name) }
 
         //    private static transient Handler handler;
         @Transient

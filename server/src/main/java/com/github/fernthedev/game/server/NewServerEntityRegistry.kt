@@ -116,7 +116,7 @@ class NewServerEntityRegistry(
             EntityPlayer.MAX_VELOCITY.toFloat()
         )
 
-        val copyNewPlayer =  EntityPlayer(
+        val copyNewPlayer = EntityPlayer(
             Location(
                 oldPlayer.location.x,
                 oldPlayer.location.y
@@ -136,6 +136,7 @@ class NewServerEntityRegistry(
         )
         val clientGameData = clientGameDataMap[clientPlayer]!!
         clientGameData.clientSidePlayerHashCode = packetPlayer.hashCode()
+        clientGameData.clientSideLocation = packetPlayer.location
         clientGameData.objectCacheList.clear()
         clientGameData.objectCacheList.putAll(infoPacket.entitiesHashCodeMap!!)
 

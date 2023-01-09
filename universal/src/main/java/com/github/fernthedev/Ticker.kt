@@ -1,9 +1,10 @@
 package com.github.fernthedev
 
 import com.github.fernthedev.universal.UniversalHandler
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 
-open class Ticker(private val tick: suspend () -> Unit): Runnable {
+open class Ticker(private val tick: suspend () -> Unit) : Runnable {
     constructor(t: Runnable) : this({ t.run() })
     constructor(t: TickRunnable) : this(suspend { t.tick() })
 
@@ -21,12 +22,7 @@ open class Ticker(private val tick: suspend () -> Unit): Runnable {
                     tick()
                     delta--
                 }
-                try {
-                    Thread.sleep(UniversalHandler.TICK_WAIT.toLong())
-                } catch (e: InterruptedException) {
-                    e.printStackTrace()
-                    Thread.currentThread().interrupt()
-                }
+                delay(UniversalHandler.TICK_WAIT.toLong())
             }
         }
     }

@@ -10,5 +10,6 @@ import java.util.*
 class SendObjectsList(
     /// If null, deleted
     val objectList: Map<UUID, NewGsonGameObject?>,
-    val mainPlayer: NewGsonGameObject
+    val mainPlayer: NewGsonGameObject,
+    val teleport: Boolean
 ) : Packet(), Serializable

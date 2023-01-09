@@ -10,17 +10,13 @@ import com.github.fernthedev.universal.entity.NewGsonGameObject
 import io.github.fernthedev.secondgame.main.Game
 import io.github.fernthedev.secondgame.main.inputs.InputHandler
 import io.github.fernthedev.secondgame.main.inputs.InputType
+import kotlinx.coroutines.Dispatchers
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
+import kotlin.coroutines.EmptyCoroutineContext
 
-class KeyInput    //        glfwPollEvents();
-
-/*GLFW.glfwInit();
-   GLFW.glfwPollEvents();
-
-   if (glfwJoystickPresent(GLFW_JOYSTICK_1)) {
-       Game.getLogger().info("connected controller " + glfwGetJoystickName(GLFW_JOYSTICK_1));
-   }*/(private val game: Game) : KeyAdapter() {
+class KeyInput
+    (private val game: Game) : KeyAdapter() {
     private val keyButtonMap: MutableMap<Int, KeyButton> = HashMap()
     private var toUpdate = false
     override fun keyPressed(e: KeyEvent) {
@@ -28,10 +24,8 @@ class KeyInput    //        glfwPollEvents();
         //Game.getLogger().info("Some key pressed ");
         val key = e.keyCode
         registerKey(key, true)
-        if (key == KeyEvent.VK_P) {
-            if (Game.screen == null) {
-                Game.paused = !Game.paused
-            }
+        if (key == KeyEvent.VK_P && Game.screen == null) {
+            Game.paused = !Game.paused
         }
         if (key == KeyEvent.VK_ESCAPE) game.stop()
     }
@@ -62,45 +56,48 @@ class KeyInput    //        glfwPollEvents();
     }
 
     fun tick() {
+        if (Game.mainPlayer == null || InputHandler.inputType != InputType.KEYBOARD) return
 
-        // Game.getLogger().info("Thing! " + gameObjectList.size());
-        if (Game.mainPlayer != null && InputHandler.inputType == InputType.KEYBOARD) {
-            var velX = 0
-            var velY = 0
-            val velMultiplier = UniversalHandler.PLAYER_VEL_MULTIPLIER
-            if (registerKey(KeyEvent.VK_W).held) {
-                velY += -velMultiplier
-            }
-            if (registerKey(KeyEvent.VK_S).held) {
-                velY += velMultiplier
-            }
-            if (registerKey(KeyEvent.VK_D).held) {
-                velX += velMultiplier
-            }
-            if (registerKey(KeyEvent.VK_A).held) {
-                velX += -velMultiplier
-            }
-            if (Game.mainPlayer?.velX != velX.toFloat() || Game.mainPlayer?.velY != velY.toFloat()) toUpdate = true
-
-            if (toUpdate) {
-                Game.mainPlayer!!.velX = (velX.toFloat())
-                Game.mainPlayer!!.velY = (velY.toFloat())
-                Game.staticEntityRegistry.setPlayerInfo(Game.mainPlayer)
-                update()
-            }
-
+        var velX = 0
+        var velY = 0
+        val velMultiplier = UniversalHandler.PLAYER_VEL_MULTIPLIER
+        if (registerKey(KeyEvent.VK_W).held) {
+            velY += -velMultiplier
         }
+        if (registerKey(KeyEvent.VK_S).held) {
+            velY += velMultiplier
+        }
+        if (registerKey(KeyEvent.VK_D).held) {
+            velX += velMultiplier
+        }
+        if (registerKey(KeyEvent.VK_A).held) {
+            velX += -velMultiplier
+        }
+        if (Game.mainPlayer?.velX != velX.toFloat() || Game.mainPlayer?.velY != velY.toFloat()) {
+            toUpdate = true
+        }
+
+        if (!toUpdate) return
+
+        Game.mainPlayer!!.velX = (velX.toFloat())
+        Game.mainPlayer!!.velY = (velY.toFloat())
+        Game.staticEntityRegistry.setPlayerInfo(Game.mainPlayer)
+        update()
     }
 
     private fun update() {
         toUpdate = false
         if (Game.screen == null && Game.client?.isRegistered == true && Game.mainPlayer != null) {
-            Game.client!!.sendObject(
-                ClientWorldUpdatePacket(
-                    NewGsonGameObject(Game.mainPlayer!!),
-                    Game.staticEntityRegistry.objectsAndHashCode
+
+            Dispatchers.Default.dispatch(EmptyCoroutineContext) {
+                Game.client!!.sendObject(
+                    ClientWorldUpdatePacket(
+                        NewGsonGameObject(Game.mainPlayer!!),
+                        Game.staticEntityRegistry.objectsAndHashCode
+                    )
                 )
-            )
+            }
+
             Game.loggerImpl.debug("Updated player")
         }
     }
