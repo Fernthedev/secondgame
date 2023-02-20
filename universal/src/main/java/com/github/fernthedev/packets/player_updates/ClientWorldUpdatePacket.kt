@@ -1,7 +1,7 @@
 package com.github.fernthedev.packets.player_updates
 
-import com.github.fernthedev.lightchat.core.packets.Packet
 import com.github.fernthedev.lightchat.core.packets.PacketInfo
+import com.github.fernthedev.lightchat.core.packets.PacketJSON
 import com.github.fernthedev.universal.entity.NewGsonGameObject
 import java.io.Serializable
 import java.util.*
@@ -10,4 +10,4 @@ import java.util.*
 class ClientWorldUpdatePacket(
     val playerObject: NewGsonGameObject,
     val entitiesHashCodeMap: Map<UUID, Int>?
-) : Packet(), Serializable
+) : PacketJSON(), Serializable

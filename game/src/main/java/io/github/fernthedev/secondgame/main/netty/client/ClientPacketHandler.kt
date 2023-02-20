@@ -1,11 +1,8 @@
 package io.github.fernthedev.secondgame.main.netty.client
 
 import com.github.fernthedev.lightchat.client.api.IPacketHandler
-import com.github.fernthedev.lightchat.client.event.ServerConnectFinishEvent
 import com.github.fernthedev.lightchat.client.event.ServerDisconnectEvent
-import com.github.fernthedev.lightchat.core.api.event.api.EventHandler
-import com.github.fernthedev.lightchat.core.api.event.api.Listener
-import com.github.fernthedev.lightchat.core.packets.Packet
+import com.github.fernthedev.lightchat.core.packets.PacketJSON
 import com.github.fernthedev.packets.GameOverPacket
 import com.github.fernthedev.packets.LevelUp
 import com.github.fernthedev.packets.object_updates.SendObjectsList
@@ -17,8 +14,8 @@ import io.github.fernthedev.secondgame.main.ui.screens.EndScreen
 import io.github.fernthedev.secondgame.main.ui.screens.MainMenu
 import java.util.*
 
-class ClientPacketHandler : IPacketHandler, Listener {
-    override fun handlePacket(packet: Packet, packetId: Int) {
+class ClientPacketHandler : IPacketHandler {
+    override fun handlePacket(packet: PacketJSON, packetId: Int) {
         when (packet) {
             is SetCoin -> {
                 Game.loggerImpl.info("Coin one up")
@@ -66,12 +63,10 @@ class ClientPacketHandler : IPacketHandler, Listener {
         }
     }
 
-    @EventHandler
-    fun onConnect(e: ServerConnectFinishEvent?) {
-    }
 
-    @EventHandler
-    fun onDisconnect(e: ServerDisconnectEvent?) {
+
+
+    fun onDisconnect(e: ServerDisconnectEvent) {
         resetGame()
         Game.client = null
     }

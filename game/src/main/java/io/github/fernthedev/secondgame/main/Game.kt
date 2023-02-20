@@ -11,10 +11,9 @@ import com.github.fernthedev.config.common.Config
 import com.github.fernthedev.config.gson.GsonConfig
 import com.github.fernthedev.game.server.GameServer
 import com.github.fernthedev.lightchat.client.Client
-import com.github.fernthedev.lightchat.core.PacketRegistry
+import com.github.fernthedev.lightchat.client.event.ServerDisconnectEvent
+import com.github.fernthedev.lightchat.core.PacketJsonRegistry
 import com.github.fernthedev.lightchat.core.StaticHandler
-import com.github.fernthedev.lightchat.core.api.event.api.EventHandler
-import com.github.fernthedev.lightchat.core.api.event.api.Listener
 import com.github.fernthedev.lightchat.server.event.ServerStartupEvent
 import com.github.fernthedev.universal.UniversalHandler
 import com.github.fernthedev.universal.entity.EntityPlayer
@@ -302,12 +301,14 @@ class Game : Canvas(), Runnable, IGame {
             Companion.client = client
             screen = null
             CommonUtil.registerNetworking()
-            PacketRegistry.registerDefaultPackets()
+            PacketJsonRegistry.registerDefaultPackets()
 
 
             val clientPacketHandler = ClientPacketHandler()
 
-            client.pluginManager.registerEvents(clientPacketHandler)
+            client.eventHandler.add(ServerDisconnectEvent::class.java) {
+                clientPacketHandler.onDisconnect(it)
+            }
             client.addPacketHandler(clientPacketHandler)
 
             var name = client.name
@@ -347,12 +348,10 @@ class Game : Canvas(), Runnable, IGame {
             staticEntityRegistry.serverEntityRegistry = server.entityHandler
 
             gameServer = server
-            server.server.pluginManager.registerEvents(object : Listener {
-                @EventHandler
-                fun onEvent(e: ServerStartupEvent) {
-                    staticEntityRegistry.addEntityObject(mainPlayer!!)
-                }
-            })
+            server.server.eventHandler.add(ServerStartupEvent::class.java) {
+                staticEntityRegistry.addEntityObject(mainPlayer!!)
+
+            }
         }
     }
 

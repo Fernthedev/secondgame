@@ -10,12 +10,12 @@ import com.github.fernthedev.game.server.game_handler.PlayerUpdateHandler
 import com.github.fernthedev.game.server.game_handler.ServerGameHandler
 import com.github.fernthedev.game.server.game_handler.Spawn
 import com.github.fernthedev.lightchat.core.ColorCode
-import com.github.fernthedev.lightchat.core.PacketRegistry
+import com.github.fernthedev.lightchat.core.PacketJsonRegistry
 import com.github.fernthedev.lightchat.core.StaticHandler
-import com.github.fernthedev.lightchat.core.api.event.api.EventHandler
-import com.github.fernthedev.lightchat.core.api.event.api.Listener
 import com.github.fernthedev.lightchat.server.SenderInterface
 import com.github.fernthedev.lightchat.server.Server
+import com.github.fernthedev.lightchat.server.event.PlayerDisconnectEvent
+import com.github.fernthedev.lightchat.server.event.PlayerJoinEvent
 import com.github.fernthedev.lightchat.server.event.ServerShutdownEvent
 import com.github.fernthedev.lightchat.server.event.ServerStartupEvent
 import com.github.fernthedev.lightchat.server.settings.ServerSettings
@@ -23,10 +23,12 @@ import com.github.fernthedev.lightchat.server.terminal.ServerTerminal
 import com.github.fernthedev.lightchat.server.terminal.ServerTerminalSettings
 import com.github.fernthedev.lightchat.server.terminal.command.Command
 import com.github.fernthedev.universal.UniversalHandler
+import io.netty.channel.ChannelPipeline
 import org.slf4j.Logger
 import java.io.File
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.function.Consumer
 import kotlin.system.exitProcess
 
 class GameServer constructor(
@@ -78,59 +80,67 @@ class GameServer constructor(
                 .serverSettings(GsonConfig<ServerSettings>(serverSettings, File("settings.json")))
                 .build()
         )
-        ServerTerminal.server.addShutdownListener {
+        ServerTerminal.server.eventHandler.add(ServerShutdownEvent::class.java) {
             ServerTerminal.server.logger.info(ColorCode.RED.toString() + "Goodbye!")
             exitProcess(0)
         }
 
         ServerTerminal.server.maxPacketId = CommonUtil.MAX_PACKET_IDS
         ServerTerminal.server.addPacketHandler(ServerPacketHandler(this))
-        ServerTerminal.server.pluginManager.registerEvents(object : Listener {
-            @EventHandler
-            fun onEvent(event: ServerStartupEvent) {
-                UniversalHandler.running = true
-                ServerTerminal.server.logger.info("Running game startup code")
+        ServerTerminal.server.eventHandler.add(ServerStartupEvent::class.java) { event ->
 
-                CommonUtil.registerNetworking()
+            UniversalHandler.running = true
+            ServerTerminal.server.logger.info("Running game startup code")
 
-                serverThread = ServerTerminal.server.serverThread!!
+            CommonUtil.registerNetworking()
 
-                ServerTerminal.server.addChannelHandler(processHandler)
-                ServerTerminal.server.pluginManager.registerEvents(processHandler)
-
-                val thread = Thread(Ticker(serverGameHandler))
-                thread.start()
+            serverThread = ServerTerminal.server.serverThread!!
 
 
-                ServerTerminal.registerCommand(object : Command("start") {
-                    override fun onCommand(sender: SenderInterface, args: Array<String>) {
-                        ServerTerminal.server.authenticationManager.authenticate(sender)
-                            .thenAccept { aBoolean: Boolean ->
-                                if (aBoolean) {
-                                    serverGameHandler.started = true
-                                }
-                            }
-                    }
-                })
-                ServerTerminal.registerCommand(object : Command("stop") {
-                    override fun onCommand(sender: SenderInterface, args: Array<String>) {
-                        ServerTerminal.server.authenticationManager.authenticate(sender)
-                            .thenAccept { aBoolean: Boolean ->
-                                if (aBoolean) {
-                                    serverGameHandler.started = false
-                                    entityRegistry.removeRespawnAllPlayers()
-                                }
-                            }
-                    }
-                })
+            ServerTerminal.server.channelHandlers = Consumer { channel: ChannelPipeline ->
+                channel.addLast(processHandler)
             }
 
-            @EventHandler
-            fun onEvent(e: ServerShutdownEvent) {
-                UniversalHandler.running = false
+            ServerTerminal.server.eventHandler.add(PlayerJoinEvent::class.java) {
+                processHandler.playerJoin(it)
             }
-        })
-        PacketRegistry.registerDefaultPackets()
+            ServerTerminal.server.eventHandler.add(PlayerDisconnectEvent::class.java) {
+                processHandler.onLeave(it)
+            }
+
+            val thread = Thread(Ticker(serverGameHandler))
+            thread.start()
+
+
+            ServerTerminal.registerCommand(object : Command("start") {
+                override fun onCommand(sender: SenderInterface, args: Array<String>) {
+                    ServerTerminal.server.authenticationManager.authenticate(sender)
+                        .thenAccept { aBoolean: Boolean ->
+                            if (aBoolean) {
+                                serverGameHandler.started = true
+                            }
+                        }
+                }
+            })
+            ServerTerminal.registerCommand(object : Command("stop") {
+                override fun onCommand(sender: SenderInterface, args: Array<String>) {
+                    ServerTerminal.server.authenticationManager.authenticate(sender)
+                        .thenAccept { aBoolean: Boolean ->
+                            if (aBoolean) {
+                                serverGameHandler.started = false
+                                entityRegistry.removeRespawnAllPlayers()
+                            }
+                        }
+                }
+            })
+
+        }
+
+        ServerTerminal.server.eventHandler.add(ServerShutdownEvent::class.java) {
+            UniversalHandler.running = false
+        }
+
+        PacketJsonRegistry.registerDefaultPackets()
         ServerTerminal.startBind()
     }
 

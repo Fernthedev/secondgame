@@ -4,8 +4,6 @@ import com.github.fernthedev.game.server.ClientGameData
 import com.github.fernthedev.game.server.GameServer
 import com.github.fernthedev.lightchat.core.ColorCode
 import com.github.fernthedev.lightchat.core.StaticHandler
-import com.github.fernthedev.lightchat.core.api.event.api.EventHandler
-import com.github.fernthedev.lightchat.core.api.event.api.Listener
 import com.github.fernthedev.lightchat.server.ClientConnection
 import com.github.fernthedev.lightchat.server.event.PlayerDisconnectEvent
 import com.github.fernthedev.lightchat.server.event.PlayerJoinEvent
@@ -18,8 +16,8 @@ import io.netty.channel.ChannelInboundHandlerAdapter
 @ChannelHandler.Sharable
 class GameNetworkProcessingHandler(
     val server: GameServer
-) : ChannelInboundHandlerAdapter(), Listener {
-    @EventHandler
+) : ChannelInboundHandlerAdapter() {
+
     fun playerJoin(e: PlayerJoinEvent) {
         server.server.logger
             .info(ColorCode.YELLOW.toString() + "handling player " + e.joinPlayer.name + " giving data")
@@ -36,7 +34,7 @@ class GameNetworkProcessingHandler(
         )
     }
 
-    @EventHandler
+
     fun onLeave(e: PlayerDisconnectEvent) {
         server.serverGameHandler.entityHandler.removeClientData(e.disconnectedPlayer)
         StaticHandler.core.logger.debug("Removed player {}", e.disconnectedPlayer.name)
