@@ -13,6 +13,7 @@ import com.github.fernthedev.universal.GameObject
 import com.github.fernthedev.universal.Location
 import com.github.fernthedev.universal.entity.EntityPlayer
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
 import java.util.concurrent.ConcurrentHashMap
 
 
@@ -56,7 +57,7 @@ class NewServerEntityRegistry(
         super.tick()
     }
 
-    override fun collisionCheck(universalPlayer: EntityPlayer) {
+    override fun collisionCheck(universalPlayer: EntityPlayer) = runBlocking {
         clientGameDataMap.keys
             .filter { connection: ClientConnection -> clientGameDataMap[connection]!!.entityPlayer.uniqueId === universalPlayer.uniqueId }
             .forEach { connection: ClientConnection ->
@@ -82,7 +83,8 @@ class NewServerEntityRegistry(
 
                 if (coinIncrease > 0) {
                     universalPlayer.coin = universalPlayer.coin + coinIncrease
-                    connection.sendObject(SetCoin(universalPlayer.coin).transport())
+
+                    connection.sendObjectIO(SetCoin(universalPlayer.coin).transport())
                 }
 
                 if (universalPlayer.health <= 0) {

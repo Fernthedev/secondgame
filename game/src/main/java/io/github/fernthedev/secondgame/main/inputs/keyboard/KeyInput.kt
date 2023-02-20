@@ -4,16 +4,16 @@
 //
 package io.github.fernthedev.secondgame.main.inputs.keyboard
 
+import com.github.fernthedev.lightchat.core.encryption.transport
 import com.github.fernthedev.packets.player_updates.ClientWorldUpdatePacket
 import com.github.fernthedev.universal.UniversalHandler
 import com.github.fernthedev.universal.entity.NewGsonGameObject
 import io.github.fernthedev.secondgame.main.Game
 import io.github.fernthedev.secondgame.main.inputs.InputHandler
 import io.github.fernthedev.secondgame.main.inputs.InputType
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
-import kotlin.coroutines.EmptyCoroutineContext
 
 class KeyInput
     (private val game: Game) : KeyAdapter() {
@@ -55,7 +55,7 @@ class KeyInput
         return button
     }
 
-    fun tick() {
+    suspend fun tick() {
         if (Game.mainPlayer == null || InputHandler.inputType != InputType.KEYBOARD) return
 
         var velX = 0
@@ -82,21 +82,21 @@ class KeyInput
         Game.mainPlayer!!.velX = (velX.toFloat())
         Game.mainPlayer!!.velY = (velY.toFloat())
         Game.staticEntityRegistry.setPlayerInfo(Game.mainPlayer)
+
         update()
     }
 
-    private fun update() {
+    private suspend fun update() = coroutineScope {
         toUpdate = false
         if (Game.screen == null && Game.client?.isRegistered == true && Game.mainPlayer != null) {
 
-            Dispatchers.Default.dispatch(EmptyCoroutineContext) {
-                Game.client!!.sendObject(
-                    ClientWorldUpdatePacket(
-                        NewGsonGameObject(Game.mainPlayer!!),
-                        Game.staticEntityRegistry.objectsAndHashCode
-                    )
-                )
-            }
+            Game.sendPacket(
+                ClientWorldUpdatePacket(
+                    NewGsonGameObject(Game.mainPlayer!!),
+                    Game.staticEntityRegistry.objectsAndHashCode
+                ).transport()
+            )
+
 
             Game.loggerImpl.debug("Updated player")
         }

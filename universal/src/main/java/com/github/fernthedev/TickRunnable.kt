@@ -1,5 +1,5 @@
 package com.github.fernthedev
 
-interface TickRunnable {
+fun interface TickRunnable {
     suspend fun tick()
 }

@@ -3,11 +3,13 @@ package com.github.fernthedev.game.server.game_handler
 import com.github.fernthedev.TickRunnable
 import com.github.fernthedev.game.server.GameServer
 import com.github.fernthedev.game.server.NewServerEntityRegistry
+import com.github.fernthedev.game.server.sendObjectIODeferred
 import com.github.fernthedev.lightchat.core.encryption.transport
 import com.github.fernthedev.packets.GameOverPacket
 import com.github.fernthedev.universal.entity.EntityPlayer
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.yield
 
 class ServerGameHandler(
     val server: GameServer,
@@ -34,25 +36,32 @@ class ServerGameHandler(
         spawnJob.join()
         playerJob.join()
 
-        if (started && !entityHandler.gameObjects
+        if (!started || entityHandler.gameObjects
                 .any { (_, gameObject) -> gameObject is EntityPlayer }
         ) {
-            started = false
-            if (server.server.playerHandler.channelMap.isNotEmpty()) {
-                val packet = GameOverPacket().transport()
-                server.server.playerHandler.channelMap.values.forEach { connection ->
-                    try {
-                        connection.sendObject(packet).sync()
-                    } catch (e: InterruptedException) {
-                        Thread.currentThread().interrupt()
-                        e.printStackTrace()
-                    }
-                    connection.close()
-                }
+            return@coroutineScope
+        }
 
-                entityHandler.clearEntities()
-                entityHandler.clientGameDataMap.clear()
+
+        started = false
+        if (server.server.playerHandler.channelMap.isEmpty()) {
+            return@coroutineScope
+        }
+
+        entityHandler.clearEntities()
+        entityHandler.clientGameDataMap.clear()
+
+        val packet = GameOverPacket().transport()
+        server.server.playerHandler.channelMap.values.map { connection ->
+            connection to connection.sendObjectIODeferred(packet)
+        }.forEach { (connection, deferred) ->
+            val future = deferred.await()
+
+            while (!future.isDone) {
+                yield()
             }
+
+            connection.close()
         }
     }
 }

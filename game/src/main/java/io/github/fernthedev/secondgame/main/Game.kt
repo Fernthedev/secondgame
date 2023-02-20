@@ -14,6 +14,7 @@ import com.github.fernthedev.lightchat.client.Client
 import com.github.fernthedev.lightchat.client.event.ServerDisconnectEvent
 import com.github.fernthedev.lightchat.core.PacketJsonRegistry
 import com.github.fernthedev.lightchat.core.StaticHandler
+import com.github.fernthedev.lightchat.core.encryption.PacketTransporter
 import com.github.fernthedev.lightchat.server.event.ServerStartupEvent
 import com.github.fernthedev.universal.UniversalHandler
 import com.github.fernthedev.universal.entity.EntityPlayer
@@ -26,9 +27,7 @@ import io.github.fernthedev.secondgame.main.ui.MouseHandler
 import io.github.fernthedev.secondgame.main.ui.api.Screen
 import io.github.fernthedev.secondgame.main.ui.screens.EndScreen
 import io.github.fernthedev.secondgame.main.ui.screens.MainMenu
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import org.lwjgl.Version
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -351,6 +350,12 @@ class Game : Canvas(), Runnable, IGame {
             server.server.eventHandler.add(ServerStartupEvent::class.java) {
                 staticEntityRegistry.addEntityObject(mainPlayer!!)
 
+            }
+        }
+
+        suspend fun sendPacket(packet: PacketTransporter): Job = coroutineScope {
+            return@coroutineScope launch(Dispatchers.IO) {
+                client!!.sendObject(packet)
             }
         }
     }

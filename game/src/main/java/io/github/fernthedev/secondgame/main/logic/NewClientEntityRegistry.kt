@@ -4,6 +4,7 @@ import com.github.fernthedev.GameMathUtil
 import com.github.fernthedev.INewEntityRegistry
 import com.github.fernthedev.exceptions.DebugException
 import com.github.fernthedev.game.server.NewServerEntityRegistry
+import com.github.fernthedev.lightchat.core.encryption.transport
 import com.github.fernthedev.packets.player_updates.ClientWorldUpdatePacket
 import com.github.fernthedev.universal.GameObject
 import com.github.fernthedev.universal.Location
@@ -15,6 +16,9 @@ import io.github.fernthedev.secondgame.main.entities.CoinRenderer
 import io.github.fernthedev.secondgame.main.entities.MenuParticle
 import io.github.fernthedev.secondgame.main.entities.PlayerRender
 import io.github.fernthedev.secondgame.main.entities.Trail
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import java.awt.Graphics2D
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -61,7 +65,7 @@ class NewClientEntityRegistry : INewEntityRegistry() {
          }
     }
 
-    override suspend fun tick() {
+    override suspend fun tick() = coroutineScope {
         super.tick()
 
         if (Game.client == null) {
@@ -75,12 +79,14 @@ class NewClientEntityRegistry : INewEntityRegistry() {
                 TimeUnit.MILLISECONDS
             ) >= 500
         ) {
-            Game.client!!.sendObject(
-                ClientWorldUpdatePacket(
-                    NewGsonGameObject(Game.mainPlayer!!),
-                    Game.staticEntityRegistry.objectsAndHashCode
+            launch(Dispatchers.IO) {
+                Game.sendPacket(
+                    ClientWorldUpdatePacket(
+                        NewGsonGameObject(Game.mainPlayer!!),
+                        Game.staticEntityRegistry.objectsAndHashCode
+                    ).transport()
                 )
-            )
+            }
             stopwatch.reset()
             Game.loggerImpl.info("Sent update packet " + Game.mainPlayer.toString())
         }
