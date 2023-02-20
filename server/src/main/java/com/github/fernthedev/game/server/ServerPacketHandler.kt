@@ -9,7 +9,7 @@ import com.github.fernthedev.packets.player_updates.ClientWorldUpdatePacket
 class ServerPacketHandler(
     val server: GameServer
 ) : IPacketHandler {
-    override fun handlePacket(p: PacketJSON, clientConnection: ClientConnection, packetId: Int) {
+    override suspend fun handlePacket(p: PacketJSON, clientConnection: ClientConnection, packetId: Int) {
         if (p is ClientWorldUpdatePacket) {
             val infoPacket: ClientWorldUpdatePacket = p
             val packetIdAndTime: Pair<Int, Long> = clientConnection.getPacketId(p.javaClass)

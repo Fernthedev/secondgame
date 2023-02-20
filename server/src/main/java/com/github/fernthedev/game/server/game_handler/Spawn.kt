@@ -2,6 +2,7 @@ package com.github.fernthedev.game.server.game_handler
 
 import com.github.fernthedev.TickRunnable
 import com.github.fernthedev.game.server.GameServer
+import com.github.fernthedev.lightchat.core.encryption.transport
 import com.github.fernthedev.packets.LevelUp
 import com.github.fernthedev.universal.Location
 import com.github.fernthedev.universal.UniversalHandler
@@ -90,7 +91,7 @@ class Spawn(
                 server.serverGameHandler.entityHandler.removeRespawnAllPlayers()
                 levels++
 
-                server.server.sendObjectToAllPlayers(LevelUp(levels))
+                server.server.sendObjectToAllPlayers(LevelUp(levels).transport())
                 scoreKeep = 200
             }
         }

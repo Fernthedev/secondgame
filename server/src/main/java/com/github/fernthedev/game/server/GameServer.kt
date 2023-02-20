@@ -32,9 +32,7 @@ import java.util.function.Consumer
 import kotlin.system.exitProcess
 
 class GameServer constructor(
-    args: Array<String>,
-    defaultPort: Int,
-    terminal: Boolean
+    args: Array<String>, defaultPort: Int, terminal: Boolean
 ) : IGame {
 
     val entityHandler: NewServerEntityRegistry = NewServerEntityRegistry(this)
@@ -53,8 +51,7 @@ class GameServer constructor(
 
         val port = AtomicInteger(defaultPort)
 
-        parseArguments(args)
-            .handle("-port") { queue: Queue<String> ->
+        parseArguments(args).handle("-port") { queue: Queue<String> ->
                 try {
                     port.set(queue.remove().toInt())
                     if (port.get() <= 0) {
@@ -65,20 +62,14 @@ class GameServer constructor(
                     logger.error("-port is not a number")
                     port.set(-1)
                 }
-            }
-            .handle("-debug") { StaticHandler.setDebug(true) }
-            .apply()
+            }.handle("-debug") { StaticHandler.setDebug(true) }.apply()
 
         val serverSettings = ServerSettings()
         ServerTerminal.init(
             args,
-            ServerTerminalSettings.builder()
-                .port(port.get())
-                .allowChangePassword(false)
-                .allowTermPackets(false)
+            ServerTerminalSettings.builder().port(port.get()).allowChangePassword(false).allowTermPackets(false)
                 .launchConsoleInCMDWhenNone(terminal)
-                .serverSettings(GsonConfig<ServerSettings>(serverSettings, File("settings.json")))
-                .build()
+                .serverSettings(GsonConfig<ServerSettings>(serverSettings, File("settings.json"))).build()
         )
         ServerTerminal.server.eventHandler.add(ServerShutdownEvent::class.java) {
             ServerTerminal.server.logger.info(ColorCode.RED.toString() + "Goodbye!")
@@ -113,24 +104,20 @@ class GameServer constructor(
 
 
             ServerTerminal.registerCommand(object : Command("start") {
-                override fun onCommand(sender: SenderInterface, args: Array<String>) {
-                    ServerTerminal.server.authenticationManager.authenticate(sender)
-                        .thenAccept { aBoolean: Boolean ->
-                            if (aBoolean) {
-                                serverGameHandler.started = true
-                            }
-                        }
+                override suspend fun onCommand(sender: SenderInterface, args: Array<String>) {
+                    val authenticated = ServerTerminal.server.authenticationManager.authenticate(sender).await()
+                    if (authenticated) {
+                        serverGameHandler.started = true
+                    }
                 }
             })
             ServerTerminal.registerCommand(object : Command("stop") {
-                override fun onCommand(sender: SenderInterface, args: Array<String>) {
-                    ServerTerminal.server.authenticationManager.authenticate(sender)
-                        .thenAccept { aBoolean: Boolean ->
-                            if (aBoolean) {
-                                serverGameHandler.started = false
-                                entityRegistry.removeRespawnAllPlayers()
-                            }
-                        }
+                override suspend fun onCommand(sender: SenderInterface, args: Array<String>) {
+                    val authenticated = ServerTerminal.server.authenticationManager.authenticate(sender).await()
+                    if (authenticated) {
+                        serverGameHandler.started = false
+                        entityRegistry.removeRespawnAllPlayers()
+                    }
                 }
             })
 

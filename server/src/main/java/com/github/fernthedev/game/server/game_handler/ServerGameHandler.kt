@@ -3,7 +3,6 @@ package com.github.fernthedev.game.server.game_handler
 import com.github.fernthedev.TickRunnable
 import com.github.fernthedev.game.server.GameServer
 import com.github.fernthedev.game.server.NewServerEntityRegistry
-import com.github.fernthedev.game.server.sendObjectIODeferred
 import com.github.fernthedev.lightchat.core.encryption.transport
 import com.github.fernthedev.packets.GameOverPacket
 import com.github.fernthedev.universal.entity.EntityPlayer
@@ -53,7 +52,7 @@ class ServerGameHandler(
 
         val packet = GameOverPacket().transport()
         server.server.playerHandler.channelMap.values.map { connection ->
-            connection to connection.sendObjectIODeferred(packet)
+            connection to connection.sendPacketDeferred(packet)
         }.forEach { (connection, deferred) ->
             val future = deferred.await()
 

@@ -3,7 +3,6 @@ package com.github.fernthedev.game.server.game_handler
 import com.github.fernthedev.game.server.ClientGameData
 import com.github.fernthedev.game.server.GameServer
 import com.github.fernthedev.game.server.NewServerEntityRegistry
-import com.github.fernthedev.game.server.sendObjectIO
 import com.github.fernthedev.lightchat.core.StaticHandler
 import com.github.fernthedev.lightchat.core.encryption.transport
 import com.github.fernthedev.lightchat.server.ClientConnection
@@ -117,7 +116,7 @@ class PlayerUpdateHandler(private val gameServer: GameServer) {
                 clientChangedObjects, NewGsonGameObject(clientGameData.entityPlayer), teleport = !clientGameData.entityPlayer.location.approx(clientGameData.clientSideLocation)
             )
 
-            clientPlayer.sendObjectIO(sendObjectsList.transport())
+            clientPlayer.sendPacketLaunch(sendObjectsList.transport())
 
             // Update hash to avoid redundant reuploads
             // Assume the client will receive it

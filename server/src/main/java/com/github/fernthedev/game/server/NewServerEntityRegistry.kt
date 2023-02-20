@@ -84,7 +84,7 @@ class NewServerEntityRegistry(
                 if (coinIncrease > 0) {
                     universalPlayer.coin = universalPlayer.coin + coinIncrease
 
-                    connection.sendObjectIO(SetCoin(universalPlayer.coin).transport())
+                    connection.sendPacketLaunch(SetCoin(universalPlayer.coin).transport())
                 }
 
                 if (universalPlayer.health <= 0) {
