@@ -7,7 +7,9 @@ import com.github.fernthedev.lightchat.core.StaticHandler
 import com.github.fernthedev.lightchat.core.encryption.transport
 import com.github.fernthedev.lightchat.server.ClientConnection
 import com.github.fernthedev.packets.object_updates.SetCoin
-import com.github.fernthedev.packets.player_updates.ClientWorldUpdatePacket
+import com.github.fernthedev.packets.proto.Packets
+import com.github.fernthedev.toGameObject
+import com.github.fernthedev.toUUIDMap
 import com.github.fernthedev.universal.EntityID
 import com.github.fernthedev.universal.GameObject
 import com.github.fernthedev.universal.Location
@@ -102,7 +104,7 @@ class NewServerEntityRegistry(
         }
     }
 
-    fun handleClientRespond(clientPlayer: ClientConnection, infoPacket: ClientWorldUpdatePacket) {
+    fun handleClientRespond(clientPlayer: ClientConnection, infoPacket: Packets.ClientWorldUpdatePacket) {
         val clientData: ClientGameData = server.serverGameHandler.entityHandler.clientGameDataMap[clientPlayer]
             ?: return
         val oldPlayer: EntityPlayer = clientData.entityPlayer
@@ -140,7 +142,7 @@ class NewServerEntityRegistry(
         clientGameData.clientSidePlayerHashCode = packetPlayer.hashCode()
         clientGameData.clientSideLocation = packetPlayer.location
         clientGameData.objectCacheList.clear()
-        clientGameData.objectCacheList.putAll(infoPacket.entitiesHashCodeMap!!)
+        clientGameData.objectCacheList.putAll(infoPacket.entitiesHashCodeMapMap.toUUIDMap())
 
         if (EntityPlayer.isPlayerDifferent(oldPlayer, copyNewPlayer, velXClamp, velYClamp)) {
             StaticHandler.core.logger.debug("Client player is changed")

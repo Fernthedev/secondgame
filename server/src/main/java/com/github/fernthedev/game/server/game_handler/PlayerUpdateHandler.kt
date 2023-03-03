@@ -3,14 +3,19 @@ package com.github.fernthedev.game.server.game_handler
 import com.github.fernthedev.game.server.ClientGameData
 import com.github.fernthedev.game.server.GameServer
 import com.github.fernthedev.game.server.NewServerEntityRegistry
+import com.github.fernthedev.lightchat.core.ProtobufRegistry
 import com.github.fernthedev.lightchat.core.StaticHandler
+import com.github.fernthedev.lightchat.core.encryption.PacketTransporter
 import com.github.fernthedev.lightchat.core.encryption.transport
 import com.github.fernthedev.lightchat.server.ClientConnection
-import com.github.fernthedev.packets.object_updates.SendObjectsList
+import com.github.fernthedev.packets.proto.sendObjectsListPacket
+import com.github.fernthedev.toProto
 import com.github.fernthedev.universal.GameObject
 import com.github.fernthedev.universal.approx
 import com.github.fernthedev.universal.entity.EntityPlayer
 import com.github.fernthedev.universal.entity.NewGsonGameObject
+import com.google.protobuf.GeneratedMessageV3
+import com.google.protobuf.kotlin.DslMap
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import java.util.*
@@ -32,7 +37,7 @@ class PlayerUpdateHandler(private val gameServer: GameServer) {
 
             val jsonGameObjects =
                 cachedObjectMap.map { (uuid: UUID, gameObject: GameObject) ->
-                    return@map uuid to lazy { NewGsonGameObject(gameObject) to gameObject.hashCode() }
+                    return@map uuid to lazy { gameObject to gameObject.hashCode() }
                 }.toMap()
 
 
@@ -64,13 +69,13 @@ class PlayerUpdateHandler(private val gameServer: GameServer) {
      */
     private suspend fun updatePlayerInfo(
         clientPlayer: ClientConnection,
-        jsonGameObjects: Map<UUID, Lazy<Pair<NewGsonGameObject, Int>>>
-    ) = coroutineScope{
+        jsonGameObjects: Map<UUID, Lazy<Pair<GameObject, Int>>>
+    ) = coroutineScope {
         val clientGameData: ClientGameData = gameServer.entityRegistry.clientGameDataMap[clientPlayer]!!
         val serverObjects: Map<UUID, GameObject> = gameServer.entityRegistry.gameObjects
 
 
-        val clientChangedObjects: Map<UUID, NewGsonGameObject?> = if (clientGameData.forcedUpdate) {
+        val clientChangedObjects: Map<UUID, GameObject?> = if (clientGameData.forcedUpdate) {
             jsonGameObjects.map { it.key to it.value.value.first }.toMap()
         } else {
             serverObjects
@@ -112,9 +117,17 @@ class PlayerUpdateHandler(private val gameServer: GameServer) {
 
 
         if (clientChangedObjects.isNotEmpty() || clientGameData.forcedUpdate || clientGameData.clientSidePlayerHashCode != clientGameData.entityPlayer.hashCode()) {
-            val sendObjectsList = SendObjectsList(
-                clientChangedObjects, NewGsonGameObject(clientGameData.entityPlayer), teleport = !clientGameData.entityPlayer.location.approx(clientGameData.clientSideLocation)
-            )
+
+            val sendObjectsList = sendObjectsListPacket {
+
+                this.objectList.putAll(clientChangedObjects.map {
+                    it.key.toString() to it.value.toProto()
+                }.toMap())
+
+                mainPlayer = clientGameData.entityPlayer.toProto()
+
+                teleport = !clientGameData.entityPlayer.location.approx(clientGameData.clientSideLocation)
+            }
 
             clientPlayer.sendPacketLaunch(sendObjectsList.transport())
 

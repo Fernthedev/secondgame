@@ -13,7 +13,7 @@ allprojects {
     apply plugin: 'kotlin'
     apply plugin: 'org.jetbrains.kotlin.jvm'
 
-    ext.lightchat = "03afec3410cfe7971a37eb816bff924b918d0483"
+    ext.lightchat = "a30e7a3563d0fa6a90f7cd31437b6b1fe0f8ceaa"
     ext.isBetaLight = true
     ext.log4j_ver = "2.19.0"
 
@@ -40,6 +40,9 @@ allprojects {
 
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4")
+
+        implementation 'com.google.protobuf:protobuf-java:3.22.0'
+        implementation 'com.google.protobuf:protobuf-kotlin:3.22.0'
 
         implementation 'com.github.Fernthedev:FernUtils:1.4.2'
         implementation 'com.google.code.gson:gson:2.8.9'
@@ -78,23 +81,23 @@ allprojects {
 //            exclude (dependency("${group}:server") )
 //            exclude (project(":server") )
 
-            exclude (dependency('io.netty:netty-transport.*:.*') )
+            exclude(dependency('io.netty:netty-transport.*:.*'))
 //            exclude (dependency('log4j:log4j:.*') )
-            exclude (dependency('org.apache.logging.log4j:log4j-core'))
-            exclude (dependency('org.apache.logging.log4j:log4j-slf4j-impl'))
+            exclude(dependency('org.apache.logging.log4j:log4j-core'))
+            exclude(dependency('org.apache.logging.log4j:log4j-slf4j-impl'))
 
-            exclude (dependency('org.apache.logging.log4j:') )
-            exclude (dependency('org.apache.commons:'))
+            exclude(dependency('org.apache.logging.log4j:'))
+            exclude(dependency('org.apache.commons:'))
 
-            exclude (dependency('org.slf4j:.*:.*') )
-            exclude (dependency('commons-logging:.*:.*') )
-            exclude (dependency('org.fusesource.jansi:.*:.*') )
-            exclude (dependency('org.jline:.*:.*') )
-            exclude (dependency('commons-logging:.*:.*') )
-            exclude (dependency('net.minecrell:.*:.*') )
-            exclude (dependency('com.jcraft:jzlib'))
-            exclude (dependency('org.lz4:lz4-java'))
-            exclude ('.**/Log4j2Plugins.dat' )
+            exclude(dependency('org.slf4j:.*:.*'))
+            exclude(dependency('commons-logging:.*:.*'))
+            exclude(dependency('org.fusesource.jansi:.*:.*'))
+            exclude(dependency('org.jline:.*:.*'))
+            exclude(dependency('commons-logging:.*:.*'))
+            exclude(dependency('net.minecrell:.*:.*'))
+            exclude(dependency('com.jcraft:jzlib'))
+            exclude(dependency('org.lz4:lz4-java'))
+            exclude('.**/Log4j2Plugins.dat')
         }
         mergeServiceFiles()
         getArchiveClassifier().set('')
@@ -116,4 +119,14 @@ allprojects {
             jvmTarget = "17"
         }
     }
+}
+
+tasks.register('protoGen', Exec) {
+
+    def SRC_DIR = rootDir.path
+    def DST_DIR = "${rootDir.path}\\universal\\src\\main\\java\\"
+
+    commandLine 'protoc',
+            "-I=$SRC_DIR", "--java_out=$DST_DIR",
+            "--kotlin_out=$DST_DIR", "$SRC_DIR/packets.proto"
 }

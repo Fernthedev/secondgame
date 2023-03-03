@@ -1,0 +1,72 @@
+syntax = "proto3";
+package com.github.fernthedev.packets.proto;
+
+import "google/protobuf/timestamp.proto";
+
+message UUID {
+    bytes value = 1;
+}
+
+message Location {
+    float x = 1;
+    float y = 2;
+}
+
+enum EntityID {
+    PLAYER = 0;
+    TRAIL = 1;
+    ENEMY = 2;
+    COIN = 3;
+}
+
+message Color {
+    uint32 r = 1;
+    uint32 g = 2;
+    uint32 b = 3;
+    uint32 a = 4;
+}
+
+message GameObject {
+    Location location = 1;
+    EntityID entityId = 2;
+
+    float velX = 3;
+    float velY = 4;
+
+    UUID uniqueId = 5;
+    Color color = 6;
+
+    float width = 7;
+    float height = 8;
+    bool hasTrail = 9;
+
+    // player
+    string name = 10;
+    int32 health = 11;
+    int32 coin = 12;
+}
+
+// wrapper to mark as nullable
+message GameObjectNullable {
+    GameObject o = 1;
+}
+
+message SendObjectsListPacket {
+    /// If null, deleted
+    map<string, GameObjectNullable> objectList = 1;
+    GameObject mainPlayer = 2;
+    bool teleport = 3;
+}
+
+
+message ClientWorldUpdatePacket {
+    GameObject playerObject = 1;
+    map<string, int32> entitiesHashCodeMap = 2; /* nullable */
+}
+
+message PacketWrapper {
+    oneof packet {
+        SendObjectsListPacket sendObjectsListPacket = 1;
+        ClientWorldUpdatePacket clientWorldUpdatePacket = 2;
+    }
+}

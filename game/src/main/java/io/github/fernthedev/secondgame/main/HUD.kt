@@ -55,7 +55,7 @@ class HUD {
 
         if (Game.client != null) {
             try {
-                g.drawString("Ping: " + Game.client!!.getPingTime(TimeUnit.MILLISECONDS) + "ms", 15, 112)
+                g.drawString("Ping: ${Game.client!!.getPingTime(TimeUnit.MILLISECONDS)}ms", 15, 112)
             } catch (e: RuntimeException) {
                 e.printStackTrace()
             }

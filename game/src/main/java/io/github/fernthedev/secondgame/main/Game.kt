@@ -15,7 +15,10 @@ import com.github.fernthedev.lightchat.client.event.ServerDisconnectEvent
 import com.github.fernthedev.lightchat.core.PacketJsonRegistry
 import com.github.fernthedev.lightchat.core.StaticHandler
 import com.github.fernthedev.lightchat.core.encryption.PacketTransporter
+import com.github.fernthedev.lightchat.core.encryption.transport
 import com.github.fernthedev.lightchat.server.event.ServerStartupEvent
+import com.github.fernthedev.packets.proto.clientWorldUpdatePacket
+import com.github.fernthedev.toProto
 import com.github.fernthedev.universal.UniversalHandler
 import com.github.fernthedev.universal.entity.EntityPlayer
 import io.github.fernthedev.secondgame.main.inputs.joystick.JoystickHandler
@@ -306,7 +309,7 @@ class Game : Canvas(), Runnable, IGame {
             val clientPacketHandler = ClientPacketHandler()
 
             client.eventHandler.add(ServerDisconnectEvent::class.java) {
-                clientPacketHandler.onDisconnect(it)
+                clientPacketHandler.onDisconnect()
             }
             client.addPacketHandler(clientPacketHandler)
 
@@ -357,6 +360,17 @@ class Game : Canvas(), Runnable, IGame {
             return@coroutineScope launch(Dispatchers.IO) {
                 client!!.sendObject(packet)
             }
+        }
+
+        fun updateWorld() {
+            client!!.sendObject(
+                clientWorldUpdatePacket {
+                    entitiesHashCodeMap.putAll(staticEntityRegistry.objectsAndHashCode.mapKeys {
+                        it.key.toString()
+                    })
+                    playerObject = mainPlayer!!.toProto()
+                }.transport()
+            )
         }
     }
 

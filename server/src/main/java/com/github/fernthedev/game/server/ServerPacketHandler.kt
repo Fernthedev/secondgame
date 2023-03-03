@@ -1,18 +1,25 @@
 package com.github.fernthedev.game.server
 
-import com.github.fernthedev.lightchat.core.packets.PacketJSON
+import com.github.fernthedev.lightchat.core.codecs.AcceptablePacketTypes
+import com.github.fernthedev.lightchat.core.packets.PacketProto
 import com.github.fernthedev.lightchat.server.ClientConnection
 import com.github.fernthedev.lightchat.server.api.IPacketHandler
-import com.github.fernthedev.packets.player_updates.ClientWorldUpdatePacket
+import com.github.fernthedev.packets.proto.Packets
 
 
 class ServerPacketHandler(
     val server: GameServer
 ) : IPacketHandler {
-    override suspend fun handlePacket(p: PacketJSON, clientConnection: ClientConnection, packetId: Int) {
-        if (p is ClientWorldUpdatePacket) {
-            val infoPacket: ClientWorldUpdatePacket = p
-            val packetIdAndTime: Pair<Int, Long> = clientConnection.getPacketId(p.javaClass)
+    override suspend fun handlePacket(
+        acceptablePacketTypes: AcceptablePacketTypes,
+        clientConnection: ClientConnection,
+        packetId: Int
+    ) {
+        val proto = acceptablePacketTypes as? PacketProto
+
+        val infoPacket = proto?.message as? Packets.ClientWorldUpdatePacket
+        if (infoPacket != null) {
+            val packetIdAndTime: Pair<Int, Long> = clientConnection.getPacketId(acceptablePacketTypes.javaClass)
             val id = packetIdAndTime.first
             val time = packetIdAndTime.second
 

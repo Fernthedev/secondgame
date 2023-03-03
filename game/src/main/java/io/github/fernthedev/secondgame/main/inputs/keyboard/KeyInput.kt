@@ -5,7 +5,6 @@
 package io.github.fernthedev.secondgame.main.inputs.keyboard
 
 import com.github.fernthedev.lightchat.core.encryption.transport
-import com.github.fernthedev.packets.player_updates.ClientWorldUpdatePacket
 import com.github.fernthedev.universal.UniversalHandler
 import com.github.fernthedev.universal.entity.NewGsonGameObject
 import io.github.fernthedev.secondgame.main.Game
@@ -90,14 +89,7 @@ class KeyInput
         toUpdate = false
         if (Game.screen == null && Game.client?.isRegistered == true && Game.mainPlayer != null) {
 
-            Game.sendPacket(
-                ClientWorldUpdatePacket(
-                    NewGsonGameObject(Game.mainPlayer!!),
-                    Game.staticEntityRegistry.objectsAndHashCode
-                ).transport()
-            )
-
-
+            Game.updateWorld()
             Game.loggerImpl.debug("Updated player")
         }
     }

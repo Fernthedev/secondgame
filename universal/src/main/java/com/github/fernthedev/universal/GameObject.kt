@@ -19,6 +19,7 @@ abstract class GameObject(
 
     var width: Float = 0F, var height: Float = 0F
 ) : Cloneable {
+
     var hasTrail = true
         protected set
 

@@ -1,6 +1,5 @@
 package io.github.fernthedev.secondgame.main.inputs.joystick
 
-import com.github.fernthedev.packets.player_updates.ClientWorldUpdatePacket
 import com.github.fernthedev.universal.entity.NewGsonGameObject
 import io.github.fernthedev.secondgame.main.Game
 import io.github.fernthedev.secondgame.main.inputs.InputHandler
@@ -129,12 +128,7 @@ class JoystickHandler {
         Game.mainPlayer?.velY = (vertical)
         Game.mainPlayer?.velX = (horizontal)
         if (Game.screen == null && Game.client != null) {
-            Game.client!!.sendObject(
-                ClientWorldUpdatePacket(
-                    NewGsonGameObject(Game.mainPlayer!!),
-                    Game.staticEntityRegistry.objectsAndHashCode
-                )
-            )
+            Game.updateWorld()
         }
     }
 

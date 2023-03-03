@@ -5,7 +5,6 @@ import com.github.fernthedev.INewEntityRegistry
 import com.github.fernthedev.exceptions.DebugException
 import com.github.fernthedev.game.server.NewServerEntityRegistry
 import com.github.fernthedev.lightchat.core.encryption.transport
-import com.github.fernthedev.packets.player_updates.ClientWorldUpdatePacket
 import com.github.fernthedev.universal.GameObject
 import com.github.fernthedev.universal.Location
 import com.github.fernthedev.universal.UniversalHandler
@@ -54,15 +53,14 @@ class NewClientEntityRegistry : INewEntityRegistry() {
     }
 
 
-
     override fun collisionCheck(universalPlayer: EntityPlayer) {
         if (Game.client == null && Game.gameServer == null) super.collisionCheck(universalPlayer)
     }
 
     override fun clampAndTP(gameObject: GameObject) {
-         if (Game.client == null && Game.gameServer == null || Game.mainPlayer != null && gameObject.uniqueId == Game.mainPlayer?.uniqueId) {
-             super.clampAndTP(gameObject)
-         }
+        if (Game.client == null && Game.gameServer == null || Game.mainPlayer != null && gameObject.uniqueId == Game.mainPlayer?.uniqueId) {
+            super.clampAndTP(gameObject)
+        }
     }
 
     override suspend fun tick() = coroutineScope {
@@ -80,12 +78,7 @@ class NewClientEntityRegistry : INewEntityRegistry() {
             ) >= 500
         ) {
             launch(Dispatchers.IO) {
-                Game.sendPacket(
-                    ClientWorldUpdatePacket(
-                        NewGsonGameObject(Game.mainPlayer!!),
-                        Game.staticEntityRegistry.objectsAndHashCode
-                    ).transport()
-                )
+                Game.updateWorld()
             }
             stopwatch.reset()
             Game.loggerImpl.info("Sent update packet " + Game.mainPlayer.toString())
@@ -102,9 +95,9 @@ class NewClientEntityRegistry : INewEntityRegistry() {
     fun startGame() {
         clearObjects()
         Game.mainPlayer = EntityPlayer(
-            Location(UniversalHandler.WIDTH.toFloat() / 2f - 32f,
-            UniversalHandler.HEIGHT.toFloat() / 2f - 32f),
-            ""
+            Location(
+                UniversalHandler.WIDTH.toFloat() / 2f - 32f, UniversalHandler.HEIGHT.toFloat() / 2f - 32f
+            ), ""
         )
         Game.screen = null
         val r: Random = UniversalHandler.RANDOM
@@ -112,7 +105,11 @@ class NewClientEntityRegistry : INewEntityRegistry() {
         val WIDTH: Int = UniversalHandler.WIDTH
         addEntityObject(Game.mainPlayer!!)
         addEntityObject(BasicEnemy(Location(r.nextFloat(WIDTH - 50f), r.nextFloat(HEIGHT - 50f))))
-        addEntityObject(Coin(Location(r.nextFloat(WIDTH - 50f), r.nextFloat(UniversalHandler.HEIGHT - 50f))))
+        addEntityObject(
+            Coin(
+                Location(r.nextFloat(WIDTH - 50f), r.nextFloat(UniversalHandler.HEIGHT - 50f))
+            )
+        )
     }
 
     fun resetLevel() {
@@ -132,21 +129,16 @@ class NewClientEntityRegistry : INewEntityRegistry() {
         val prevLoc = previousLocations[`object`.uniqueId] ?: `object`.location
 
         val entityRenderer = getRenderer(`object`.javaClass)
-        val drawX =
-            GameMathUtil.lerp(prevLoc.x, `object`.location.x, Game.elapsedTime.toFloat())
-        val drawY =
-            GameMathUtil.lerp(prevLoc.y, `object`.location.y, Game.elapsedTime.toFloat())
+        val drawX = GameMathUtil.lerp(prevLoc.x, `object`.location.x, Game.elapsedTime.toFloat())
+        val drawY = GameMathUtil.lerp(prevLoc.y, `object`.location.y, Game.elapsedTime.toFloat())
         entityRenderer.render(g, `object`, drawX, drawY)
         if (`object`.hasTrail && `object` !is Trail) {
             try {
                 entityRegistryInUse.addEntityObject(
                     Trail(
-                        Location(drawX,
-                        drawY),
-                        color = `object`.color,
-                        width = `object`.width,
-                        height = `object`.height,
-                        life = 0.04f
+                        Location(
+                            drawX, drawY
+                        ), color = `object`.color, width = `object`.width, height = `object`.height, life = 0.04f
                     )
                 )
             } catch (e: IllegalArgumentException) {
@@ -163,12 +155,10 @@ class NewClientEntityRegistry : INewEntityRegistry() {
 
     val objectsAndHashCode: Map<UUID, Int>
         get() {
-            return gameObjects
-                .filter { (uuid, _) -> gameObjects[uuid] != null && gameObjects[uuid] !is Trail && gameObjects[uuid] !is MenuParticle }
+            return gameObjects.filter { (uuid, _) -> gameObjects[uuid] != null && gameObjects[uuid] !is Trail && gameObjects[uuid] !is MenuParticle }
                 .map { (uuid, obj) ->
                     uuid to obj.hashCode()
-                }
-                .toMap()
+                }.toMap()
         }
 
     companion object {

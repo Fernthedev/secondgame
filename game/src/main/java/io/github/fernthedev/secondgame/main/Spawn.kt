@@ -23,7 +23,9 @@ internal class Spawn(private val hud: HUD, private val game: Game) {
         val coinspawn = hud.score + r.nextInt(512)
         if (hud.score == coinspawn) {
             Game.staticEntityRegistry.addEntityObject(
-                Coin(Location(r.nextFloat(UniversalHandler.WIDTH - 50f), r.nextFloat(UniversalHandler.HEIGHT - 50f)))
+                Coin(
+                    Location(r.nextFloat(UniversalHandler.WIDTH - 50f), r.nextFloat(UniversalHandler.HEIGHT - 50f)),
+                )
             )
             //handler.addObject(new Coin(r.nextInt(GAME.WIDTH - 50), r.nextInt(GAME.HEIGHT - 50), EntityID.Coin, GameObject.entities));
         }

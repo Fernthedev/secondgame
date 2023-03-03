@@ -1,9 +1,10 @@
 package com.github.fernthedev
 
 import com.github.fernthedev.lightchat.core.PacketJsonRegistry
+import com.github.fernthedev.lightchat.core.ProtobufRegistry
 import com.github.fernthedev.packets.GameOverPacket
-import com.github.fernthedev.packets.object_updates.SendObjectsList
-import com.github.fernthedev.packets.player_updates.ClientWorldUpdatePacket
+import com.github.fernthedev.packets.object_updates.SetCoin
+import com.github.fernthedev.packets.proto.Packets
 
 object CommonUtil {
     const val MAX_PACKET_IDS = 40
@@ -13,7 +14,8 @@ object CommonUtil {
     @JvmStatic
     fun registerNetworking() {
         PacketJsonRegistry.registerPacketPackageFromClass(GameOverPacket::class.java)
-        PacketJsonRegistry.registerPacketPackageFromClass(SendObjectsList::class.java)
-        PacketJsonRegistry.registerPacketPackageFromClass(ClientWorldUpdatePacket::class.java)
+        PacketJsonRegistry.registerPacketPackageFromClass(SetCoin::class.java)
+        ProtobufRegistry.addMessage(Packets.ClientWorldUpdatePacket.getDefaultInstance())
+        ProtobufRegistry.addMessage(Packets.SendObjectsListPacket.getDefaultInstance())
     }
 }
